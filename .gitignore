@@ -1,0 +1,8 @@
+conf.json
+fly.toml
+
+*.exe
+*.png
+*.svg
+don-trade-golang
+my.db

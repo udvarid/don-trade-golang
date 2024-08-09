@@ -1,7 +1,9 @@
 package collector
 
-func GetItems() map[string][]string {
-	items := make(map[string][]string)
+import "github.com/udvarid/don-trade-golang/model"
+
+func GetItems() map[string][]model.Item {
+	items := make(map[string][]model.Item)
 	items["stocks"] = getStocks()
 	items["fxs"] = getFxs()
 	items["commodities"] = getCommodities()
@@ -9,34 +11,34 @@ func GetItems() map[string][]string {
 	return items
 }
 
-func getFxs() []string {
-	var fxs []string
-	fxs = append(fxs, "EURUSD")
-	fxs = append(fxs, "GBPUSD")
-	fxs = append(fxs, "CNYUSD")
+func getFxs() []model.Item {
+	var fxs []model.Item
+	fxs = append(fxs, model.Item{"EURUSD", "EUR-USD fx quote"})
+	fxs = append(fxs, model.Item{"GBPUSD", "GBP-USD fx quote"})
+	fxs = append(fxs, model.Item{"CHFUSD", "CHF-USD fx quote"})
 	return fxs
 }
 
-func getStocks() []string {
-	var stocks []string
-	stocks = append(stocks, "NVDA")
-	stocks = append(stocks, "AMZN")
-	stocks = append(stocks, "TSLA")
+func getStocks() []model.Item {
+	var stocks []model.Item
+	stocks = append(stocks, model.Item{"NVDA", "Nvidia stock price"})
+	stocks = append(stocks, model.Item{"AMZN", "Amazon stock price"})
+	stocks = append(stocks, model.Item{"TSLA", "Tesla stock price"})
 	return stocks
 }
 
-func getCommodities() []string {
-	var commodities []string
-	commodities = append(commodities, "CLUSD")
-	commodities = append(commodities, "KCUSX")
-	commodities = append(commodities, "GCUSD")
+func getCommodities() []model.Item {
+	var commodities []model.Item
+	commodities = append(commodities, model.Item{"CLUSD", "Crude Oil-USD price"})
+	commodities = append(commodities, model.Item{"KCUSX", "Coffee-USD price"})
+	commodities = append(commodities, model.Item{"GCUSD", "Gold-USD price"})
 	return commodities
 }
 
-func getCryptos() []string {
-	var cryptos []string
-	cryptos = append(cryptos, "BTCUSD")
-	cryptos = append(cryptos, "ETHUSD")
-	cryptos = append(cryptos, "BNBUSD")
+func getCryptos() []model.Item {
+	var cryptos []model.Item
+	cryptos = append(cryptos, model.Item{"BTCUSD", "Bitcoin-USD price"})
+	cryptos = append(cryptos, model.Item{"ETHUSD", "Ethereum-USD price"})
+	cryptos = append(cryptos, model.Item{"BNBUSD", "Binance-USD price"})
 	return cryptos
 }

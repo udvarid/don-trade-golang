@@ -8,3 +8,18 @@ type Configuration struct {
 	Environment             string `json:"environment"`
 	Price_collector_api_key string `json:"price_collector_api_key"`
 }
+
+type CandleDto struct {
+	Item   string  `json:"item"`
+	Date   string  `json:"date"`
+	Open   float64 `json:"open"`
+	Close  float64 `json:"close"`
+	High   float64 `json:"high"`
+	Low    float64 `json:"low"`
+	Volume float64 `json:"volume"`
+}
+
+type Item struct {
+	Name        string `json:"name"`
+	Description string `json:"description"`
+}

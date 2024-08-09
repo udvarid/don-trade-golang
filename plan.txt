@@ -1,6 +1,4 @@
 
-    - Service, mely hívásra leszedi az utolsó időszak (paraméterezhető) adatait a kért típusra és az addícionálist hozzáadja az adatbázishoz. Goroutin használata
-        - Az adatgyűjtésre a direkt api call-t használjuk és egyben szedjük le az összeset, ne categóriánként eltérően. A Goroutin fv paramétere legyen az url is, a válasz már egy candle típusú adat, amit lehet a repository-nak küldeni
     - Adatbázis és hozzá repository, mely tartalmazza a napi gyertyaadatokat
 	- Adatbázis és hozzá repository, mely az utolsó adatfrissítést idejét tartalmazza ill. típusonként az utolsó dátumot
 	- Adatgyűjtő service-be olyan public fv, mely csak akkor indít adatfrissítést, ha aktuális nap még nem történt. Ez hívódna meg alkalmazás indításkor ill. egyéb bármilyen fv indításakor

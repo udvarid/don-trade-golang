@@ -4,9 +4,9 @@ import (
 	"embed"
 	"encoding/json"
 	"flag"
-	"fmt"
 
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/repository/repoUtil"
 	collector "github.com/udvarid/don-trade-golang/service"
 )
 
@@ -24,6 +24,6 @@ func main() {
 	json.Unmarshal([]byte(configFileInString), &config)
 
 	config.Environment = *environment
-	fmt.Println("Collecting data")
+	repoUtil.Init()
 	collector.CollectData(&config)
 }

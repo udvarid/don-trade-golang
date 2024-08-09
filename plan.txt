@@ -1,12 +1,17 @@
 
     - Adatbázis és hozzá repository, mely tartalmazza a napi gyertyaadatokat
+		- a candleSummary alapján az utolsó 15 vagy utolsó 700 pontot lekérni
 	- Adatbázis és hozzá repository, mely az utolsó adatfrissítést idejét tartalmazza ill. típusonként az utolsó dátumot
+		- repository létrehozása
+		- adatfrissítéskor mindig update
+	- A 2 évnél régebbi adatpontokat töröljük, rendszeres futtatás
 	- Adatgyűjtő service-be olyan public fv, mely csak akkor indít adatfrissítést, ha aktuális nap még nem történt. Ez hívódna meg alkalmazás indításkor ill. egyéb bármilyen fv indításakor
 	- gin-el controller készítése és induló index.html, mely https://github.com/go-echarts/go-echarts libbel kirajzolja a 4 db chart-ot
 	- Dockerfile és fly.toml
 	- Fő oldalon legyen lehetőség kategórián belül mást is kiválasztani
 	- Ha egy chart-ra kattintunk, külön oldalon jelenjen csak ez meg és itt addícionális mutatók/görbék is legyenek (pl. mozgó átlag)
 	- Bármilyen átlag/indikátor esetén unit tesztek
+	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
 		- piaci áras adásvételt indítani kiválasztott típusra
@@ -14,11 +19,17 @@
 	- Minden user-nél időpecsétes könyveléssel látszódjon, hogy melyik típus hogy változott ($, kereskedési típusok) és hogy ezáltal aznap miből mennyi készlete volt. Mindenhol unit tesztek
 	- Ügyfél vagyonának napi helyzetéről legyne chart, típus szerinti bontásban
 	- Nyitott megbízásokról lista
-	- Email fíók létrehozása
 	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)
 	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
 	- Legyen lehetőség short ügyletekre is
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short)
 	- Automatikus/állandó eladási/vételi utasítások megadása generálisan ill. adott típusra (pl. X napos mozgó átlag magasabb, Y naposnál, vétel)
 	- Értelmes indikátorok meghatározása / megismerése
+		- https://howtotrade.com/cheat-sheets/stock-indicators/
+		- https://b2prime.com/news/cheat-sheet-for-technical-indicators-to-succeed-in-trading/
+		- https://www.ig.com/en/trading-strategies/10-trading-indicators-every-trader-should-know-190604
+		- https://www.investopedia.com/top-7-technical-analysis-tools-4773275
+		- https://www.axi.com/int/blog/education/trading-indicators
+		- https://www.britannica.com/money/technical-indicator-types
+		- https://www.home.saxo/learn/guides/trading-strategies/a-guide-to-the-10-most-popular-trading-indicators
 	- Limit megadása automatikus műveleteknél (pl. short is, tőkeáttét is, őssz portfóli max x%-a)

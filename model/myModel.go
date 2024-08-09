@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type Configuration struct {
 	Mail_psw                string `json:"mail_psw"`
 	Mail_from               string `json:"mail_from"`
@@ -17,6 +19,23 @@ type CandleDto struct {
 	High   float64 `json:"high"`
 	Low    float64 `json:"low"`
 	Volume float64 `json:"volume"`
+}
+
+type Candle struct {
+	ID     int       `json:"id"`
+	Item   string    `json:"item"`
+	Date   time.Time `json:"date"`
+	Open   float64   `json:"open"`
+	Close  float64   `json:"close"`
+	High   float64   `json:"high"`
+	Low    float64   `json:"low"`
+	Volume float64   `json:"volume"`
+}
+
+type CandleSummary struct {
+	ID      int            `json:"id"`
+	Date    time.Time      `json:"date"`
+	Summary map[string]int `json:"summary"`
 }
 
 type Item struct {

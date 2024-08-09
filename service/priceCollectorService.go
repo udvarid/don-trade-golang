@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 )
 
 /* Used provider
@@ -21,7 +22,6 @@ https://www.alphavantage.co/
 */
 
 func CollectData(config *model.Configuration) {
-	dayParameter := 10 // ennek értéke legyen 15 / 700, attól függően, hogy van e már ilyen az adatbázisban
 
 	items := GetItems()
 	itemCounts := 0
@@ -31,6 +31,7 @@ func CollectData(config *model.Configuration) {
 	channel := make(chan CandleResult, itemCounts)
 	var wgStock sync.WaitGroup
 	for _, items := range items {
+		dayParameter := 15 // ennek értéke legyen 15 / 700, attól függően, hogy van e már ilyen az adatbázisban
 		for _, item := range items {
 			url := getUrl(dayParameter, item.Name, config.Price_collector_api_key)
 			if url != "" {
@@ -45,13 +46,55 @@ func CollectData(config *model.Configuration) {
 		close(channel)
 	}()
 
+	candlesPersisted := candleRepository.GetAllCandles()
 	for result := range channel {
-		for _, candle := range result.result {
-			// repository mentés...
-			fmt.Println(candle.Item, candle.Date, candle.Close, candle.Volume)
+		persisted := 0
+		for _, candleDto := range result.result {
+			candle := mapCandleDtoToCandle(candleDto)
+			if isCandleNew(&candlesPersisted, &candle) {
+				candleRepository.AddCandle(candle)
+				persisted++
+			}
 		}
-		fmt.Println("-----------------------------")
+		if persisted > 0 {
+			fmt.Println("Persisted: ", result.name, persisted)
+		}
 	}
+
+	candlesPersisted = candleRepository.GetAllCandles()
+	itemCountMap := make(map[string]int)
+	for _, candle := range candlesPersisted {
+		itemCountMap[candle.Item]++
+	}
+	var candleSummary model.CandleSummary
+	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-01"))
+	candleSummary.Date = pureToday
+	candleSummary.Summary = itemCountMap
+	// candleSummary lementése
+
+	// 2 évnél régebbi candle-k törlése db-ből
+}
+
+func isCandleNew(candlesPersisted *[]model.Candle, candle *model.Candle) bool {
+	for _, candlePersisted := range *candlesPersisted {
+		if candlePersisted.Item == candle.Item && candlePersisted.Date == candle.Date {
+			return false
+		}
+	}
+	return true
+}
+
+func mapCandleDtoToCandle(candleDto model.CandleDto) model.Candle {
+	var candle model.Candle
+	candle.Item = candleDto.Item
+	candle.High = candleDto.High
+	candle.Low = candleDto.Low
+	candle.Open = candleDto.Open
+	candle.Close = candleDto.Close
+	candle.Volume = candleDto.Volume
+	candleDate, _ := time.Parse("2006-01-02", candleDto.Date)
+	candle.Date = candleDate
+	return candle
 }
 
 func getUrl(days int, item string, apiKey string) string {

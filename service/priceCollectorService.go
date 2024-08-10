@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"slices"
 	"sync"
 	"time"
 
@@ -23,12 +24,15 @@ https://www.alphavantage.co/
 
 func CollectData(config *model.Configuration) {
 
+	// If today there was already a data collection, then we quit
 	summaries := candleRepository.GetAllCandleSummaries()
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-01"))
 	if len(summaries) > 0 && summaries[0].Date == pureToday {
+		log.Println("No more data collection today")
 		return
 	}
 
+	// starting data collection for each item in separated goroutins
 	itemMap := GetItems()
 	itemCounts := 0
 	for _, v := range itemMap {
@@ -52,6 +56,7 @@ func CollectData(config *model.Configuration) {
 		close(channel)
 	}()
 
+	// waiting the results and the new candles will be presisted
 	candlesPersisted := candleRepository.GetAllCandles()
 	for result := range channel {
 		persisted := 0
@@ -67,14 +72,16 @@ func CollectData(config *model.Configuration) {
 		}
 	}
 
+	// the old and unrelevant candles should be deleted
+	timeTwoYearsBefore := pureToday.AddDate(-2, 0, 0)
+	itemNames := getItemsFromItemMap(itemMap)
 	for _, candlePersisted := range candlesPersisted {
-		_, exists := itemMap[candlePersisted.Item]
-		timeTwoYearsBefore := pureToday.AddDate(-2, 0, 0)
-		if !exists || candlePersisted.Date.Before(timeTwoYearsBefore) {
+		if shouldBeDeleted(&candlePersisted, itemNames, timeTwoYearsBefore) {
 			candleRepository.DeleteCandle(candlePersisted.ID)
 		}
 	}
 
+	// creating new candleSummary statistics
 	candlesPersisted = candleRepository.GetAllCandles()
 	itemCountMap := make(map[string]int)
 	for _, candle := range candlesPersisted {
@@ -92,6 +99,25 @@ func CollectData(config *model.Configuration) {
 		candleSummaryToUpdate.Summary = candleSummary.Summary
 		candleRepository.UpdateCandleSummary(candleSummaryToUpdate)
 	}
+}
+
+func getItemsFromItemMap(itemMap map[string][]model.Item) []string {
+	itemNameSet := make(map[string]bool)
+	for _, v := range itemMap {
+		for _, item := range v {
+			itemNameSet[item.Name] = true
+		}
+	}
+	var result []string
+	for k := range itemNameSet {
+		result = append(result, k)
+	}
+	return result
+}
+
+func shouldBeDeleted(candlePersisted *model.Candle, itemNames []string, date time.Time) bool {
+	exists := slices.Contains(itemNames, candlePersisted.Item)
+	return !exists || candlePersisted.Date.Before(date)
 }
 
 func getDayParameter(summaries []model.CandleSummary, item string, defaultDays int) int {

@@ -1,10 +1,12 @@
 
-    - Adatbázis és hozzá repository, mely tartalmazza a napi gyertyaadatokat
-		- a candleSummary alapján az utolsó 15 vagy utolsó 700 pontot lekérni
-	- Adatbázis és hozzá repository, mely az utolsó adatfrissítést idejét tartalmazza ill. típusonként az utolsó dátumot
-		- repository létrehozása
-		- adatfrissítéskor mindig update
-	- A 2 évnél régebbi adatpontokat töröljük, rendszeres futtatás
+    - Tesztelni a data collecting processt
+		- manuális tesztelés minden ágat
+			- új item hozzáadás
+			- meglévő item elvétel
+			- aznap nem indul collection megint, csak utána
+			- dayparam meghatározás
+			- régiek törlése
+		- amit lehet unit tesztekkel
 	- Adatgyűjtő service-be olyan public fv, mely csak akkor indít adatfrissítést, ha aktuális nap még nem történt. Ez hívódna meg alkalmazás indításkor ill. egyéb bármilyen fv indításakor
 	- gin-el controller készítése és induló index.html, mely https://github.com/go-echarts/go-echarts libbel kirajzolja a 4 db chart-ot
 	- Dockerfile és fly.toml

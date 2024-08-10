@@ -23,16 +23,22 @@ https://www.alphavantage.co/
 
 func CollectData(config *model.Configuration) {
 
-	items := GetItems()
+	summaries := candleRepository.GetAllCandleSummaries()
+	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-01"))
+	if len(summaries) > 0 && summaries[0].Date == pureToday {
+		return
+	}
+
+	itemMap := GetItems()
 	itemCounts := 0
-	for _, v := range items {
+	for _, v := range itemMap {
 		itemCounts += len(v)
 	}
 	channel := make(chan CandleResult, itemCounts)
 	var wgStock sync.WaitGroup
-	for _, items := range items {
-		dayParameter := 15 // ennek értéke legyen 15 / 700, attól függően, hogy van e már ilyen az adatbázisban
+	for _, items := range itemMap {
 		for _, item := range items {
+			dayParameter := getDayParameter(summaries, item.Name, 15)
 			url := getUrl(dayParameter, item.Name, config.Price_collector_api_key)
 			if url != "" {
 				wgStock.Add(1)
@@ -61,18 +67,44 @@ func CollectData(config *model.Configuration) {
 		}
 	}
 
+	for _, candlePersisted := range candlesPersisted {
+		_, exists := itemMap[candlePersisted.Item]
+		timeTwoYearsBefore := pureToday.AddDate(-2, 0, 0)
+		if !exists || candlePersisted.Date.Before(timeTwoYearsBefore) {
+			candleRepository.DeleteCandle(candlePersisted.ID)
+		}
+	}
+
 	candlesPersisted = candleRepository.GetAllCandles()
 	itemCountMap := make(map[string]int)
 	for _, candle := range candlesPersisted {
 		itemCountMap[candle.Item]++
 	}
+
 	var candleSummary model.CandleSummary
-	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-01"))
 	candleSummary.Date = pureToday
 	candleSummary.Summary = itemCountMap
-	// candleSummary lementése
+	if len(summaries) == 0 {
+		candleRepository.AddCandleSummary(candleSummary)
+	} else {
+		candleSummaryToUpdate := summaries[0]
+		candleSummaryToUpdate.Date = candleSummary.Date
+		candleSummaryToUpdate.Summary = candleSummary.Summary
+		candleRepository.UpdateCandleSummary(candleSummaryToUpdate)
+	}
+}
 
-	// 2 évnél régebbi candle-k törlése db-ből
+func getDayParameter(summaries []model.CandleSummary, item string, defaultDays int) int {
+	longDayParam := 700
+	if len(summaries) == 0 {
+		return longDayParam
+	}
+	summary := summaries[0].Summary
+	numberOfItem, exists := summary[item]
+	if !exists || numberOfItem < 300 {
+		return longDayParam
+	}
+	return defaultDays
 }
 
 func isCandleNew(candlesPersisted *[]model.Candle, candle *model.Candle) bool {

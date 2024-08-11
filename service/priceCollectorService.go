@@ -26,7 +26,7 @@ func CollectData(config *model.Configuration) {
 
 	// If today there was already a data collection, then we quit
 	summaries := candleRepository.GetAllCandleSummaries()
-	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-01"))
+	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	if len(summaries) > 0 && summaries[0].Date == pureToday {
 		log.Println("No more data collection today")
 		return

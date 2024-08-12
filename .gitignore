@@ -4,5 +4,6 @@ fly.toml
 *.exe
 *.png
 *.svg
+kline-*.html
 don-trade-golang
 my.db

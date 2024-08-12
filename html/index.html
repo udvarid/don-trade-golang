@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <style>
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1f;
+            grid-template-rows: 1fr 1fr 1fr 1fr;
+            gap: 10px;
+            height: 80vh;
+            width: 100%;
+        }
+        .box {
+            border: 1px solid #ccc;
+            padding: 10px;
+            overflow: auto;
+            height: 100%;  
+        }
+        .text-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>    
+    <div class="container">
+        <div class="box" id="box1">{{.Html1}}</div>
+        <div class="box" id="box2">{{.Html2}}</div>
+        <div class="box" id="box3">{{.Html3}}</div>
+        <div class="box" id="box4">{{.Html4}}</div>        
+    </div>
+</body>
+</html>

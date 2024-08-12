@@ -7,9 +7,11 @@ import (
 	"log"
 	"net/http"
 	"slices"
+	"sort"
 	"sync"
 	"time"
 
+	chart "github.com/udvarid/don-trade-golang/chartBuilder"
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 )
@@ -98,6 +100,23 @@ func CollectData(config *model.Configuration) {
 		candleSummaryToUpdate.Date = candleSummary.Date
 		candleSummaryToUpdate.Summary = candleSummary.Summary
 		candleRepository.UpdateCandleSummary(candleSummaryToUpdate)
+	}
+
+	orderCharts(candlesPersisted, itemNames)
+}
+
+func orderCharts(candles []model.Candle, itemNames []string) {
+	for _, itemName := range itemNames {
+		var candlesToChart []model.Candle
+		for _, candle := range candles {
+			if candle.Item == itemName {
+				candlesToChart = append(candlesToChart, candle)
+			}
+		}
+		sort.Slice(candlesToChart, func(i, j int) bool {
+			return candlesToChart[i].Date.Before(candlesToChart[j].Date)
+		})
+		chart.BuildSimpleCandleChart(candlesToChart)
 	}
 }
 

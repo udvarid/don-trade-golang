@@ -4,10 +4,13 @@ import (
 	"embed"
 	"encoding/json"
 	"flag"
+	"sort"
 
+	chart "github.com/udvarid/don-trade-golang/chartBuilder"
+	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/repoUtil"
-	collector "github.com/udvarid/don-trade-golang/service"
 )
 
 var config = model.Configuration{}
@@ -26,4 +29,17 @@ func main() {
 	config.Environment = *environment
 	repoUtil.Init()
 	collector.CollectData(&config)
+
+	var amzn []model.Candle
+	for _, c := range candleRepository.GetAllCandles() {
+		if c.Item == "AMZN" {
+			amzn = append(amzn, c)
+		}
+	}
+
+	sort.Slice(amzn, func(i, j int) bool {
+		return amzn[i].Date.Before(amzn[j].Date)
+	})
+
+	chart.BuildSimpleCandleChart(amzn)
 }

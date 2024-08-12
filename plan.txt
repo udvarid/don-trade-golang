@@ -1,6 +1,6 @@
 	- gin-el controller készítése és induló index.html, mely https://github.com/go-echarts/go-echarts libbel kirajzolja a 4 db chart-ot
-	- Dockerfile és fly.toml
 	- Fő oldalon legyen lehetőség kategórián belül mást is kiválasztani
+	- Dockerfile és fly.toml + fly deploy (mounting)	
 	- Ha egy chart-ra kattintunk, külön oldalon jelenjen csak ez meg és itt addícionális mutatók/görbék is legyenek (pl. mozgó átlag)
 	- Bármilyen átlag/indikátor esetén unit tesztek
 	- Email fíók létrehozása

@@ -121,13 +121,21 @@ func getItemMap() map[string][]model.Item {
 
 func TestGetItemsFromItemMap(t *testing.T) {
 	answer := getItemsFromItemMap(getItemMap())
-	if len(answer) != 3 || !slices.Contains(answer, "Test1") || !slices.Contains(answer, "Test2") || !slices.Contains(answer, "Test3") {
+	var keys []string
+	for itemName := range answer {
+		keys = append(keys, itemName)
+	}
+	if len(answer) != 3 || !slices.Contains(keys, "Test1") || !slices.Contains(keys, "Test2") || !slices.Contains(keys, "Test3") {
 		t.Errorf("Not proper answer for getItemsFromItemMap")
 	}
 }
 
 func TestShouldBeDeleted(t *testing.T) {
-	itemNames := getItemsFromItemMap(getItemMap())
+	itemNamesWithItem := getItemsFromItemMap(getItemMap())
+	var itemNames []string
+	for itemName := range itemNamesWithItem {
+		itemNames = append(itemNames, itemName)
+	}
 	myDate, _ := time.Parse("2006-01-02", "2023-01-01")
 
 	var tests = []struct {

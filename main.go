@@ -32,7 +32,6 @@ func main() {
 		cs.Date = cs.Date.AddDate(0, 0, -1)
 		candleRepository.UpdateCandleSummary(cs)
 	*/
-
 	collector.CollectData(&config)
 
 	controller.Init()

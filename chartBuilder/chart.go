@@ -10,12 +10,14 @@ import (
 	"github.com/udvarid/don-trade-golang/model"
 )
 
+// https://github.com/go-echarts/go-echarts
+
 type klineData struct {
 	date string
 	data [4]float32
 }
 
-func BuildSimpleCandleChart(candles []model.Candle) {
+func BuildSimpleCandleChart(candles []model.Candle, description string) {
 
 	page := components.NewPage()
 
@@ -25,7 +27,7 @@ func BuildSimpleCandleChart(candles []model.Candle) {
 		klineData := klineData{date: myDate, data: [4]float32{float32(candle.Open), float32(candle.Close), float32(candle.Low), float32(candle.High)}}
 		kd = append(kd, klineData)
 	}
-	page.AddCharts(klineBase(kd, candles[0].Item))
+	page.AddCharts(klineBase(kd, description))
 
 	f, err := os.Create("html/kline-" + candles[0].Item + ".html")
 	if err != nil {
@@ -36,7 +38,7 @@ func BuildSimpleCandleChart(candles []model.Candle) {
 
 }
 
-func klineBase(kd []klineData, item string) *charts.Kline {
+func klineBase(kd []klineData, description string) *charts.Kline {
 	kline := charts.NewKLine()
 
 	x := make([]string, 0)
@@ -47,22 +49,14 @@ func klineBase(kd []klineData, item string) *charts.Kline {
 	}
 
 	kline.SetGlobalOptions(
-		charts.WithTitleOpts(opts.Title{
-			Title: "Stock Price",
-		}),
 		charts.WithXAxisOpts(opts.XAxis{
 			SplitNumber: 20,
 		}),
 		charts.WithYAxisOpts(opts.YAxis{
 			Scale: opts.Bool(true),
 		}),
-		charts.WithDataZoomOpts(opts.DataZoom{
-			Start:      50,
-			End:        100,
-			XAxisIndex: []int{0},
-		}),
 	)
 
-	kline.SetXAxis(x).AddSeries(item, y)
+	kline.SetXAxis(x).AddSeries(description, y)
 	return kline
 }

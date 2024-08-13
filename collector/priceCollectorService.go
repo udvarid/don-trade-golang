@@ -76,7 +76,11 @@ func CollectData(config *model.Configuration) {
 
 	// the old and unrelevant candles should be deleted
 	timeTwoYearsBefore := pureToday.AddDate(-2, 0, 0)
-	itemNames := getItemsFromItemMap(itemMap)
+	itemNamesWithItem := getItemsFromItemMap(itemMap)
+	var itemNames []string
+	for itemName := range itemNamesWithItem {
+		itemNames = append(itemNames, itemName)
+	}
 	for _, candlePersisted := range candlesPersisted {
 		if shouldBeDeleted(&candlePersisted, itemNames, timeTwoYearsBefore) {
 			candleRepository.DeleteCandle(candlePersisted.ID)
@@ -102,11 +106,11 @@ func CollectData(config *model.Configuration) {
 		candleRepository.UpdateCandleSummary(candleSummaryToUpdate)
 	}
 
-	orderCharts(candlesPersisted, itemNames)
+	orderCharts(candlesPersisted, itemNamesWithItem)
 }
 
-func orderCharts(candles []model.Candle, itemNames []string) {
-	for _, itemName := range itemNames {
+func orderCharts(candles []model.Candle, itemNames map[string]model.Item) {
+	for itemName, item := range itemNames {
 		var candlesToChart []model.Candle
 		for _, candle := range candles {
 			if candle.Item == itemName {
@@ -116,22 +120,22 @@ func orderCharts(candles []model.Candle, itemNames []string) {
 		sort.Slice(candlesToChart, func(i, j int) bool {
 			return candlesToChart[i].Date.Before(candlesToChart[j].Date)
 		})
-		chart.BuildSimpleCandleChart(candlesToChart)
+		n := len(candlesToChart)
+		if n > 100 {
+			n = 100
+		}
+		chart.BuildSimpleCandleChart(candlesToChart[len(candlesToChart)-n:], item.Description)
 	}
 }
 
-func getItemsFromItemMap(itemMap map[string][]model.Item) []string {
-	itemNameSet := make(map[string]bool)
+func getItemsFromItemMap(itemMap map[string][]model.Item) map[string]model.Item {
+	itemNameSet := make(map[string]model.Item)
 	for _, v := range itemMap {
 		for _, item := range v {
-			itemNameSet[item.Name] = true
+			itemNameSet[item.Name] = item
 		}
 	}
-	var result []string
-	for k := range itemNameSet {
-		result = append(result, k)
-	}
-	return result
+	return itemNameSet
 }
 
 func shouldBeDeleted(candlePersisted *model.Candle, itemNames []string, date time.Time) bool {

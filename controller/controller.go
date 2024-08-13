@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/udvarid/don-trade-golang/collector"
 )
 
 func Init() {
@@ -17,24 +18,67 @@ func Init() {
 }
 
 func startPage(c *gin.Context) {
-	// Read the pre-generated HTML files
-	html1, _ := os.ReadFile("html/kline-AMZN.html")
-	html2, _ := os.ReadFile("html/kline-BTCUSD.html")
-	html3, _ := os.ReadFile("html/kline-EURUSD.html")
-	html4, _ := os.ReadFile("html/kline-CLUSD.html")
+	items := collector.GetItems()
+	stockItems := items["stocks"]
+	var stockPages []HtmlWithInfo
+	for _, stockItem := range stockItems {
+		html, _ := os.ReadFile("html/kline-" + stockItem.Name + ".html")
+		var page HtmlWithInfo
+		page.Page = template.HTML(string(html))
+		page.Name = stockItem.Name
+		page.Description = stockItem.Description
+		stockPages = append(stockPages, page)
 
-	data := map[string]interface{}{
-		"Html1": template.HTML(string(html1)),
-		"Html2": template.HTML(string(html2)),
-		"Html3": template.HTML(string(html3)),
-		"Html4": template.HTML(string(html4)),
 	}
 
-	/*c.HTML(http.StatusOK, "index.html", gin.H{
-		"title": "Home Page",
-		"pages": data,
-	})*/
+	fxItems := items["fxs"]
+	var fxPages []HtmlWithInfo
+	for _, fxItem := range fxItems {
+		html, _ := os.ReadFile("html/kline-" + fxItem.Name + ".html")
+		var page HtmlWithInfo
+		page.Page = template.HTML(string(html))
+		page.Name = fxItem.Name
+		page.Description = fxItem.Description
+		fxPages = append(fxPages, page)
 
-	c.HTML(http.StatusOK, "index.html", data)
+	}
 
+	commodityItems := items["commodities"]
+	var commodityPages []HtmlWithInfo
+	for _, commodityItem := range commodityItems {
+		html, _ := os.ReadFile("html/kline-" + commodityItem.Name + ".html")
+		var page HtmlWithInfo
+		page.Page = template.HTML(string(html))
+		page.Name = commodityItem.Name
+		page.Description = commodityItem.Description
+		commodityPages = append(commodityPages, page)
+
+	}
+
+	cryptoItems := items["cryptos"]
+	var cryptoPages []HtmlWithInfo
+	for _, cryptoItem := range cryptoItems {
+		html, _ := os.ReadFile("html/kline-" + cryptoItem.Name + ".html")
+		var page HtmlWithInfo
+		page.Page = template.HTML(string(html))
+		page.Name = cryptoItem.Name
+		page.Description = cryptoItem.Description
+		cryptoPages = append(cryptoPages, page)
+
+	}
+
+	c.HTML(http.StatusOK, "index.html", gin.H{
+		"title":          "Home Page",
+		"stockPages":     stockPages,
+		"fxPages":        fxPages,
+		"commodityPages": commodityPages,
+		"cryptoPages":    cryptoPages,
+	})
+
+}
+
+type HtmlWithInfo struct {
+	Name        string
+	Description string
+	Page        interface{}
 }

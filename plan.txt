@@ -1,4 +1,12 @@
-	- Ha egy chart-ra kattintunk, külön oldalon jelenjen csak ez meg és itt addícionális mutatók/görbék is legyenek (pl. mozgó átlag)
+	- Detailed page-hez extra chartok kitalálása és megcsinálása
+		- https://howtotrade.com/cheat-sheets/stock-indicators/
+		- https://b2prime.com/news/cheat-sheet-for-technical-indicators-to-succeed-in-trading/
+		- https://www.ig.com/en/trading-strategies/10-trading-indicators-every-trader-should-know-190604
+		- https://www.investopedia.com/top-7-technical-analysis-tools-4773275
+		- https://www.axi.com/int/blog/education/trading-indicators
+		- https://www.britannica.com/money/technical-indicator-types
+		- https://www.home.saxo/learn/guides/trading-strategies/a-guide-to-the-10-most-popular-trading-indicators
+	- Automatikus meghívatása (napi 1x)
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
@@ -12,12 +20,4 @@
 	- Legyen lehetőség short ügyletekre is
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short)
 	- Automatikus/állandó eladási/vételi utasítások megadása generálisan ill. adott típusra (pl. X napos mozgó átlag magasabb, Y naposnál, vétel)
-	- Értelmes indikátorok meghatározása / megismerése
-		- https://howtotrade.com/cheat-sheets/stock-indicators/
-		- https://b2prime.com/news/cheat-sheet-for-technical-indicators-to-succeed-in-trading/
-		- https://www.ig.com/en/trading-strategies/10-trading-indicators-every-trader-should-know-190604
-		- https://www.investopedia.com/top-7-technical-analysis-tools-4773275
-		- https://www.axi.com/int/blog/education/trading-indicators
-		- https://www.britannica.com/money/technical-indicator-types
-		- https://www.home.saxo/learn/guides/trading-strategies/a-guide-to-the-10-most-popular-trading-indicators
 	- Limit megadása automatikus műveleteknél (pl. short is, tőkeáttét is, őssz portfóli max x%-a)

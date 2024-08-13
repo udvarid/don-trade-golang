@@ -28,9 +28,12 @@ func main() {
 	config.Environment = *environment
 	repoUtil.Init()
 
-	cs := candleRepository.GetAllCandleSummaries()[0]
-	cs.Date = cs.Date.AddDate(0, 0, -1)
-	candleRepository.UpdateCandleSummary(cs)
+	forceRefresh := false
+	if forceRefresh {
+		cs := candleRepository.GetAllCandleSummaries()[0]
+		cs.Date = cs.Date.AddDate(0, 0, -1)
+		candleRepository.UpdateCandleSummary(cs)
+	}
 
 	collector.CollectData(&config)
 

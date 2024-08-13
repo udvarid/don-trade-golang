@@ -120,7 +120,7 @@ func getItemMap() map[string][]model.Item {
 }
 
 func TestGetItemsFromItemMap(t *testing.T) {
-	answer := getItemsFromItemMap(getItemMap())
+	answer := GetItemsFromItemMap(getItemMap())
 	var keys []string
 	for itemName := range answer {
 		keys = append(keys, itemName)
@@ -131,7 +131,7 @@ func TestGetItemsFromItemMap(t *testing.T) {
 }
 
 func TestShouldBeDeleted(t *testing.T) {
-	itemNamesWithItem := getItemsFromItemMap(getItemMap())
+	itemNamesWithItem := GetItemsFromItemMap(getItemMap())
 	var itemNames []string
 	for itemName := range itemNamesWithItem {
 		itemNames = append(itemNames, itemName)

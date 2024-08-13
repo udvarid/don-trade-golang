@@ -14,7 +14,23 @@ func Init() {
 	router.LoadHTMLGlob("html/*")
 
 	router.GET("/", startPage)
+	router.GET("/detailed/:item", detailedPage)
 	router.Run()
+}
+
+func detailedPage(c *gin.Context) {
+	id := c.Param("item")
+	items := collector.GetItemsFromItemMap(collector.GetItems())
+	item := items[id]
+	var pageCandle HtmlWithInfo
+	html, _ := os.ReadFile("html/kline-detailed-" + id + ".html")
+	pageCandle.Page = template.HTML(string(html))
+	pageCandle.Name = item.Name
+	pageCandle.Description = item.Description
+	c.HTML(http.StatusOK, "detailed.html", gin.H{
+		"title":         "Detailed Page",
+		"detailedPage1": pageCandle,
+	})
 }
 
 func startPage(c *gin.Context) {
@@ -68,7 +84,7 @@ func startPage(c *gin.Context) {
 	}
 
 	c.HTML(http.StatusOK, "index.html", gin.H{
-		"title":          "Home Page",
+		"title":          "Main Page",
 		"stockPages":     stockPages,
 		"fxPages":        fxPages,
 		"commodityPages": commodityPages,

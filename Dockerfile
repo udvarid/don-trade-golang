@@ -3,7 +3,8 @@ FROM ubuntu:latest
 RUN apt update && apt install -y ca-certificates
 
 COPY don-trade-golang ./
-COPY ./html/*.html ./html/
+COPY ./html/index.html ./html/
+COPY ./html/detailed.html ./html/
 RUN mkdir /db
 
 EXPOSE 8080

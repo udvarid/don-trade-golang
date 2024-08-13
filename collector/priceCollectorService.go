@@ -31,6 +31,13 @@ func CollectData(config *model.Configuration) {
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	if len(summaries) > 0 && summaries[0].Date == pureToday {
 		log.Println("No more data collection today")
+
+		forceChartCreation := true
+		if forceChartCreation {
+			cp := candleRepository.GetAllCandles()
+			inwi := GetItemsFromItemMap(GetItems())
+			orderCharts(cp, inwi)
+		}
 		return
 	}
 
@@ -76,7 +83,7 @@ func CollectData(config *model.Configuration) {
 
 	// the old and unrelevant candles should be deleted
 	timeTwoYearsBefore := pureToday.AddDate(-2, 0, 0)
-	itemNamesWithItem := getItemsFromItemMap(itemMap)
+	itemNamesWithItem := GetItemsFromItemMap(itemMap)
 	var itemNames []string
 	for itemName := range itemNamesWithItem {
 		itemNames = append(itemNames, itemName)
@@ -125,10 +132,11 @@ func orderCharts(candles []model.Candle, itemNames map[string]model.Item) {
 			n = 100
 		}
 		chart.BuildSimpleCandleChart(candlesToChart[len(candlesToChart)-n:], item.Description)
+		chart.BuildDetailedChart(candlesToChart, item.Description)
 	}
 }
 
-func getItemsFromItemMap(itemMap map[string][]model.Item) map[string]model.Item {
+func GetItemsFromItemMap(itemMap map[string][]model.Item) map[string]model.Item {
 	itemNameSet := make(map[string]model.Item)
 	for _, v := range itemMap {
 		for _, item := range v {

@@ -6,21 +6,51 @@
     <title>Index</title>
 </head>
 <body>
+
+    <script>
+        // Function to send a GET request when the outermost div is clicked
+        function sendGetRequest(name) {
+            const url = `/detailed/${name}`;
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {                                
+                window.location.href = response.url;                
+            })
+            .catch(error => {      
+                console.error("Error:", error);
+            });
+        }
+
+        // Add event listeners to all divs
+        document.addEventListener('DOMContentLoaded', () => {
+            const divs = document.querySelectorAll('.clickable-div');
+            divs.forEach(div => {
+                div.addEventListener('click', (event) => {                    
+                    sendGetRequest(div.id);                    
+                });
+            });
+        });
+    </script>
+
     Stocks
     {{range .stockPages }}        
-        <div id={{.Name}}>{{.Page}}</div>    
+        <div id={{.Name}} class="clickable-div">{{.Page}}</div>    
     {{end}}
     Fxs
     {{range .fxPages }}        
-        <div id={{.Name}}>{{.Page}}</div>    
+        <div id={{.Name}} class="clickable-div">{{.Page}}</div>    
     {{end}}
     Commodities
     {{range .commodityPages }}        
-        <div id={{.Name}}>{{.Page}}</div>    
+        <div id={{.Name}} class="clickable-div">{{.Page}}</div>    
     {{end}}
     Cryptos
     {{range .cryptoPages }}        
-        <div id={{.Name}}>{{.Page}}</div>    
+        <div id={{.Name}} class="clickable-div">{{.Page}}</div>    
     {{end}}
 </body>
 </html>

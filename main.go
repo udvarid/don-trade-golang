@@ -8,6 +8,7 @@ import (
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/controller"
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/repoUtil"
 )
 
@@ -27,11 +28,10 @@ func main() {
 	config.Environment = *environment
 	repoUtil.Init()
 
-	/*
-		cs := candleRepository.GetAllCandleSummaries()[0]
-		cs.Date = cs.Date.AddDate(0, 0, -1)
-		candleRepository.UpdateCandleSummary(cs)
-	*/
+	cs := candleRepository.GetAllCandleSummaries()[0]
+	cs.Date = cs.Date.AddDate(0, 0, -1)
+	candleRepository.UpdateCandleSummary(cs)
+
 	collector.CollectData(&config)
 
 	controller.Init()

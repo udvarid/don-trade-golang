@@ -191,8 +191,17 @@ func collectCandles(wg *sync.WaitGroup, channel chan CandleResult, url string, i
 	defer wg.Done()
 	response, err := http.Get(url)
 	if err != nil {
-		log.Fatal(err)
+		log.Print("Couldn't get data")
+		log.Print(err)
+		retryCount := 1
+		for err != nil && retryCount <= 10 {
+			time.Sleep(5000 * time.Millisecond)
+			log.Print("Trying to collect data again - ", retryCount)
+			response, err = http.Get(url)
+			retryCount++
+		}
 	}
+
 	defer response.Body.Close()
 
 	responseData, err := io.ReadAll(response.Body)

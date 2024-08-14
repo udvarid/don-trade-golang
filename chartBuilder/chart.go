@@ -78,7 +78,14 @@ func klineBase(kd []klineData, description string) *charts.Kline {
 		}),
 	)
 
-	kline.SetXAxis(x).AddSeries(description, y)
+	kline.SetXAxis(x).AddSeries(description, y).SetSeriesOptions(
+		charts.WithItemStyleOpts(opts.ItemStyle{
+			Color:        "#47b262",
+			Color0:       "#eb5454",
+			BorderColor:  "#47b262",
+			BorderColor0: "#eb5454",
+		}),
+	)
 	return kline
 }
 
@@ -112,6 +119,30 @@ func klineDetailed(kd []klineData, description string) *charts.Kline {
 		}),
 	)
 
-	kline.SetXAxis(x).AddSeries(description, y)
+	kline.SetXAxis(x).AddSeries(description, y).SetSeriesOptions(
+		charts.WithMarkPointNameTypeItemOpts(opts.MarkPointNameTypeItem{
+			Name:      "highest value",
+			Type:      "max",
+			ValueDim:  "highest",
+			ItemStyle: &opts.ItemStyle{Color: "#47b262"},
+		}),
+		charts.WithMarkPointNameTypeItemOpts(opts.MarkPointNameTypeItem{
+			Name:      "lowest value",
+			Type:      "min",
+			ValueDim:  "lowest",
+			ItemStyle: &opts.ItemStyle{Color: "#eb5454"},
+		}),
+		charts.WithMarkPointStyleOpts(opts.MarkPointStyle{
+			Label: &opts.Label{
+				Show: opts.Bool(true),
+			},
+		}),
+		charts.WithItemStyleOpts(opts.ItemStyle{
+			Color:        "#47b262",
+			Color0:       "#eb5454",
+			BorderColor:  "#47b262",
+			BorderColor0: "#eb5454",
+		}),
+	)
 	return kline
 }

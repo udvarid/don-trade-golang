@@ -7,6 +7,12 @@
 		- https://www.britannica.com/money/technical-indicator-types
 		- https://www.home.saxo/learn/guides/trading-strategies/a-guide-to-the-10-most-popular-trading-indicators
 	- Automatikus meghívatása (napi 1x)
+	- kipróbálni ezen libeket a kiválasztott indikátorok számítására:
+		- https://github.com/cinar/indicator?tab=readme-ov-file
+		- https://github.com/sdcoffey/techan/tree/main
+	- template megvizsgálása, ha kell, használjuk: https://templ.guide/
+	- dinamikus html töltés (Single Page method) https://htmx.org/
+	- formázás, css használata: https://tailwindcss.com/
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
@@ -19,5 +25,5 @@
 	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
 	- Legyen lehetőség short ügyletekre is
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short)
-	- Automatikus/állandó eladási/vételi utasítások megadása generálisan ill. adott típusra (pl. X napos mozgó átlag magasabb, Y naposnál, vétel)
+	- Automatikus/állandó eladási/vételi utasítások megadása generálisan ill. adott típusra (pl. X napos mozgó átlag magasabb, Y naposnál, vétel). Ennél külön SubUser-eket indítsunk (robotokat), melyekhez induló pénzt lehet allokálni. Legyen lehetőség a pénz összeg átcsoportosítására
 	- Limit megadása automatikus műveleteknél (pl. short is, tőkeáttét is, őssz portfóli max x%-a)

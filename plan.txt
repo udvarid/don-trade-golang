@@ -6,7 +6,6 @@
 		- https://www.axi.com/int/blog/education/trading-indicators
 		- https://www.britannica.com/money/technical-indicator-types
 		- https://www.home.saxo/learn/guides/trading-strategies/a-guide-to-the-10-most-popular-trading-indicators
-	- Automatikus meghívatása (napi 1x)
 	- kipróbálni ezen libeket a kiválasztott indikátorok számítására:
 		- https://github.com/cinar/indicator?tab=readme-ov-file
 		- https://github.com/sdcoffey/techan/tree/main

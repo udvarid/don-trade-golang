@@ -3,54 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">    
     <title>Index</title>
 </head>
 <body>
 
-    <script>
-        // Function to send a GET request when the outermost div is clicked
-        function sendGetRequest(name) {
-            const url = `/detailed/${name}`;
-            fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => {                                
-                window.location.href = response.url;                
-            })
-            .catch(error => {      
-                console.error("Error:", error);
-            });
-        }
+    <nav class="navbar navbar-default">
+        <div class="container">
+          <div class="navbar-header">
+          </div>
+        </div>
+      </nav>  
 
-        // Add event listeners to all divs
-        document.addEventListener('DOMContentLoaded', () => {
-            const divs = document.querySelectorAll('.clickable-div');
-            divs.forEach(div => {
-                div.addEventListener('click', (event) => {                    
-                    sendGetRequest(div.id);                    
-                });
-            });
-        });
-    </script>
 
     Stocks
     {{range .stockPages }}        
-        <div id={{.Name}} class="clickable-div">{{.Page}}</div>    
+        <div id={{.Name}} class="clickable-div" hx-get="/detailed/{{.Name}}" hx-target="body">{{.Page}}</div>    
     {{end}}
     Fxs
     {{range .fxPages }}        
-        <div id={{.Name}} class="clickable-div">{{.Page}}</div>    
+        <div id={{.Name}} class="clickable-div" hx-get="/detailed/{{.Name}}" hx-target="body">{{.Page}}</div>    
     {{end}}
     Commodities
     {{range .commodityPages }}        
-        <div id={{.Name}} class="clickable-div">{{.Page}}</div>    
+        <div id={{.Name}} class="clickable-div" hx-get="/detailed/{{.Name}}" hx-target="body">{{.Page}}</div>    
     {{end}}
     Cryptos
     {{range .cryptoPages }}        
-        <div id={{.Name}} class="clickable-div">{{.Page}}</div>    
+        <div id={{.Name}} class="clickable-div" hx-get="/detailed/{{.Name}}" hx-target="body">{{.Page}}</div>    
     {{end}}
 </body>
 </html>

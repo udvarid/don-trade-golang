@@ -4,34 +4,80 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://unpkg.com/htmx.org@2.0.2"></script>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">    
-    <title>Index</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <title>Dynamic Display</title>
+    <script>
+        function showDiv(selectElement, pagesArray) {
+            const selectedValue = selectElement.value;
+            const divs = document.querySelectorAll(`#${selectElement.dataset.target} div`);
+            pagesArray.forEach(page => {
+                divs.forEach(div => {                    
+                    if (page.Name === div.id) {
+                        if (div.id === selectedValue) {                            
+                            div.style.display = 'block';
+                        } else {                            
+                            div.style.display = 'none';
+                        }
+                    }
+                });
+            });
+        }
+    </script>
 </head>
-<body>
-
-    <nav class="navbar navbar-default">
-        <div class="container">
-          <div class="navbar-header">
-          </div>
+<body class="bg-gray-100 p-4">
+    <div class="grid grid-cols-2 gap-4 h-screen">
+        <div class="p-4 bg-white rounded shadow">
+            <h2 class="text-xl font-bold mb-2">Stocks</h2>
+            <select class="mb-4 p-2 border rounded" data-target="stockPages" onchange="showDiv(this, {{.stockPages}})">
+                {{range .stockPages}}
+                    <option value="{{.Name}}">{{.Name}}</option>
+                {{end}}
+            </select>  
+            <div id="stockPages">
+                {{range $index, $element := .stockPages }}        
+                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                {{end}}
+            </div>
         </div>
-      </nav>  
-
-
-    Stocks
-    {{range .stockPages }}        
-        <div id={{.Name}} class="clickable-div" hx-get="/detailed/{{.Name}}" hx-target="body">{{.Page}}</div>    
-    {{end}}
-    Fxs
-    {{range .fxPages }}        
-        <div id={{.Name}} class="clickable-div" hx-get="/detailed/{{.Name}}" hx-target="body">{{.Page}}</div>    
-    {{end}}
-    Commodities
-    {{range .commodityPages }}        
-        <div id={{.Name}} class="clickable-div" hx-get="/detailed/{{.Name}}" hx-target="body">{{.Page}}</div>    
-    {{end}}
-    Cryptos
-    {{range .cryptoPages }}        
-        <div id={{.Name}} class="clickable-div" hx-get="/detailed/{{.Name}}" hx-target="body">{{.Page}}</div>    
-    {{end}}
+        <div class="p-4 bg-white rounded shadow">
+            <h2 class="text-xl font-bold mb-2">Fxs</h2>
+            <select class="mb-4 p-2 border rounded" data-target="fxPages" onchange="showDiv(this, {{.fxPages}})">
+                {{range .fxPages}}
+                    <option value="{{.Name}}">{{.Name}}</option>
+                {{end}}
+            </select>  
+            <div id="fxPages">
+                {{range $index, $element := .fxPages }}        
+                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                {{end}}
+            </div>
+        </div>
+        <div class="p-4 bg-white rounded shadow">
+            <h2 class="text-xl font-bold mb-2">Commodities</h2>
+            <select class="mb-4 p-2 border rounded" data-target="commodityPages" onchange="showDiv(this, {{.commodityPages}})">
+                {{range .commodityPages}}
+                    <option value="{{.Name}}">{{.Name}}</option>
+                {{end}}
+            </select>  
+            <div id="commodityPages">
+                {{range $index, $element := .commodityPages }}        
+                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                {{end}}
+            </div>
+        </div>
+        <div class="p-4 bg-white rounded shadow">
+            <h2 class="text-xl font-bold mb-2">Cryptos</h2>
+            <select class="mb-4 p-2 border rounded" data-target="cryptoPages" onchange="showDiv(this, {{.cryptoPages}})">
+                {{range .cryptoPages}}
+                    <option value="{{.Name}}">{{.Name}}</option>
+                {{end}}
+            </select>  
+            <div id="cryptoPages">
+                {{range $index, $element := .cryptoPages }}        
+                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                {{end}}
+            </div>
+        </div>
+    </div>
 </body>
 </html>

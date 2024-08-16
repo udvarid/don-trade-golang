@@ -30,3 +30,4 @@
 
 Usefull:
 	- dinamikus html töltés (Single Page method) https://htmx.org/
+	- template: https://templ.guide/

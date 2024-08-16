@@ -7,7 +7,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/udvarid/don-trade-golang/collector"
-	"github.com/udvarid/don-trade-golang/tradeTempl"
 )
 
 func Init() {
@@ -15,13 +14,8 @@ func Init() {
 	router.LoadHTMLGlob("html/*")
 
 	router.GET("/", startPage)
-	router.GET("/hello", helloPage)
 	router.GET("/detailed/:item", detailedPage)
 	router.Run()
-}
-
-func helloPage(c *gin.Context) {
-	tradeTempl.Hello("John").Render(c.Request.Context(), c.Writer)
 }
 
 func detailedPage(c *gin.Context) {

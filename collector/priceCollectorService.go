@@ -67,6 +67,7 @@ func CollectData(config *model.Configuration) {
 
 	// waiting the results and the new candles will be presisted
 	candlesPersisted := candleRepository.GetAllCandles()
+	var persistedItems []string
 	for result := range channel {
 		persisted := 0
 		for _, candleDto := range result.result {
@@ -77,6 +78,7 @@ func CollectData(config *model.Configuration) {
 			}
 		}
 		if persisted > 0 {
+			persistedItems = append(persistedItems, result.name)
 			fmt.Println("Persisted: ", result.name, persisted)
 		}
 	}
@@ -110,6 +112,7 @@ func CollectData(config *model.Configuration) {
 		candleSummaryToUpdate := summaries[0]
 		candleSummaryToUpdate.Date = candleSummary.Date
 		candleSummaryToUpdate.Summary = candleSummary.Summary
+		candleSummaryToUpdate.Persisted = persistedItems
 		candleRepository.UpdateCandleSummary(candleSummaryToUpdate)
 	}
 

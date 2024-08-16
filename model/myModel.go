@@ -33,9 +33,10 @@ type Candle struct {
 }
 
 type CandleSummary struct {
-	ID      int            `json:"id"`
-	Date    time.Time      `json:"date"`
-	Summary map[string]int `json:"summary"`
+	ID        int            `json:"id"`
+	Date      time.Time      `json:"date"`
+	Summary   map[string]int `json:"summary"`
+	Persisted []string       `json:"persisted"`
 }
 
 type Item struct {

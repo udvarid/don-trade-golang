@@ -26,6 +26,15 @@ func BuildDetailedChart(candles []model.Candle, description string) {
 
 	bollingerBands := calculator.CalculateBollingerBands(candles, period, multiplier)
 
+	shortPeriod := 12
+	longPeriod := 26
+	signalPeriod := 9
+
+	mediumPeriod := 19
+
+	macd := calculator.CalculateMACD(candles, shortPeriod, longPeriod, signalPeriod)
+	sma := calculator.CalculateSmaLines(candles, shortPeriod, mediumPeriod, longPeriod)
+
 	var kd []klineData
 	for _, candle := range candles {
 		myDate := candle.Date.Format("2006/01/02")
@@ -36,8 +45,10 @@ func BuildDetailedChart(candles []model.Candle, description string) {
 	detailedChart := klineDetailed(kd[period:], description)
 	boilingerChart := boilingerLineMulti(bollingerBands)
 	detailedChart.Overlap(boilingerChart)
+	macdChart := macdLineMulti(macd)
+	smaChart := maLineMulti(sma)
 
-	page.AddCharts(detailedChart)
+	page.AddCharts(detailedChart, smaChart, macdChart)
 
 	f, err := os.Create("html/kline-detailed-" + candles[0].Item + ".html")
 	if err != nil {
@@ -193,5 +204,84 @@ func boilingerLineMulti(boilingerBands []model.BollingerBand) *charts.Line {
 		AddSeries("", generateLineItems(downBand),
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "#D3D3D3"}),
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "none"}))
+	return line
+}
+
+func maLineMulti(maPoints []model.Ma) *charts.Line {
+	line := charts.NewLine()
+	var longLine []float64
+	var mediumLine []float64
+	var shortLine []float64
+	var date []string
+	for _, ma := range maPoints {
+		longLine = append(longLine, ma.MaLong)
+		mediumLine = append(mediumLine, ma.MaMedium)
+		shortLine = append(shortLine, ma.MaShort)
+		date = append(date, ma.Date.Format("2006/01/02"))
+	}
+
+	line.SetGlobalOptions(
+		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
+		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Type:       "inside",
+			Start:      50,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Start:      50,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+	)
+
+	line.SetXAxis(date).
+		AddSeries("Sma long", generateLineItems(longLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("Sma medium", generateLineItems(mediumLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "green"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("Sma short", generateLineItems(shortLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "orange"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
+	return line
+}
+
+func macdLineMulti(macdPoints []model.Macd) *charts.Line {
+	line := charts.NewLine()
+	var macdLine []float64
+	var signalLine []float64
+	var date []string
+	for _, macd := range macdPoints {
+		macdLine = append(macdLine, macd.Macd)
+		signalLine = append(signalLine, macd.Signal)
+		date = append(date, macd.Date.Format("2006/01/02"))
+	}
+
+	line.SetGlobalOptions(
+		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
+		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Type:       "inside",
+			Start:      50,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Start:      50,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+	)
+
+	line.SetXAxis(date).
+		AddSeries("MACD Line", generateLineItems(macdLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("Signal Line", generateLineItems(signalLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "green"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
 	return line
 }

@@ -29,6 +29,21 @@ type BollingerBand struct {
 	CenterBand float64   `json:"center_band"`
 }
 
+type Ma struct {
+	Item     string    `json:"item"`
+	Date     time.Time `json:"date"`
+	MaLong   float64   `json:"ma_long"`
+	MaMedium float64   `json:"ma_medium"`
+	MaShort  float64   `json:"ma_short"`
+}
+
+type Macd struct {
+	Item   string    `json:"item"`
+	Date   time.Time `json:"date"`
+	Macd   float64   `json:"macd"`
+	Signal float64   `json:"signal"`
+}
+
 type Candle struct {
 	ID     int       `json:"id"`
 	Item   string    `json:"item"`

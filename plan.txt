@@ -8,10 +8,7 @@
 		- https://www.home.saxo/learn/guides/trading-strategies/a-guide-to-the-10-most-popular-trading-indicators
 	- kipróbálni ezen libeket a kiválasztott indikátorok számítására:
 		- https://github.com/cinar/indicator?tab=readme-ov-file
-		- https://github.com/sdcoffey/techan/tree/main
-	- template megvizsgálása, ha kell, használjuk: https://templ.guide/
-	
-	- formázás, css használata: https://tailwindcss.com/
+		- https://github.com/sdcoffey/techan/tree/main		
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
@@ -31,3 +28,4 @@
 Usefull:
 	- dinamikus html töltés (Single Page method) https://htmx.org/
 	- template: https://templ.guide/
+	- css/stlye: https://tailwindcss.com/

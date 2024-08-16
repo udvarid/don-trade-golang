@@ -21,6 +21,14 @@ type CandleDto struct {
 	Volume float64 `json:"volume"`
 }
 
+type BollingerBand struct {
+	Item       string    `json:"item"`
+	Date       time.Time `json:"date"`
+	UpperBand  float64   `json:"upper_band"`
+	LowerBand  float64   `json:"lower_band"`
+	CenterBand float64   `json:"center_band"`
+}
+
 type Candle struct {
 	ID     int       `json:"id"`
 	Item   string    `json:"item"`

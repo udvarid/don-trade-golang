@@ -7,6 +7,7 @@ import (
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/components"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	"github.com/udvarid/don-trade-golang/calculator"
 	"github.com/udvarid/don-trade-golang/model"
 )
 
@@ -20,6 +21,11 @@ type klineData struct {
 func BuildDetailedChart(candles []model.Candle, description string) {
 	page := components.NewPage()
 
+	period := 15
+	multiplier := 2.0
+
+	bollingerBands := calculator.CalculateBollingerBands(candles, period, multiplier)
+
 	var kd []klineData
 	for _, candle := range candles {
 		myDate := candle.Date.Format("2006/01/02")
@@ -27,7 +33,11 @@ func BuildDetailedChart(candles []model.Candle, description string) {
 		kd = append(kd, klineData)
 	}
 
-	page.AddCharts(klineDetailed(kd, description))
+	detailedChart := klineDetailed(kd[period:], description)
+	boilingerChart := boilingerLineMulti(bollingerBands)
+	detailedChart.Overlap(boilingerChart)
+
+	page.AddCharts(detailedChart)
 
 	f, err := os.Create("html/kline-detailed-" + candles[0].Item + ".html")
 	if err != nil {
@@ -145,4 +155,43 @@ func klineDetailed(kd []klineData, description string) *charts.Kline {
 		}),
 	)
 	return kline
+}
+
+func generateLineItems(numbers []float64) []opts.LineData {
+	items := make([]opts.LineData, 0)
+	for _, number := range numbers {
+		items = append(items, opts.LineData{Value: number})
+	}
+	return items
+}
+
+func boilingerLineMulti(boilingerBands []model.BollingerBand) *charts.Line {
+	line := charts.NewLine()
+	var upBand []float64
+	var centerBand []float64
+	var downBand []float64
+	var date []string
+	for _, bollingerBand := range boilingerBands {
+		upBand = append(upBand, bollingerBand.UpperBand)
+		centerBand = append(centerBand, bollingerBand.CenterBand)
+		downBand = append(downBand, bollingerBand.LowerBand)
+		date = append(date, bollingerBand.Date.Format("2006/01/02"))
+	}
+
+	line.SetGlobalOptions(
+		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
+		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
+	)
+
+	line.SetXAxis(date).
+		AddSeries("", generateLineItems(upBand),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "#D3D3D3"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "none"})).
+		AddSeries("", generateLineItems(centerBand),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "lightblue"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "none"})).
+		AddSeries("", generateLineItems(downBand),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "#D3D3D3"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "none"}))
+	return line
 }

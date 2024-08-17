@@ -1,14 +1,7 @@
-	- Detailed page-hez extra chartok kitalálása és megcsinálása
-		- https://howtotrade.com/cheat-sheets/stock-indicators/
-		- https://b2prime.com/news/cheat-sheet-for-technical-indicators-to-succeed-in-trading/
-		- https://www.ig.com/en/trading-strategies/10-trading-indicators-every-trader-should-know-190604
-		- https://www.investopedia.com/top-7-technical-analysis-tools-4773275
-		- https://www.axi.com/int/blog/education/trading-indicators
-		- https://www.britannica.com/money/technical-indicator-types
-		- https://www.home.saxo/learn/guides/trading-strategies/a-guide-to-the-10-most-popular-trading-indicators
-	- kipróbálni ezen libeket a kiválasztott indikátorok számítására:
-		- https://github.com/cinar/indicator?tab=readme-ov-file
-		- https://github.com/sdcoffey/techan/tree/main		
+
+	- Detailed oldalhoz: OBV, ADX
+	- Detailed oldal a tetején mutassa a 'detailed'-et, ne az 1. chart tetején
+	- Calculátorhoz unit teszteket írni, mindent letesztelni (pl. van e elég candle a megadott periódust is figyelembe véve)
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
@@ -29,3 +22,14 @@ Usefull:
 	- dinamikus html töltés (Single Page method) https://htmx.org/
 	- template: https://templ.guide/
 	- css/stlye: https://tailwindcss.com/
+	- indikátor számoló lib-ek Golanghez:
+		- https://github.com/cinar/indicator?tab=readme-ov-file
+		- https://github.com/sdcoffey/techan/tree/main		
+	- Indikátor leíró oldalak
+		- https://howtotrade.com/cheat-sheets/stock-indicators/
+		- https://b2prime.com/news/cheat-sheet-for-technical-indicators-to-succeed-in-trading/
+		- https://www.ig.com/en/trading-strategies/10-trading-indicators-every-trader-should-know-190604
+		- https://www.investopedia.com/top-7-technical-analysis-tools-4773275
+		- https://www.axi.com/int/blog/education/trading-indicators
+		- https://www.britannica.com/money/technical-indicator-types
+		- https://www.home.saxo/learn/guides/trading-strategies/a-guide-to-the-10-most-popular-trading-indicators

@@ -27,9 +27,17 @@ func detailedPage(c *gin.Context) {
 	pageCandle.Page = template.HTML(string(html))
 	pageCandle.Name = item.Name
 	pageCandle.Description = item.Description
+
+	var pageCandle2 HtmlWithInfo
+	html2, _ := os.ReadFile("html/kline-detailed2-" + id + ".html")
+	pageCandle2.Page = template.HTML(string(html2))
+	pageCandle2.Name = item.Name
+	pageCandle2.Description = item.Description
 	c.HTML(http.StatusOK, "detailed.html", gin.H{
 		"title":         "Detailed Page",
+		"description":   item.Description,
 		"detailedPage1": pageCandle,
+		"detailedPage2": pageCandle2,
 	})
 }
 

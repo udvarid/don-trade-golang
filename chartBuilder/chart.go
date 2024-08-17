@@ -18,8 +18,9 @@ type klineData struct {
 	data [4]float32
 }
 
-func BuildDetailedChart(candles []model.Candle, description string) {
+func BuildDetailedChart(candles []model.Candle) {
 	page := components.NewPage()
+	page2 := components.NewPage()
 
 	period := 15
 	multiplier := 2.0
@@ -35,6 +36,8 @@ func BuildDetailedChart(candles []model.Candle, description string) {
 	macd := calculator.CalculateMACD(candles, shortPeriod, longPeriod, signalPeriod)
 	sma := calculator.CalculateSmaLines(candles, shortPeriod, mediumPeriod, longPeriod)
 
+	rsi := calculator.CalculateRSI(candles, 14)
+
 	var kd []klineData
 	for _, candle := range candles {
 		myDate := candle.Date.Format("2006/01/02")
@@ -42,7 +45,7 @@ func BuildDetailedChart(candles []model.Candle, description string) {
 		kd = append(kd, klineData)
 	}
 
-	detailedChart := klineDetailed(kd[period:], description)
+	detailedChart := klineDetailed(kd[period:])
 	boilingerChart := boilingerLineMulti(bollingerBands)
 	detailedChart.Overlap(boilingerChart)
 	macdChart := macdLineMulti(macd)
@@ -56,6 +59,17 @@ func BuildDetailedChart(candles []model.Candle, description string) {
 
 	}
 	page.Render(io.MultiWriter(f))
+
+	rsiChart := rsiLine(rsi)
+
+	page2.AddCharts(rsiChart)
+
+	f2, err2 := os.Create("html/kline-detailed2-" + candles[0].Item + ".html")
+	if err2 != nil {
+		panic(err2)
+
+	}
+	page2.Render(io.MultiWriter(f2))
 }
 
 func BuildSimpleCandleChart(candles []model.Candle, description string) {
@@ -110,7 +124,7 @@ func klineBase(kd []klineData, description string) *charts.Kline {
 	return kline
 }
 
-func klineDetailed(kd []klineData, description string) *charts.Kline {
+func klineDetailed(kd []klineData) *charts.Kline {
 	kline := charts.NewKLine()
 
 	x := make([]string, 0)
@@ -129,18 +143,18 @@ func klineDetailed(kd []klineData, description string) *charts.Kline {
 		}),
 		charts.WithDataZoomOpts(opts.DataZoom{
 			Type:       "inside",
-			Start:      50,
+			Start:      75,
 			End:        100,
 			XAxisIndex: []int{0},
 		}),
 		charts.WithDataZoomOpts(opts.DataZoom{
-			Start:      50,
+			Start:      75,
 			End:        100,
 			XAxisIndex: []int{0},
 		}),
 	)
 
-	kline.SetXAxis(x).AddSeries(description, y).SetSeriesOptions(
+	kline.SetXAxis(x).AddSeries("", y).SetSeriesOptions(
 		charts.WithMarkPointNameTypeItemOpts(opts.MarkPointNameTypeItem{
 			Name:      "highest value",
 			Type:      "max",
@@ -225,12 +239,12 @@ func maLineMulti(maPoints []model.Ma) *charts.Line {
 		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
 		charts.WithDataZoomOpts(opts.DataZoom{
 			Type:       "inside",
-			Start:      50,
+			Start:      75,
 			End:        100,
 			XAxisIndex: []int{0},
 		}),
 		charts.WithDataZoomOpts(opts.DataZoom{
-			Start:      50,
+			Start:      75,
 			End:        100,
 			XAxisIndex: []int{0},
 		}),
@@ -265,12 +279,12 @@ func macdLineMulti(macdPoints []model.Macd) *charts.Line {
 		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
 		charts.WithDataZoomOpts(opts.DataZoom{
 			Type:       "inside",
-			Start:      50,
+			Start:      75,
 			End:        100,
 			XAxisIndex: []int{0},
 		}),
 		charts.WithDataZoomOpts(opts.DataZoom{
-			Start:      50,
+			Start:      75,
 			End:        100,
 			XAxisIndex: []int{0},
 		}),
@@ -281,6 +295,52 @@ func macdLineMulti(macdPoints []model.Macd) *charts.Line {
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
 		AddSeries("Signal Line", generateLineItems(signalLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "green"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
+	return line
+}
+
+func rsiLine(macdPoints []model.Rsi) *charts.Line {
+	line := charts.NewLine()
+	var rsiLine []float64
+	var line70 []float64
+	var line30 []float64
+	var date []string
+	for _, rsi := range macdPoints {
+		rsiLine = append(rsiLine, rsi.RSI)
+		line70 = append(line70, 70)
+		line30 = append(line30, 30)
+		date = append(date, rsi.Date.Format("2006/01/02"))
+	}
+
+	line.SetGlobalOptions(
+		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
+		charts.WithYAxisOpts(opts.YAxis{
+			Scale: opts.Bool(true),
+			Min:   "0",
+			Max:   "100",
+		}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Type:       "inside",
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+	)
+
+	line.SetXAxis(date).
+		AddSeries("RSI Line", generateLineItems(rsiLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("RSI Line", generateLineItems(line70),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "red"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("RSI Line", generateLineItems(line30),
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "green"}),
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
 	return line

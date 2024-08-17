@@ -135,7 +135,7 @@ func orderCharts(candles []model.Candle, itemNames map[string]model.Item) {
 			n = 100
 		}
 		chart.BuildSimpleCandleChart(candlesToChart[len(candlesToChart)-n:], item.Description)
-		chart.BuildDetailedChart(candlesToChart, item.Description)
+		chart.BuildDetailedChart(candlesToChart)
 	}
 }
 

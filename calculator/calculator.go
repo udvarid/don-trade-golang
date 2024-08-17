@@ -66,6 +66,61 @@ func CalculateMACD(candles []model.Candle, shortPeriod int, longPeriod int, sign
 	return macdDtos
 }
 
+func CalculateRSI(candles []model.Candle, period int) []model.Rsi {
+	if len(candles) < period {
+		return []model.Rsi{} // Not enough data to calculate RSI
+	}
+
+	gains := make([]float64, len(candles))
+	losses := make([]float64, len(candles))
+
+	// Calculate initial gains and losses
+	for i := 1; i < len(candles); i++ {
+		change := candles[i].Close - candles[i-1].Close
+		if change > 0 {
+			gains[i] = change
+		} else {
+			losses[i] = -change
+		}
+	}
+
+	// Calculate the initial average gain and loss
+	var avgGain, avgLoss float64
+	for i := 1; i <= period; i++ {
+		avgGain += gains[i]
+		avgLoss += losses[i]
+	}
+	avgGain /= float64(period)
+	avgLoss /= float64(period)
+
+	// Calculate RSI for each point in the series
+	rsis := make([]model.Rsi, len(candles)-period)
+	for i := period; i < len(candles); i++ {
+		if i > period {
+			// Update the average gain and loss with a rolling average
+			avgGain = (avgGain*(float64(period-1)) + gains[i]) / float64(period)
+			avgLoss = (avgLoss*(float64(period-1)) + losses[i]) / float64(period)
+		}
+
+		var rs, rsi float64
+		if avgLoss == 0 {
+			rs = math.Inf(1) // If no losses, RS is infinite
+			rsi = 100.0      // RSI is 100 if there are no losses
+		} else {
+			rs = avgGain / avgLoss
+			rsi = 100.0 - (100.0 / (1.0 + rs))
+		}
+
+		rsis[i-period] = model.Rsi{
+			Item: candles[i].Item,
+			Date: candles[i].Date,
+			RSI:  rsi,
+		}
+	}
+
+	return rsis
+}
+
 func CalculateStandardDeviation(candles []model.Candle, sma []float64, period int) []float64 {
 	stdDev := make([]float64, len(sma))
 	for i := range stdDev {

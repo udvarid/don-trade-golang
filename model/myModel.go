@@ -44,6 +44,12 @@ type Macd struct {
 	Signal float64   `json:"signal"`
 }
 
+type Rsi struct {
+	Item string    `json:"item"`
+	Date time.Time `json:"date"`
+	RSI  float64   `json:"rsi"`
+}
+
 type Candle struct {
 	ID     int       `json:"id"`
 	Item   string    `json:"item"`

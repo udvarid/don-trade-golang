@@ -18,30 +18,88 @@ func CalculateSMA(candles []float64, period int) []float64 {
 	return sma
 }
 
-func CalculateEMA(prices []float64, period int) []float64 {
+func CalculateADX(candles []model.Candle, period int) []model.Adx {
+	if len(candles) < period {
+		return []model.Adx{} // Not enough data to calculate ADX
+	}
+
+	plusDM := make([]float64, len(candles))
+	minusDM := make([]float64, len(candles))
+	tr := make([]float64, len(candles))
+
+	for i := 1; i < len(candles); i++ {
+		highDiff := candles[i].High - candles[i-1].High
+		lowDiff := candles[i-1].Low - candles[i].Low
+
+		if highDiff > lowDiff && highDiff > 0 {
+			plusDM[i] = highDiff
+		} else {
+			plusDM[i] = 0
+		}
+
+		if lowDiff > highDiff && lowDiff > 0 {
+			minusDM[i] = lowDiff
+		} else {
+			minusDM[i] = 0
+		}
+
+		tr[i] = math.Max(candles[i].High-candles[i].Low, math.Max(math.Abs(candles[i].High-candles[i-1].Close), math.Abs(candles[i].Low-candles[i-1].Close)))
+	}
+
+	plusDI := CalculateEMA(plusDM, tr, period)
+	minusDI := CalculateEMA(minusDM, tr, period)
+
+	dx := make([]float64, len(plusDI)-period)
+	for i := range dx {
+		dx[i] = 100 * math.Abs(plusDI[i+period]-minusDI[i+period]) / (plusDI[i+period] + minusDI[i+period])
+	}
+
+	adx := CalculateEMA(dx, nil, period)
+
+	adxDtos := make([]model.Adx, len(adx))
+	for i := range adxDtos {
+		adxDtos[i] = model.Adx{
+			Item: candles[i+len(candles)-len(adx)].Item,
+			Date: candles[i+len(candles)-len(adx)].Date,
+			ADX:  adx[i],
+			PDI:  plusDI[i+period],
+			MDI:  minusDI[i+period],
+		}
+	}
+
+	return adxDtos
+}
+
+func CalculateEMA(prices []float64, tr []float64, period int) []float64 {
 	ema := make([]float64, len(prices))
-	multiplier := 2.0 / (float64(period) + 1.0)
+	k := 2.0 / float64(period+1)
 
-	// Calculate the first EMA using the simple moving average (SMA)
-	sum := 0.0
-	for i := 0; i < period; i++ {
-		sum += prices[i]
+	for i := period - 1; i < len(prices); i++ {
+		if tr != nil && tr[i] != 0 {
+			di := (prices[i] / tr[i]) * 100 // Calculate the DI as a percentage
+			if i == period-1 {
+				ema[i] = di // Initial EMA is just the DI for the first period
+			} else {
+				ema[i] = (di-ema[i-1])*k + ema[i-1] // EMA calculation
+			}
+		} else if tr != nil && tr[i] == 0 {
+			ema[i] = 0 // If TR is zero, DI should be zero
+		} else {
+			if i == period-1 {
+				ema[i] = prices[i] // Initial EMA if no TR is provided
+			} else {
+				ema[i] = (prices[i]-ema[i-1])*k + ema[i-1]
+			}
+		}
 	}
-	ema[period-1] = sum / float64(period)
 
-	// Calculate the rest of the EMA values
-	for i := period; i < len(prices); i++ {
-		ema[i] = ((prices[i] - ema[i-1]) * multiplier) + ema[i-1]
-	}
-
-	// Return only the EMA values starting from the period-1 index
-	return ema[period-1:]
+	return ema
 }
 
 func CalculateMACD(candles []model.Candle, shortPeriod int, longPeriod int, signalPeriod int) []model.Macd {
 	closePrices := candleToFloat(candles)
-	shortEMA := CalculateEMA(closePrices, shortPeriod)
-	longEMA := CalculateEMA(closePrices, longPeriod)
+	shortEMA := CalculateEMA(closePrices, nil, shortPeriod)
+	longEMA := CalculateEMA(closePrices, nil, longPeriod)
 
 	// Calculate MACD line (shortEMA - longEMA)
 	macdLine := make([]float64, len(longEMA))
@@ -50,7 +108,7 @@ func CalculateMACD(candles []model.Candle, shortPeriod int, longPeriod int, sign
 	}
 
 	// Calculate Signal line (EMA of MACD line)
-	signalLine := CalculateEMA(macdLine, signalPeriod)
+	signalLine := CalculateEMA(macdLine, nil, signalPeriod)
 
 	// Calculate Histogram (MACD line - Signal line)
 	macdDtos := make([]model.Macd, len(signalLine))
@@ -104,8 +162,7 @@ func CalculateRSI(candles []model.Candle, period int) []model.Rsi {
 
 		var rs, rsi float64
 		if avgLoss == 0 {
-			rs = math.Inf(1) // If no losses, RS is infinite
-			rsi = 100.0      // RSI is 100 if there are no losses
+			rsi = 100.0 // RSI is 100 if there are no losses
 		} else {
 			rs = avgGain / avgLoss
 			rsi = 100.0 - (100.0 / (1.0 + rs))
@@ -119,6 +176,38 @@ func CalculateRSI(candles []model.Candle, period int) []model.Rsi {
 	}
 
 	return rsis
+}
+
+func CalculateOBV(candles []model.Candle) []model.Obv {
+	if len(candles) == 0 {
+		return []model.Obv{}
+	}
+
+	obvs := make([]model.Obv, len(candles))
+	obvs[0] = model.Obv{
+		Item: candles[0].Item,
+		Date: candles[0].Date,
+		Obv:  candles[0].Volume,
+	}
+
+	for i := 1; i < len(candles); i++ {
+		var obv float64
+		if candles[i].Close > candles[i-1].Close {
+			obv = obvs[i-1].Obv + candles[i].Volume
+		} else if candles[i].Close < candles[i-1].Close {
+			obv = obvs[i-1].Obv - candles[i].Volume
+		} else {
+			obv = obvs[i-1].Obv
+		}
+
+		obvs[i] = model.Obv{
+			Item: candles[i].Item,
+			Date: candles[i].Date,
+			Obv:  obv,
+		}
+	}
+
+	return obvs
 }
 
 func CalculateStandardDeviation(candles []model.Candle, sma []float64, period int) []float64 {

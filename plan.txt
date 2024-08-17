@@ -1,6 +1,4 @@
 
-	- Detailed oldalhoz: OBV, ADX
-	- Detailed oldal a tetején mutassa a 'detailed'-et, ne az 1. chart tetején
 	- Calculátorhoz unit teszteket írni, mindent letesztelni (pl. van e elég candle a megadott periódust is figyelembe véve)
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:

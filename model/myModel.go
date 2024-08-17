@@ -50,6 +50,20 @@ type Rsi struct {
 	RSI  float64   `json:"rsi"`
 }
 
+type Obv struct {
+	Item string    `json:"item"`
+	Date time.Time `json:"date"`
+	Obv  float64   `json:"obv"`
+}
+
+type Adx struct {
+	Item string    `json:"item"`
+	Date time.Time `json:"date"`
+	ADX  float64   `json:"adx"`
+	PDI  float64   `json:"pdi"`
+	MDI  float64   `json:"mdi"`
+}
+
 type Candle struct {
 	ID     int       `json:"id"`
 	Item   string    `json:"item"`

@@ -2,7 +2,9 @@ package chart
 
 import (
 	"io"
+	"math"
 	"os"
+	"sort"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/components"
@@ -37,6 +39,8 @@ func BuildDetailedChart(candles []model.Candle) {
 	sma := calculator.CalculateSmaLines(candles, shortPeriod, mediumPeriod, longPeriod)
 
 	rsi := calculator.CalculateRSI(candles, 14)
+	obv := calculator.CalculateOBV(candles)
+	adx := calculator.CalculateADX(candles, 14)
 
 	var kd []klineData
 	for _, candle := range candles {
@@ -61,8 +65,10 @@ func BuildDetailedChart(candles []model.Candle) {
 	page.Render(io.MultiWriter(f))
 
 	rsiChart := rsiLine(rsi)
+	obvChart := obvLine(obv)
+	adxChart := adxLineMulti(adx)
 
-	page2.AddCharts(rsiChart)
+	page2.AddCharts(rsiChart, obvChart, adxChart)
 
 	f2, err2 := os.Create("html/kline-detailed2-" + candles[0].Item + ".html")
 	if err2 != nil {
@@ -263,6 +269,99 @@ func maLineMulti(maPoints []model.Ma) *charts.Line {
 	return line
 }
 
+func adxLineMulti(adxPoints []model.Adx) *charts.Line {
+	line := charts.NewLine()
+	var adxLine []float64
+	var pdiLine []float64
+	var mdiLine []float64
+	var strongTrendLine []float64
+	var veryStrongTrendLine []float64
+	var date []string
+	for _, adx := range adxPoints {
+		adxLine = append(adxLine, adx.ADX)
+		pdiLine = append(pdiLine, adx.PDI)
+		mdiLine = append(mdiLine, adx.MDI)
+		strongTrendLine = append(strongTrendLine, 25)
+		veryStrongTrendLine = append(veryStrongTrendLine, 50)
+		date = append(date, adx.Date.Format("2006/01/02"))
+	}
+
+	line.SetGlobalOptions(
+		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
+		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Type:       "inside",
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+	)
+
+	line.SetXAxis(date).
+		AddSeries("ADX", generateLineItems(adxLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("", generateLineItems(strongTrendLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "lightred", Width: 1.5}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("", generateLineItems(veryStrongTrendLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "red", Width: 1.5}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("+DMI", generateLineItems(pdiLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "green", Type: "dotted", Opacity: 0.5}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("-DMI", generateLineItems(mdiLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "orange", Type: "dotted", Opacity: 0.5}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
+	return line
+}
+
+func obvLine(obvPoints []model.Obv) *charts.Line {
+	line := charts.NewLine()
+	var obvLine []float64
+	var date []string
+	for _, obv := range obvPoints {
+		obvLine = append(obvLine, obv.Obv)
+		date = append(date, obv.Date.Format("2006/01/02"))
+	}
+
+	obvLinePuff := make([]float64, len(obvLine))
+	copy(obvLinePuff, obvLine)
+	sort.Float64Slice(obvLinePuff).Sort()
+	max := math.Max(math.Abs(obvLinePuff[0]), math.Abs(obvLinePuff[len(obvLine)-1]))
+	powerOfMax := math.Pow(10, math.Floor(math.Log10(max)))
+	for i := range obvLine {
+		obvLine[i] = obvLine[i] / powerOfMax
+	}
+
+	line.SetGlobalOptions(
+		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
+		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Type:       "inside",
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+	)
+
+	line.SetXAxis(date).
+		AddSeries("OBV", generateLineItems(obvLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
+	return line
+}
+
 func macdLineMulti(macdPoints []model.Macd) *charts.Line {
 	line := charts.NewLine()
 	var macdLine []float64
@@ -300,13 +399,13 @@ func macdLineMulti(macdPoints []model.Macd) *charts.Line {
 	return line
 }
 
-func rsiLine(macdPoints []model.Rsi) *charts.Line {
+func rsiLine(rsiPoints []model.Rsi) *charts.Line {
 	line := charts.NewLine()
 	var rsiLine []float64
 	var line70 []float64
 	var line30 []float64
 	var date []string
-	for _, rsi := range macdPoints {
+	for _, rsi := range rsiPoints {
 		rsiLine = append(rsiLine, rsi.RSI)
 		line70 = append(line70, 70)
 		line30 = append(line30, 30)

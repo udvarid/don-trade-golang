@@ -1,5 +1,6 @@
 
 	- Calculátorhoz unit teszteket írni, mindent letesztelni (pl. van e elég candle a megadott periódust is figyelembe véve)
+	- trend vonal kereső/rajzoló fv írása, mely 20/25 napos, magas R-el rendelkező trendeket keres és rajzol be, pl. OBV-re ill. Close price-re
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra

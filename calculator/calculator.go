@@ -6,12 +6,15 @@ import (
 	"github.com/udvarid/don-trade-golang/model"
 )
 
-func CalculateSMA(candles []float64, period int) []float64 {
-	sma := make([]float64, len(candles)-period+1)
+func CalculateSMA(prices []float64, period int) []float64 {
+	if len(prices) < period || len(prices) == 0 {
+		return []float64{}
+	}
+	sma := make([]float64, len(prices)-period+1)
 	for i := range sma {
 		sum := 0.0
 		for j := i; j < i+period; j++ {
-			sum += candles[j]
+			sum += prices[j]
 		}
 		sma[i] = sum / float64(period)
 	}
@@ -74,6 +77,12 @@ func CalculateEMA(prices []float64, tr []float64, period int) []float64 {
 	ema := make([]float64, len(prices))
 	k := 2.0 / float64(period+1)
 
+	sum := 0.0
+	for i := 0; i < period; i++ {
+		sum += prices[i]
+	}
+	ema[period-1] = sum / float64(period)
+
 	for i := period - 1; i < len(prices); i++ {
 		if tr != nil && tr[i] != 0 {
 			di := (prices[i] / tr[i]) * 100 // Calculate the DI as a percentage
@@ -85,9 +94,7 @@ func CalculateEMA(prices []float64, tr []float64, period int) []float64 {
 		} else if tr != nil && tr[i] == 0 {
 			ema[i] = 0 // If TR is zero, DI should be zero
 		} else {
-			if i == period-1 {
-				ema[i] = prices[i] // Initial EMA if no TR is provided
-			} else {
+			if i >= period {
 				ema[i] = (prices[i]-ema[i-1])*k + ema[i-1]
 			}
 		}
@@ -210,12 +217,15 @@ func CalculateOBV(candles []model.Candle) []model.Obv {
 	return obvs
 }
 
-func CalculateStandardDeviation(candles []model.Candle, sma []float64, period int) []float64 {
-	stdDev := make([]float64, len(sma))
+func CalculateStandardDeviation(prices []float64, ma []float64, period int) []float64 {
+	if len(prices) < period || len(prices) == 0 {
+		return []float64{}
+	}
+	stdDev := make([]float64, len(ma))
 	for i := range stdDev {
 		sum := 0.0
 		for j := i; j < i+period; j++ {
-			sum += math.Pow(candles[j].Close-sma[i], 2)
+			sum += math.Pow(prices[j]-ma[i], 2)
 		}
 		stdDev[i] = math.Sqrt(sum / float64(period))
 	}
@@ -224,7 +234,7 @@ func CalculateStandardDeviation(candles []model.Candle, sma []float64, period in
 
 func CalculateBollingerBands(candles []model.Candle, period int, multiplier float64) []model.BollingerBand {
 	sma := CalculateSMA(candleToFloat(candles), period)
-	stdDev := CalculateStandardDeviation(candles, sma, period)
+	stdDev := CalculateStandardDeviation(candleToFloat(candles), sma, period)
 
 	bollingerBands := make([]model.BollingerBand, len(sma))
 	for i := range bollingerBands {
@@ -259,10 +269,10 @@ func CalculateSmaLines(candles []model.Candle, shortPeriod int, mediumPeriod int
 	return maDtos
 }
 
-func CalculateTrend(data []float64) (slope, intercept float64) {
+func CalculateTrend(data []float64) (slope, intercept, rSquared float64) {
 	n := float64(len(data))
 	if n == 0 {
-		return 0, 0 // Handle empty array
+		return 0, 0, 0 // Handle empty array
 	}
 
 	var sumX, sumY, sumXY, sumX2 float64
@@ -280,12 +290,31 @@ func CalculateTrend(data []float64) (slope, intercept float64) {
 	// Calculate the slope (m) and intercept (b)
 	denominator := n*sumX2 - sumX*sumX
 	if denominator == 0 {
-		return 0, 0 // Handle divide by zero case
+		return 0, 0, 0 // Handle divide by zero case
 	}
 	slope = (n*sumXY - sumX*sumY) / denominator
 	intercept = (sumY*sumX2 - sumX*sumXY) / denominator
 
-	return slope, intercept
+	// Calculate R²
+	var ssTotal, ssResidual float64
+	meanY := sumY / n
+
+	for i := 0; i < int(n); i++ {
+		x := float64(i)
+		y := data[i]
+		yPredicted := slope*x + intercept
+
+		ssTotal += (y - meanY) * (y - meanY)
+		ssResidual += (y - yPredicted) * (y - yPredicted)
+	}
+
+	if ssTotal == 0 {
+		return slope, intercept, 1 // Perfect fit case
+	}
+
+	rSquared = 1 - (ssResidual / ssTotal)
+
+	return slope, intercept, rSquared
 }
 
 func candleToFloat(candles []model.Candle) []float64 {

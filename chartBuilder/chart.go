@@ -55,7 +55,11 @@ func BuildDetailedChart(candles []model.Candle) {
 	macdChart := macdLineMulti(macd)
 	smaChart := maLineMulti(sma)
 
-	page.AddCharts(detailedChart, smaChart, macdChart)
+	rsiChart := rsiLine(rsi)
+	obvChart := obvLine(obv)
+	adxChart := adxLineMulti(adx)
+
+	page.AddCharts(detailedChart, macdChart, obvChart)
 
 	f, err := os.Create("html/kline-detailed-" + candles[0].Item + ".html")
 	if err != nil {
@@ -64,11 +68,7 @@ func BuildDetailedChart(candles []model.Candle) {
 	}
 	page.Render(io.MultiWriter(f))
 
-	rsiChart := rsiLine(rsi)
-	obvChart := obvLine(obv)
-	adxChart := adxLineMulti(adx)
-
-	page2.AddCharts(rsiChart, obvChart, adxChart)
+	page2.AddCharts(smaChart, rsiChart, adxChart)
 
 	f2, err2 := os.Create("html/kline-detailed2-" + candles[0].Item + ".html")
 	if err2 != nil {

@@ -259,6 +259,35 @@ func CalculateSmaLines(candles []model.Candle, shortPeriod int, mediumPeriod int
 	return maDtos
 }
 
+func CalculateTrend(data []float64) (slope, intercept float64) {
+	n := float64(len(data))
+	if n == 0 {
+		return 0, 0 // Handle empty array
+	}
+
+	var sumX, sumY, sumXY, sumX2 float64
+
+	for i := 0; i < int(n); i++ {
+		x := float64(i)
+		y := data[i]
+
+		sumX += x
+		sumY += y
+		sumXY += x * y
+		sumX2 += x * x
+	}
+
+	// Calculate the slope (m) and intercept (b)
+	denominator := n*sumX2 - sumX*sumX
+	if denominator == 0 {
+		return 0, 0 // Handle divide by zero case
+	}
+	slope = (n*sumXY - sumX*sumY) / denominator
+	intercept = (sumY*sumX2 - sumX*sumXY) / denominator
+
+	return slope, intercept
+}
+
 func candleToFloat(candles []model.Candle) []float64 {
 	var result []float64
 	for _, candle := range candles {

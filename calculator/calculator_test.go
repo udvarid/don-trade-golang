@@ -8,10 +8,6 @@ import (
 	"github.com/udvarid/don-trade-golang/model"
 )
 
-// trend
-// rsi
-// obv
-
 func TestCandleToFloat(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -247,6 +243,143 @@ func TestCalculateEMAWithNilTR(t *testing.T) {
 		if !sameSlice(result, test.expected) {
 			t.Errorf("CalculateEMA(%v, nil, %d) = %v; want %v", test.prices, test.period, result, test.expected)
 		}
+	}
+}
+
+func TestCalculateOBV(t *testing.T) {
+	candles := []model.Candle{
+		{Item: "AAPL", Date: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC), Close: 150, Volume: 1000},
+		{Item: "AAPL", Date: time.Date(2021, 1, 2, 0, 0, 0, 0, time.UTC), Close: 155, Volume: 1500},
+		{Item: "AAPL", Date: time.Date(2021, 1, 3, 0, 0, 0, 0, time.UTC), Close: 150, Volume: 1200},
+		{Item: "AAPL", Date: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC), Close: 150, Volume: 1400},
+		{Item: "AAPL", Date: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC), Close: 151, Volume: 1700},
+	}
+
+	expected := []model.Obv{
+		{Item: "AAPL", Date: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC), Obv: 1000},
+		{Item: "AAPL", Date: time.Date(2021, 1, 2, 0, 0, 0, 0, time.UTC), Obv: 2500},
+		{Item: "AAPL", Date: time.Date(2021, 1, 3, 0, 0, 0, 0, time.UTC), Obv: 1300},
+		{Item: "AAPL", Date: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC), Obv: 1300},
+		{Item: "AAPL", Date: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC), Obv: 3000},
+	}
+
+	result := CalculateOBV(candles)
+
+	if len(result) != len(expected) {
+		t.Fatalf("expected length %d, got %d", len(expected), len(result))
+	}
+
+	for i := range result {
+		if result[i] != expected[i] {
+			t.Errorf("at index %d, expected %+v, got %+v", i, expected[i], result[i])
+		}
+	}
+}
+
+func TestCalculateRSI(t *testing.T) {
+
+	// Test data
+	candles := []model.Candle{
+		createCandle("item1", "2023-01-01", 100),
+		createCandle("item1", "2023-01-02", 105),
+		createCandle("item1", "2023-01-03", 102),
+		createCandle("item1", "2023-01-04", 108),
+		createCandle("item1", "2023-01-05", 107),
+		createCandle("item1", "2023-01-06", 111),
+		createCandle("item1", "2023-01-07", 115),
+		createCandle("item1", "2023-01-08", 113),
+		createCandle("item1", "2023-01-09", 117),
+		createCandle("item1", "2023-01-10", 120),
+	}
+
+	// Expected RSI values (calculated manually or using a reliable tool)
+	expectedRSIs := []float64{
+		78.947368,
+		83.333333,
+		73.732719,
+		79.606440,
+		83.140771,
+	}
+
+	// Calculate RSI
+	period := 5
+	rsis := CalculateRSI(candles, period)
+
+	// Check the length of the result
+	if len(rsis) != len(expectedRSIs) {
+		t.Fatalf("expected length %d, got %d", len(expectedRSIs), len(rsis))
+	}
+
+	for i := range rsis {
+		if math.Abs(rsis[i].RSI-expectedRSIs[i]) > 1e-2 {
+			t.Errorf("at index %d, expected %f, got %f", i, expectedRSIs[i], rsis[i].RSI)
+		}
+	}
+
+}
+
+func TestCalculateTrend(t *testing.T) {
+	tests := []struct {
+		name              string
+		data              []float64
+		expectedSlope     float64
+		expectedIntercept float64
+		expectedRSquared  float64
+	}{
+		{
+			name:              "Basic linear trend",
+			data:              []float64{1, 2, 3, 4, 5},
+			expectedSlope:     1,
+			expectedIntercept: 1,
+			expectedRSquared:  1,
+		},
+		{
+			name:              "No trend",
+			data:              []float64{1, 1, 1, 1, 1},
+			expectedSlope:     0,
+			expectedIntercept: 1,
+			expectedRSquared:  1,
+		},
+		{
+			name:              "Negative trend",
+			data:              []float64{5, 4, 3, 2, 1},
+			expectedSlope:     -1,
+			expectedIntercept: 5,
+			expectedRSquared:  1,
+		},
+		{
+			name:              "Empty data",
+			data:              []float64{},
+			expectedSlope:     0,
+			expectedIntercept: 0,
+			expectedRSquared:  0,
+		},
+		{
+			name:              "Relative strong trend",
+			data:              []float64{1, 3, 3, 4, 5},
+			expectedSlope:     0.9,
+			expectedIntercept: 1.4,
+			expectedRSquared:  0.9204545454545454,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			slope, intercept, rSquared := CalculateTrend(tt.data)
+			if math.Abs(slope-tt.expectedSlope) > 1e-2 ||
+				math.Abs(intercept-tt.expectedIntercept) > 1e-2 ||
+				math.Abs(rSquared-tt.expectedRSquared) > 1e-2 {
+				t.Errorf("CalculateTrend() = (%v, %v, %v), want (%v, %v, %v)", slope, intercept, rSquared, tt.expectedSlope, tt.expectedIntercept, tt.expectedRSquared)
+			}
+		})
+	}
+}
+
+func createCandle(item string, date string, close float64) model.Candle {
+	parsedDate, _ := time.Parse("2006-01-02", date)
+	return model.Candle{
+		Item:  item,
+		Date:  parsedDate,
+		Close: close,
 	}
 }
 

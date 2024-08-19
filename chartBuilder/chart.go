@@ -55,7 +55,7 @@ func BuildDetailedChart(candles []model.Candle) {
 	detailedChart.Overlap(boilingerChart)
 	detailedChart.Overlap(trendLineChart)
 	macdChart := macdLineMulti(macd)
-	smaChart := maLineMulti(sma, candles[shortPeriod:])
+	smaChart := maLineMulti(sma, candles[len(candles)-len(sma):])
 
 	rsiChart := rsiLine(rsi)
 	obvChart := obvLine(obv)
@@ -324,7 +324,11 @@ func maLineMulti(maPoints []model.Ma, candles []model.Candle) *charts.Line {
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
 		AddSeries("Vol.bil.", generateLineItems(volume),
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "red", Type: "dashed"}),
-			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false), YAxisIndex: 1}))
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false), YAxisIndex: 1}),
+			charts.WithAreaStyleOpts(opts.AreaStyle{
+				Opacity: 0.2,
+			}))
+
 	return line
 }
 

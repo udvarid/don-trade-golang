@@ -55,7 +55,7 @@ func BuildDetailedChart(candles []model.Candle) {
 	detailedChart.Overlap(boilingerChart)
 	detailedChart.Overlap(trendLineChart)
 	macdChart := macdLineMulti(macd)
-	smaChart := maLineMulti(sma)
+	smaChart := maLineMulti(sma, candles[shortPeriod:])
 
 	rsiChart := rsiLine(rsi)
 	obvChart := obvLine(obv)
@@ -275,16 +275,18 @@ func boilingerLineMulti(boilingerBands []model.BollingerBand) *charts.Line {
 	return line
 }
 
-func maLineMulti(maPoints []model.Ma) *charts.Line {
+func maLineMulti(maPoints []model.Ma, candles []model.Candle) *charts.Line {
 	line := charts.NewLine()
 	var longLine []float64
 	var mediumLine []float64
 	var shortLine []float64
 	var date []string
-	for _, ma := range maPoints {
+	var volume []float64
+	for i, ma := range maPoints {
 		longLine = append(longLine, ma.MaLong)
 		mediumLine = append(mediumLine, ma.MaMedium)
 		shortLine = append(shortLine, ma.MaShort)
+		volume = append(volume, candles[i].Volume/1000000)
 		date = append(date, ma.Date.Format("2006/01/02"))
 	}
 
@@ -304,6 +306,12 @@ func maLineMulti(maPoints []model.Ma) *charts.Line {
 		}),
 	)
 
+	line.ExtendYAxis(opts.YAxis{
+		Type:  "value",
+		Show:  opts.Bool(true),
+		Scale: opts.Bool(true),
+	})
+
 	line.SetXAxis(date).
 		AddSeries("Sma long", generateLineItems(longLine),
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
@@ -313,7 +321,10 @@ func maLineMulti(maPoints []model.Ma) *charts.Line {
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
 		AddSeries("Sma short", generateLineItems(shortLine),
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "orange"}),
-			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("Vol.bil.", generateLineItems(volume),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "red", Type: "dashed"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false), YAxisIndex: 1}))
 	return line
 }
 

@@ -1,4 +1,5 @@
-	- ADX az OTP-nél nem működik, megnézni
+	- ADX az OTP/BTCUSD-nél nem működik, megnézni
+	- Volumen-t kicserélni - ha van értelme - bar chartra
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra

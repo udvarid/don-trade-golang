@@ -1,5 +1,4 @@
-
-	- trend vonal kereső/rajzoló fv írása, mely 20/25 napos, magas R-el rendelkező trendeket keres és rajzol be, pl. OBV-re ill. Close price-re
+	- ADX az OTP-nél nem működik, megnézni
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra

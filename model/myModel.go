@@ -44,6 +44,11 @@ type Macd struct {
 	Signal float64   `json:"signal"`
 }
 
+type TrendPoint struct {
+	TrendPoint float64 `json:"trend_point"`
+	TrendFlag  bool    `json:"trend_flag"`
+}
+
 type Rsi struct {
 	Item string    `json:"item"`
 	Date time.Time `json:"date"`

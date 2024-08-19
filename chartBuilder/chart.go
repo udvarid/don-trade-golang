@@ -50,8 +50,10 @@ func BuildDetailedChart(candles []model.Candle) {
 	}
 
 	detailedChart := klineDetailed(kd[period:])
+	trendLineChart := trendLineOnCandle(candles[period:])
 	boilingerChart := boilingerLineMulti(bollingerBands)
 	detailedChart.Overlap(boilingerChart)
+	detailedChart.Overlap(trendLineChart)
 	macdChart := macdLineMulti(macd)
 	smaChart := maLineMulti(sma)
 
@@ -130,6 +132,40 @@ func klineBase(kd []klineData, description string) *charts.Kline {
 	return kline
 }
 
+func trendLineOnCandle(candles []model.Candle) *charts.Line {
+	var prices []float64
+	var date []string
+	for _, candle := range candles {
+		prices = append(prices, candle.Close)
+		date = append(date, candle.Date.Format("2006/01/02"))
+	}
+	trendPoints := calculator.GetTrendLine(prices, 20, 0.5)
+
+	line := charts.NewLine()
+	line.SetGlobalOptions(
+		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
+		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Type:       "inside",
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+	)
+
+	line.SetXAxis(date).
+		AddSeries("", generateLineItemsForTrend(trendPoints),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue", Type: "dashed"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
+	return line
+
+}
+
 func klineDetailed(kd []klineData) *charts.Kline {
 	kline := charts.NewKLine()
 
@@ -192,6 +228,18 @@ func generateLineItems(numbers []float64) []opts.LineData {
 	items := make([]opts.LineData, 0)
 	for _, number := range numbers {
 		items = append(items, opts.LineData{Value: number})
+	}
+	return items
+}
+
+func generateLineItemsForTrend(numbers []model.TrendPoint) []opts.LineData {
+	items := make([]opts.LineData, 0)
+	for _, number := range numbers {
+		if number.TrendFlag {
+			items = append(items, opts.LineData{Value: number.TrendPoint})
+		} else {
+			items = append(items, opts.LineData{Value: nil})
+		}
 	}
 	return items
 }
@@ -339,6 +387,8 @@ func obvLine(obvPoints []model.Obv) *charts.Line {
 		obvLine[i] = obvLine[i] / powerOfMax
 	}
 
+	trendPoints := calculator.GetTrendLine(obvLine, 20, 0.5)
+
 	line.SetGlobalOptions(
 		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
 		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
@@ -357,7 +407,10 @@ func obvLine(obvPoints []model.Obv) *charts.Line {
 
 	line.SetXAxis(date).
 		AddSeries("OBV", generateLineItems(obvLine),
-			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "green"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("", generateLineItemsForTrend(trendPoints),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue", Type: "dashed"}),
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
 	return line
 }

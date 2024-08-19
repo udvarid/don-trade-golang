@@ -317,6 +317,31 @@ func CalculateTrend(data []float64) (slope, intercept, rSquared float64) {
 	return slope, intercept, rSquared
 }
 
+func GetTrendLine(dataLine []float64, period int, strenght float64) (trendLine []model.TrendPoint) {
+	trendPoints := make([]model.TrendPoint, len(dataLine))
+	for i := range trendPoints {
+		trendPoints[i].TrendFlag = false
+	}
+
+	if len(dataLine) < period {
+		return
+	}
+
+	for i := 0; i <= len(dataLine)-period; i++ {
+		slope, intercept, rSquared := CalculateTrend(dataLine[i : i+period])
+		if rSquared < strenght {
+			continue
+		}
+		for j := i; j < i+period; j++ {
+			trendPoints[j].TrendFlag = true
+			trendPoints[j].TrendPoint = slope*float64(j-i) + intercept
+		}
+		i += period
+	}
+
+	return trendPoints
+}
+
 func candleToFloat(candles []model.Candle) []float64 {
 	var result []float64
 	for _, candle := range candles {

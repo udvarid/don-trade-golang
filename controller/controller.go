@@ -12,6 +12,9 @@ import (
 func Init() {
 	router := gin.Default()
 	router.LoadHTMLGlob("html/*")
+	// Serve static files from the "static" directory
+	router.Static("/static", "./static")
+	router.StaticFile("/favicon.ico", "./static/favicon.ico")
 
 	router.GET("/", startPage)
 	router.GET("/detailed/:item", detailedPage)

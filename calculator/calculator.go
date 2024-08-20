@@ -53,8 +53,13 @@ func CalculateADX(candles []model.Candle, period int) []model.Adx {
 	minusDI := CalculateEMA(minusDM, tr, period)
 
 	dx := make([]float64, len(plusDI)-period)
+	div := 1.0
 	for i := range dx {
-		dx[i] = 100 * math.Abs(plusDI[i+period]-minusDI[i+period]) / (plusDI[i+period] + minusDI[i+period])
+		div = plusDI[i+period] + minusDI[i+period]
+		if div == 0 {
+			div = plusDI[i+period-1] + minusDI[i+period-1]
+		}
+		dx[i] = 100 * math.Abs(plusDI[i+period]-minusDI[i+period]) / div
 	}
 
 	adx := CalculateEMA(dx, nil, period)

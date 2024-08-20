@@ -398,6 +398,9 @@ func obvLine(obvPoints []model.Obv) *charts.Line {
 	sort.Float64Slice(obvLinePuff).Sort()
 	max := math.Max(math.Abs(obvLinePuff[0]), math.Abs(obvLinePuff[len(obvLine)-1]))
 	powerOfMax := math.Pow(10, math.Floor(math.Log10(max)))
+	if powerOfMax == 0 {
+		powerOfMax = 1
+	}
 	for i := range obvLine {
 		obvLine[i] = obvLine[i] / powerOfMax
 	}

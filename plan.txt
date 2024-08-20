@@ -1,9 +1,8 @@
-	- más providert megnézni a hiányzó volumen adatok pótlása miat??
-	- paraméterrel szabályozni a price adatok törlését (candle és candle summary)
 	- Email fíók létrehozása
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
 		- piaci áras adásvételt indítani kiválasztott típusra
+	- admin user (udvarid@hotmail.com) tudjon megadott végponton indítani a price adatok törlését (candle és candle summary)
 	- A megbízások mentődjenek el és új adatpont lementésekor hajtódjanak végre (ha lehet). Mindenhol unit tesztek
 	- Minden user-nél időpecsétes könyveléssel látszódjon, hogy melyik típus hogy változott ($, kereskedési típusok) és hogy ezáltal aznap miből mennyi készlete volt. Mindenhol unit tesztek
 	- Ügyfél vagyonának napi helyzetéről legyne chart, típus szerinti bontásban

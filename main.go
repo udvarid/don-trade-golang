@@ -21,7 +21,7 @@ var f embed.FS
 func main() {
 	configFile := flag.String("config", "conf.json", "the Json file contains the configurations")
 	environment := flag.String("environment", "local", "where do we run the application, local or internet?")
-	remoteAddress := flag.String("remote_address", "https://don-trade-golang.fly.dev//", "remote address of the application")
+	remoteAddress := flag.String("remote_address", "https://don-trade-golang.fly.dev/", "remote address of the application")
 	flag.Parse()
 
 	configFileInString, _ := f.ReadFile("resources/" + *configFile)

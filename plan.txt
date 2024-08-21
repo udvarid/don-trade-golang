@@ -1,6 +1,7 @@
 	- alkalmazás indulásakor db-ből a régi session-öket törölni
 	- Alkalmazás indulásakor html file-ok törlődjenek	
 	- css és js külön file-okban legyenek, a static mappában
+	- a belépésre kérő mail-ben link formátúmú legyen a link és egy 404-es oldalra vigyen, hanem egy success oldalra
 	- Belépéskor hozzon létre usert első alkalommal. Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
 		- piaci áras adásvételt indítani kiválasztott típusra

@@ -84,7 +84,7 @@ func Validate(activeConfiguration *model.Configuration, id string, session strin
 		}
 
 		foundChecked := make(chan string)
-		timer := time.NewTimer(60 * time.Second)
+		timer := time.NewTimer(90 * time.Second)
 		go func() {
 			for {
 				time.Sleep(1 * time.Second)

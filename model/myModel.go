@@ -8,6 +8,7 @@ type Configuration struct {
 	Mail_local_psw          string `json:"mail_local_psw"`
 	Mail_local_from         string `json:"mail_local_from"`
 	Environment             string `json:"environment"`
+	RemoteAddress           string `json:"remote_address"`
 	Price_collector_api_key string `json:"price_collector_api_key"`
 }
 

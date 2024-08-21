@@ -3,6 +3,7 @@ module github.com/udvarid/don-trade-golang
 go 1.22.5
 
 require (
+	github.com/AfterShip/email-verifier v1.4.0
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-echarts/go-echarts/v2 v2.4.1
 	go.etcd.io/bbolt v1.3.10
@@ -20,6 +21,7 @@ require (
 	github.com/go-playground/validator/v10 v10.20.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
+	github.com/hbollon/go-edlib v1.6.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/klauspost/cpuid/v2 v2.2.7 // indirect
 	github.com/kr/text v0.2.0 // indirect

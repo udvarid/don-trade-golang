@@ -41,5 +41,5 @@ func main() {
 	collector.CollectData(&config)
 	communicator.Init(&config)
 
-	controller.Init()
+	controller.Init(&config)
 }

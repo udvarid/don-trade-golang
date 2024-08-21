@@ -36,6 +36,11 @@ func IsValid(id string, session string) bool {
 	return sessionInMap.Session == session
 }
 
+func Logout(id string) {
+	delete(sessions, id)
+	sessionRepository.DeleteSession(id)
+}
+
 func CheckIn(id string, session string) {
 	sessionInMap, isPresent := sessions[id]
 	if isPresent {

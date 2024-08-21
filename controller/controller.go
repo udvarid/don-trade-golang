@@ -3,14 +3,21 @@ package controller
 import (
 	"html/template"
 	"net/http"
+	"net/url"
 	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/udvarid/don-trade-golang/authenticator"
 	"github.com/udvarid/don-trade-golang/collector"
+	"github.com/udvarid/don-trade-golang/model"
 )
 
-func Init() {
+var (
+	activeConfiguration = &model.Configuration{}
+)
+
+func Init(config *model.Configuration) {
+	activeConfiguration = config
 	router := gin.Default()
 	router.LoadHTMLGlob("html/*")
 	// Serve static files from the "static" directory
@@ -18,8 +25,39 @@ func Init() {
 	router.StaticFile("/favicon.ico", "./static/favicon.ico")
 
 	router.GET("/", startPage)
+	router.GET("/logout", logout)
 	router.GET("/detailed/:item", detailedPage)
+	router.POST("/validate/", validate)
+	router.GET("/checkin/:id/:session", checkInTask)
 	router.Run()
+}
+
+func logout(c *gin.Context) {
+	id_cookie, err := c.Cookie("id")
+	if err == nil {
+		authenticator.Logout(id_cookie)
+	}
+	c.SetCookie("id", "", -1, "/", "localhost", false, true)
+	c.SetCookie("session", "", -1, "/", "localhost", false, true)
+	redirectTo(c, "/")
+}
+
+func validate(c *gin.Context) {
+	var getSession GetSession
+	c.BindJSON(&getSession)
+	newSession, err := authenticator.GiveSession(getSession.Id)
+	if err != nil {
+		redirectTo(c, "/")
+		return
+	}
+
+	isValidatedInTime := authenticator.Validate(activeConfiguration, getSession.Id, newSession, true)
+
+	if isValidatedInTime {
+		c.SetCookie("id", getSession.Id, 3600, "/", activeConfiguration.RemoteAddress, false, true)
+		c.SetCookie("session", newSession, 3600, "/", activeConfiguration.RemoteAddress, false, true)
+	}
+	redirectTo(c, "/")
 }
 
 func detailedPage(c *gin.Context) {
@@ -128,8 +166,21 @@ func isLoggedIn(c *gin.Context) bool {
 	return authenticator.IsValid(id_cookie, session_cookie)
 }
 
+func redirectTo(c *gin.Context, path string) {
+	location := url.URL{Path: path}
+	c.Redirect(http.StatusFound, location.RequestURI())
+}
+
+func checkInTask(c *gin.Context) {
+	authenticator.CheckIn(c.Param("id"), c.Param("session"))
+}
+
 type HtmlWithInfo struct {
 	Name        string
 	Description string
 	Page        interface{}
+}
+
+type GetSession struct {
+	Id string `json:"id"`
 }

@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/udvarid/don-trade-golang/authenticator"
 	"github.com/udvarid/don-trade-golang/collector"
 )
 
@@ -36,8 +37,12 @@ func detailedPage(c *gin.Context) {
 	pageCandle2.Page = template.HTML(string(html2))
 	pageCandle2.Name = item.Name
 	pageCandle2.Description = item.Description
+
+	isLoggedIn := isLoggedIn(c)
+
 	c.HTML(http.StatusOK, "detailed.html", gin.H{
 		"title":         "Detailed Page",
+		"isLoggedIn":    isLoggedIn,
 		"description":   item.Description,
 		"detailedPage1": pageCandle,
 		"detailedPage2": pageCandle2,
@@ -94,14 +99,33 @@ func startPage(c *gin.Context) {
 
 	}
 
+	isLoggedIn := isLoggedIn(c)
+
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"title":          "Main Page",
+		"isLoggedIn":     isLoggedIn,
 		"stockPages":     stockPages,
 		"fxPages":        fxPages,
 		"commodityPages": commodityPages,
 		"cryptoPages":    cryptoPages,
 	})
 
+}
+
+func isLoggedIn(c *gin.Context) bool {
+	id_cookie, err := c.Cookie("id")
+	isMissingCookie := false
+	if err != nil {
+		isMissingCookie = true
+	}
+	session_cookie, err := c.Cookie("session")
+	if err != nil {
+		isMissingCookie = true
+	}
+	if isMissingCookie {
+		return false
+	}
+	return authenticator.IsValid(id_cookie, session_cookie)
 }
 
 type HtmlWithInfo struct {

@@ -1,3 +1,5 @@
+	- alkalmazás indulásakor db-ből a régi session-öket törölni
+	- login/logout működjön, tesztelni élesben is
 	- email-el legyen lehetőség belépni (don-task-es alapján). Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
 		- piaci áras adásvételt indítani kiválasztott típusra

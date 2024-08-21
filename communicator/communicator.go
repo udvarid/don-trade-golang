@@ -18,6 +18,18 @@ func Init(config *model.Configuration) {
 
 var verifier = emailverifier.NewVerifier()
 
+func SendMessageWithLink(toAddress string, toLink string) {
+	ret, err := verifier.Verify(toAddress)
+	if err != nil && !ret.Syntax.Valid {
+		msg := []byte("To: " + toAddress + "\r\n" +
+			"Subject: Please check in!\r\n" +
+			"\r\n" +
+			"Here is the link\r\n" +
+			toLink)
+		sendMail(toAddress, msg)
+	}
+}
+
 func SendMessage(toAddress string, message string) {
 	ret, err := verifier.Verify(toAddress)
 	if err == nil && ret.Syntax.Valid {

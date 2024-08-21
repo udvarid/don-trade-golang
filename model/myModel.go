@@ -92,3 +92,9 @@ type Item struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 }
+
+type SessionWithTime struct {
+	Session   string
+	SessDate  time.Time
+	IsChecked bool
+}

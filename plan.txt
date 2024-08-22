@@ -1,12 +1,9 @@
-	- Felugró figyelmeztető ablak jelenjen meg, hogy emailt küldtünk belépéskor
-
-	- crypto áraknál (3 db, BTC, ETH, SOL) kézzel javítás/átlagolás. BTC-nél mintha más lenne a probléma, mint ETH és SOL esetén
-
 	- Belépéskor hozzon létre usert első alkalommal. Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra
 		- piaci áras adásvételt indítani kiválasztott típusra
 
-	- admin user (udvarid@hotmail.com) tudjon megadott végponton indítani a price adatok törlését (candle és candle summary)
+	- admin user (udvarid@hotmail.com) tudjon megadott végponton indítani a price adatok törlését és újra feltöltését (candle és candle summary)
+	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
 
 	- A megbízások mentődjenek el és új adatpont lementésekor hajtódjanak végre (ha lehet). Mindenhol unit tesztek
 	- Nyitott megbízásokról lista
@@ -17,6 +14,8 @@
 	
 	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)
 	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
+
+	- crypto áraknál (3 db, BTC, ETH, SOL) kézzel javítás/átlagolás. BTC-nél mintha más lenne a probléma, mint ETH és SOL esetén
 
 	- Legyen lehetőség short ügyletekre is
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short)

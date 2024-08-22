@@ -56,8 +56,8 @@ func validate(c *gin.Context) {
 	if isValidatedInTime {
 		c.SetCookie("id", getSession.Id, 3600, "/", activeConfiguration.RemoteAddress, false, true)
 		c.SetCookie("session", newSession, 3600, "/", activeConfiguration.RemoteAddress, false, true)
+		redirectTo(c, "/")
 	}
-	redirectTo(c, "/")
 }
 
 func detailedPage(c *gin.Context) {

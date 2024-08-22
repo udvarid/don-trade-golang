@@ -13,3 +13,19 @@
 .custom-button:hover {
     background-color: #add8e6;
 }
+
+.notification {
+    transition: all 0.35s;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    background: linear-gradient(#1abc9c, #16a085);
+    border-bottom: 0.125rem solid #1abc9c;
+    box-shadow: rgba(0, 0, 0, 0.4) 0 0.25rem 0.25rem 0;
+  }
+
+  .notification .content {
+    text-align: center;
+    color: #fff;
+  }

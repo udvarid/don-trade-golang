@@ -25,6 +25,12 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
     // Convert form data to JSON
     const jsonData = JSON.stringify(formData);
 
+    var notification = document.getElementById("one");
+    notification.style.visibility = 'visible';
+    setTimeout(function() {
+        notification.style.visibility = 'hidden';
+    }, 15000)    
+
     // Send POST request
     fetch("/validate/", {
         method: "POST",
@@ -34,10 +40,12 @@ document.getElementById("loginForm").addEventListener("submit", function(event) 
         body: jsonData
     })
     .then(response => {        
-    if (response.redirected) {
+
+        if (response.redirected) {
             const redirectUrl = response.url;
             window.location.href = redirectUrl;
-        } else {
+            } 
+        else {
             return response.json();
         }
     })

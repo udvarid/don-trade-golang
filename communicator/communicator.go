@@ -23,9 +23,12 @@ func SendMessageWithLink(toAddress string, toLink string) {
 	if err == nil && ret.Syntax.Valid {
 		msg := []byte("To: " + toAddress + "\r\n" +
 			"Subject: Please check in!\r\n" +
+			"MIME-version: 1.0;\r\n" +
+			"Content-Type: text/html; charset=\"UTF-8\";\r\n" +
 			"\r\n" +
-			"Here is the link\r\n" +
-			toLink)
+			"<html><body>" +
+			"<p>To login please: <a href=" + toLink + ">click me</a></p>" +
+			"</body></html>")
 		sendMail(toAddress, msg)
 	}
 }

@@ -173,6 +173,9 @@ func redirectTo(c *gin.Context, path string) {
 
 func checkInTask(c *gin.Context) {
 	authenticator.CheckIn(c.Param("id"), c.Param("session"))
+	c.HTML(http.StatusOK, "logged_in.html", gin.H{
+		"title": "Logged in Page",
+	})
 }
 
 type HtmlWithInfo struct {

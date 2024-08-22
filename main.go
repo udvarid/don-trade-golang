@@ -49,6 +49,8 @@ func main() {
 
 	authenticator.ClearOldSessions()
 
+	communicator.SendMessageWithLink("udvarid@hotmail.com", "https://www.telex.hu/")
+
 	controller.Init(&config)
 }
 

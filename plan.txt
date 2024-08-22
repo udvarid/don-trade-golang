@@ -1,4 +1,4 @@
-	- a belépésre kérő mail-ben link formátúmú legyen a link és egy 404-es oldalra vigyen, hanem egy success oldalra
+	- Felugró figyelmeztető ablak jelenjen meg, hogy emailt küldtünk belépéskor
 
 	- crypto áraknál (3 db, BTC, ETH, SOL) kézzel javítás/átlagolás. BTC-nél mintha más lenne a probléma, mint ETH és SOL esetén
 

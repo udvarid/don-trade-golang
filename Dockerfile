@@ -5,6 +5,7 @@ RUN apt update && apt install -y ca-certificates
 COPY don-trade-golang ./
 COPY ./html/index.html ./html/
 COPY ./html/detailed.html ./html/
+COPY ./html/logged_in.html ./html/
 COPY ./static/* ./static/
 RUN mkdir /db
 

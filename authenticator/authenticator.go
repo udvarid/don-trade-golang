@@ -27,7 +27,7 @@ func ClearOldSessions() {
 			clearedSessions++
 		}
 	}
-	fmt.Println("Cleared sessions: ", clearedSessions)
+	fmt.Println("Cleared old sessions: ", clearedSessions)
 }
 
 func IsValid(id string, session string) bool {

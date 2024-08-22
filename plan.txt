@@ -1,6 +1,7 @@
-	- Alkalmazás indulásakor html file-ok törlődjenek	
 	- css és js külön file-okban legyenek, a static mappában
 	- a belépésre kérő mail-ben link formátúmú legyen a link és egy 404-es oldalra vigyen, hanem egy success oldalra
+	
+	- crypto áraknál (3 db, BTC, ETH, SOL) kézzel javítás/átlagolás. BTC-nél mintha más lenne a probléma, mint ETH és SOL esetén
 
 	- Belépéskor hozzon létre usert első alkalommal. Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
 		- limit áras adásvételt indítani kiválasztott típusra

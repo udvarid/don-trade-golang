@@ -4,6 +4,9 @@ import (
 	"embed"
 	"encoding/json"
 	"flag"
+	"log"
+	"os"
+	"path/filepath"
 
 	"github.com/udvarid/don-trade-golang/authenticator"
 	"github.com/udvarid/don-trade-golang/collector"
@@ -39,10 +42,31 @@ func main() {
 		candleRepository.UpdateCandleSummary(cs)
 	}
 
+	deleteHtml()
+
 	collector.CollectData(&config)
 	communicator.Init(&config)
 
 	authenticator.ClearOldSessions()
 
 	controller.Init(&config)
+}
+
+func deleteHtml() {
+	folderPath := "./html"
+	filePattern := "kline-*.html"
+
+	fullPattern := filepath.Join(folderPath, filePattern)
+
+	files, err := filepath.Glob(fullPattern)
+	if err != nil {
+		log.Fatalf("Error finding files: %v", err)
+	}
+
+	for _, file := range files {
+		err := os.Remove(file)
+		if err != nil {
+			log.Printf("Error deleting file %s: %v", file, err)
+		}
+	}
 }

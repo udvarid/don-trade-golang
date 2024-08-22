@@ -66,7 +66,7 @@ func FindSession(id string) (model.SessionWithTime, error) {
 	}
 }
 
-func AddSession(id string, session model.SessionWithTime) {
+func AddSession(session model.SessionWithTime) {
 	db := repoUtil.OpenDb()
 	db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("Sessions"))
@@ -74,7 +74,7 @@ func AddSession(id string, session model.SessionWithTime) {
 		if err != nil {
 			return err
 		}
-		return b.Put([]byte(id), buf)
+		return b.Put([]byte(session.ID), buf)
 	})
 
 	defer db.Close()

@@ -12,8 +12,23 @@ import (
 )
 
 var sessions = make(map[string]model.SessionWithTime)
+var sessionTime = 60.0
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+
+func ClearOldSessions() {
+	sessions := sessionRepository.GetAllSessions()
+	now := time.Now()
+	clearedSessions := 0
+	for _, session := range sessions {
+		diff := now.Sub(session.SessDate)
+		if diff.Minutes() > sessionTime {
+			sessionRepository.DeleteSession(session.ID)
+			clearedSessions++
+		}
+	}
+	fmt.Println("Cleared sessions: ", clearedSessions)
+}
 
 func IsValid(id string, session string) bool {
 	sessionInMap, isPresent := sessions[id]
@@ -28,9 +43,9 @@ func IsValid(id string, session string) bool {
 	}
 	now := time.Now()
 	diff := now.Sub(sessionInMap.SessDate)
-	if diff.Minutes() > 30 {
+	if diff.Minutes() > sessionTime {
 		delete(sessions, id)
-		sessionRepository.DeleteSession((id))
+		sessionRepository.DeleteSession(id)
 		return false
 	}
 	return sessionInMap.Session == session
@@ -46,13 +61,13 @@ func CheckIn(id string, session string) {
 	if isPresent {
 		sessionInMap.IsChecked = true
 		sessions[id] = sessionInMap
-		sessionRepository.AddSession(id, sessionInMap)
+		sessionRepository.AddSession(sessionInMap)
 	} else {
 		sessionInDb, err := sessionRepository.FindSession(id)
 		if err == nil {
 			sessionInDb.IsChecked = true
 			sessions[id] = sessionInDb
-			sessionRepository.AddSession(id, sessionInDb)
+			sessionRepository.AddSession(sessionInDb)
 		}
 	}
 }
@@ -63,12 +78,13 @@ func GiveSession(id string) (string, error) {
 	}
 	sessionGenerated := randStringBytes(50)
 	sess := model.SessionWithTime{
+		ID:        id,
 		Session:   sessionGenerated,
 		SessDate:  time.Now(),
 		IsChecked: false,
 	}
 	sessions[id] = sess
-	sessionRepository.AddSession(id, sess)
+	sessionRepository.AddSession(sess)
 	return sessionGenerated, nil
 }
 

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"flag"
 
+	"github.com/udvarid/don-trade-golang/authenticator"
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/communicator"
 	"github.com/udvarid/don-trade-golang/controller"
@@ -40,6 +41,8 @@ func main() {
 
 	collector.CollectData(&config)
 	communicator.Init(&config)
+
+	authenticator.ClearOldSessions()
 
 	controller.Init(&config)
 }

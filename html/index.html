@@ -14,8 +14,15 @@
     <nav class="bg-white p-4 rounded shadow mb-4">
         <div class="flex justify-between items-center">
           {{if eq .isLoggedIn true}}
-            <div class="p-4 ml-auto">
-                <a class="text-l font-bold text-green-500" href="/logout">Logout</a>
+            <div class="p-4 ml-auto flex items-center space-x-4">
+                {{if eq .isAdminUser true}}
+                    <div>
+                        <a class="text-l font-bold text-grey-500" href="/admin">Admin</a>
+                    </div>
+                {{end}}
+                <div>
+                    <a class="text-l font-bold text-green-500" href="/logout">Logout</a>
+                </div>
             </div>
           {{else}}
             <div class="p-4 ml-auto">

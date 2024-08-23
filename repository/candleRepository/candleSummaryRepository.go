@@ -56,3 +56,14 @@ func AddCandleSummary(candleSummary model.CandleSummary) model.CandleSummary {
 	defer db.Close()
 	return candleSummary
 }
+
+func DeleteCandleSummary(candleSummaryId int) {
+	db := repoUtil.OpenDb()
+
+	db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("CandleSummary"))
+		err := b.Delete(repoUtil.Itob(candleSummaryId))
+		return err
+	})
+	defer db.Close()
+}

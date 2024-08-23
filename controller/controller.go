@@ -26,6 +26,8 @@ func Init(config *model.Configuration) {
 
 	router.GET("/", startPage)
 	router.GET("/logout", logout)
+	router.GET("/admin", admin)
+	router.GET("/reset_db", resetDb)
 	router.GET("/detailed/:item", detailedPage)
 	router.POST("/validate/", validate)
 	router.GET("/checkin/:id/:session", checkInTask)
@@ -40,6 +42,26 @@ func logout(c *gin.Context) {
 	c.SetCookie("id", "", -1, "/", "localhost", false, true)
 	c.SetCookie("session", "", -1, "/", "localhost", false, true)
 	redirectTo(c, "/")
+}
+
+func admin(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == getId(c)
+	if !isAdminUser {
+		redirectTo(c, "/")
+	}
+	c.HTML(http.StatusOK, "admin.html", gin.H{
+		"title": "Admin Page",
+	})
+}
+
+func resetDb(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == getId(c)
+	if !isAdminUser {
+		redirectTo(c, "/")
+	}
+	collector.DeletePriceDatabase(activeConfiguration)
 }
 
 func validate(c *gin.Context) {
@@ -138,16 +160,23 @@ func startPage(c *gin.Context) {
 	}
 
 	isLoggedIn := isLoggedIn(c)
+	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == getId(c)
 
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"title":          "Main Page",
 		"isLoggedIn":     isLoggedIn,
+		"isAdminUser":    isAdminUser,
 		"stockPages":     stockPages,
 		"fxPages":        fxPages,
 		"commodityPages": commodityPages,
 		"cryptoPages":    cryptoPages,
 	})
 
+}
+
+func getId(c *gin.Context) string {
+	id_cookie, _ := c.Cookie("id")
+	return id_cookie
 }
 
 func isLoggedIn(c *gin.Context) bool {

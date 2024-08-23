@@ -2,11 +2,10 @@
 		- limit áras adásvételt indítani kiválasztott típusra
 		- piaci áras adásvételt indítani kiválasztott típusra
 
-	- admin oldal, ahol gomb nyomásra lehet indítani admin műveleteket (price adatok törlése/újra feltöltés; utolsó napi adatokon megbízás végrehajtás)
-	- admin user (udvarid@hotmail.com) tudjon megadott végponton indítani a price adatok törlését és újra feltöltését (candle és candle summary)
-	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
+	- A megbízások mentődjenek el és új adatpont lementésekor hajtódjanak végre (ha lehet).
 
-	- A megbízások mentődjenek el és új adatpont lementésekor hajtódjanak végre (ha lehet). Mindenhol unit tesztek
+	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
+	
 	- Nyitott megbízásokról lista
 
 	- Minden user-nél időpecsétes könyveléssel látszódjon, hogy melyik típus hogy változott ($, kereskedési típusok) és hogy ezáltal aznap miből mennyi készlete volt. Mindenhol unit tesztek

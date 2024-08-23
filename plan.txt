@@ -2,6 +2,7 @@
 		- limit áras adásvételt indítani kiválasztott típusra
 		- piaci áras adásvételt indítani kiválasztott típusra
 
+	- admin oldal, ahol gomb nyomásra lehet indítani admin műveleteket (price adatok törlése/újra feltöltés; utolsó napi adatokon megbízás végrehajtás)
 	- admin user (udvarid@hotmail.com) tudjon megadott végponton indítani a price adatok törlését és újra feltöltését (candle és candle summary)
 	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
 
@@ -15,7 +16,8 @@
 	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)
 	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
 
-	- crypto áraknál (3 db, BTC, ETH, SOL) kézzel javítás/átlagolás. BTC-nél mintha más lenne a probléma, mint ETH és SOL esetén
+	- Fő oldal design: fejléc/leírás/click-here utalálsok chartokra
+	- Detailed oldal design: Leírás/link az egyes mutatókhoz
 
 	- Legyen lehetőség short ügyletekre is
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short)

@@ -98,9 +98,23 @@ func CollectData(config *model.Configuration) {
 
 	// creating new candleSummary statistics
 	candlesPersisted = candleRepository.GetAllCandles()
-	itemCountMap := make(map[string]int)
+	itemCountMap := make(map[string]model.CandleStatistic)
 	for _, candle := range candlesPersisted {
-		itemCountMap[candle.Item]++
+		cs, exists := itemCountMap[candle.Item]
+		if !exists {
+			var candleStatistic model.CandleStatistic
+			candleStatistic.Number = 1
+			candleStatistic.LastPrice = candle.Close
+			candleStatistic.LastDate = candle.Date
+			itemCountMap[candle.Item] = candleStatistic
+		} else {
+			cs.Number++
+			if cs.LastDate.Before(candle.Date) {
+				cs.LastPrice = candle.Close
+				cs.LastDate = candle.Date
+			}
+			itemCountMap[candle.Item] = cs
+		}
 	}
 
 	var candleSummary model.CandleSummary
@@ -160,8 +174,8 @@ func getDayParameter(summaries []model.CandleSummary, item string, defaultDays i
 		return longDayParam
 	}
 	summary := summaries[0].Summary
-	numberOfItem, exists := summary[item]
-	if !exists || numberOfItem < 300 {
+	candleStatistic, exists := summary[item]
+	if !exists || candleStatistic.Number < 300 {
 		return longDayParam
 	}
 	return defaultDays

@@ -16,9 +16,13 @@ shouldDelete
 func getSummaries() []model.CandleSummary {
 	var summaries []model.CandleSummary
 	var candleSummary model.CandleSummary
-	summary := make(map[string]int)
-	summary["test1"] = 10
-	summary["test2"] = 500
+	summary := make(map[string]model.CandleStatistic)
+	var cs1 model.CandleStatistic
+	var cs2 model.CandleStatistic
+	cs1.Number = 10
+	cs2.Number = 500
+	summary["test1"] = cs1
+	summary["test2"] = cs2
 	candleSummary.Summary = summary
 	summaries = append(summaries, candleSummary)
 	return summaries

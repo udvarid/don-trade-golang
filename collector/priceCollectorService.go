@@ -84,14 +84,14 @@ func CollectData(config *model.Configuration) {
 	}
 
 	// the old and unrelevant candles should be deleted
-	timeTwoYearsBefore := pureToday.AddDate(-2, 0, 0)
+	timeSomeYearsBefore := pureToday.AddDate(-3, 0, 0)
 	itemNamesWithItem := GetItemsFromItemMap(itemMap)
 	var itemNames []string
 	for itemName := range itemNamesWithItem {
 		itemNames = append(itemNames, itemName)
 	}
 	for _, candlePersisted := range candlesPersisted {
-		if shouldBeDeleted(&candlePersisted, itemNames, timeTwoYearsBefore) {
+		if shouldBeDeleted(&candlePersisted, itemNames, timeSomeYearsBefore) {
 			candleRepository.DeleteCandle(candlePersisted.ID)
 		}
 	}

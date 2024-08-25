@@ -139,3 +139,8 @@ type UserStatistic struct {
 	Assets       []AssetWithValue `json:"assets"`
 	Transactions []Transaction    `json:"transactions"`
 }
+
+type HistoryElement struct {
+	Date  time.Time          `json:"date"`
+	Items map[string]float64 `json:"items"`
+}

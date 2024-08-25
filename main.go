@@ -4,6 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"flag"
+	"fmt"
 
 	"github.com/udvarid/don-trade-golang/authenticator"
 	chart "github.com/udvarid/don-trade-golang/chartBuilder"
@@ -13,6 +14,7 @@ import (
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/repoUtil"
+	userService "github.com/udvarid/don-trade-golang/user"
 )
 
 var config = model.Configuration{}
@@ -46,6 +48,31 @@ func main() {
 	communicator.Init(&config)
 
 	authenticator.ClearOldSessions()
+
+	/*
+		donat, _ := userRepository.FindUser("udvarid@hotmail.com")
+		assets := donat.Assets
+		assets["USD"] = 900000
+		assets["NVDA"] = 1000
+
+		trs := donat.Transactions
+		var tr1 model.Transaction
+		tr1.Asset = "USD"
+		tr1.Date = trs[0].Date.AddDate(0, 0, 5)
+		tr1.Volume = -100000
+		var tr2 model.Transaction
+		tr2.Asset = "NVDA"
+		tr2.Date = trs[0].Date.AddDate(0, 0, 5)
+		tr2.Volume = 1000
+		trs = append(trs, tr1)
+		trs = append(trs, tr2)
+		donat.Transactions = trs
+		userRepository.UpdateUser(donat)*/
+
+	result := userService.GetUserHistory("udvarid@hotmail.com", 60)
+	for _, r := range result {
+		fmt.Println(r.Date, r.Items["USD"], r.Items["NVDA"])
+	}
 
 	controller.Init(&config)
 }

@@ -46,5 +46,12 @@ func Init() {
 		}
 		return nil
 	})
+	db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte("User"))
+		if err != nil {
+			return fmt.Errorf("create bucket: %s", err)
+		}
+		return nil
+	})
 	defer db.Close()
 }

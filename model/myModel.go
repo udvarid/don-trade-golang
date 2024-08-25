@@ -106,3 +106,36 @@ type SessionWithTime struct {
 	SessDate  time.Time
 	IsChecked bool
 }
+
+type UserConfig struct {
+	NotifyDaily         bool `json:"notify_daily"`
+	NotifyAtTransaction bool `json:"notify_at_transaction"`
+}
+
+type Transaction struct {
+	Asset  string    `json:"asset"`
+	Date   time.Time `json:"date"`
+	Volume float64   `json:"volume"`
+}
+
+type User struct {
+	ID           string             `json:"id"`
+	Name         string             `json:"name"`
+	Config       UserConfig         `json:"config"`
+	Assets       map[string]float64 `json:"assets"`
+	Transactions []Transaction      `json:"transactions"`
+}
+
+type AssetWithValue struct {
+	Item   string  `json:"item"`
+	Volume float64 `json:"volume"`
+	Price  float64 `json:"price"`
+	Value  float64 `json:"value"`
+}
+
+type UserStatistic struct {
+	ID           string           `json:"id"`
+	Name         string           `json:"name"`
+	Assets       []AssetWithValue `json:"assets"`
+	Transactions []Transaction    `json:"transactions"`
+}

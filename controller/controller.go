@@ -10,6 +10,8 @@ import (
 	"github.com/udvarid/don-trade-golang/authenticator"
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/repository/candleRepository"
+	userService "github.com/udvarid/don-trade-golang/user"
 )
 
 var (
@@ -26,6 +28,7 @@ func Init(config *model.Configuration) {
 
 	router.GET("/", startPage)
 	router.GET("/logout", logout)
+	router.GET("/user", user)
 	router.GET("/admin", admin)
 	router.GET("/reset_db", resetDb)
 	router.GET("/detailed/:item", detailedPage)
@@ -42,6 +45,22 @@ func logout(c *gin.Context) {
 	c.SetCookie("id", "", -1, "/", "localhost", false, true)
 	c.SetCookie("session", "", -1, "/", "localhost", false, true)
 	redirectTo(c, "/")
+}
+
+func user(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	userStatistic := userService.GetUser(getId(c))
+	candleSummary := candleRepository.GetAllCandleSummaries()[0]
+	c.HTML(http.StatusOK, "user.html", gin.H{
+		"title":         "user Page",
+		"name":          userStatistic.Name,
+		"assets":        userStatistic.Assets,
+		"transactions":  userStatistic.Transactions,
+		"candleSummary": candleSummary.Summary,
+	})
 }
 
 func admin(c *gin.Context) {

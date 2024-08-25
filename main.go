@@ -4,11 +4,9 @@ import (
 	"embed"
 	"encoding/json"
 	"flag"
-	"log"
-	"os"
-	"path/filepath"
 
 	"github.com/udvarid/don-trade-golang/authenticator"
+	chart "github.com/udvarid/don-trade-golang/chartBuilder"
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/communicator"
 	"github.com/udvarid/don-trade-golang/controller"
@@ -42,7 +40,7 @@ func main() {
 		candleRepository.UpdateCandleSummary(cs)
 	}
 
-	deleteHtml()
+	chart.DeleteHtml()
 
 	collector.CollectData(&config)
 	communicator.Init(&config)
@@ -50,23 +48,4 @@ func main() {
 	authenticator.ClearOldSessions()
 
 	controller.Init(&config)
-}
-
-func deleteHtml() {
-	folderPath := "./html"
-	filePattern := "kline-*.html"
-
-	fullPattern := filepath.Join(folderPath, filePattern)
-
-	files, err := filepath.Glob(fullPattern)
-	if err != nil {
-		log.Fatalf("Error finding files: %v", err)
-	}
-
-	for _, file := range files {
-		err := os.Remove(file)
-		if err != nil {
-			log.Printf("Error deleting file %s: %v", file, err)
-		}
-	}
 }

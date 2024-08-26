@@ -1,29 +1,19 @@
-	- Summary data and summary chart 
-
 	- Order (Direction (buy/sell) Type(limit/market), limit price, expiration date, Asset)
 	- Order Service -> Validate order
 	
-	- Belépéskor hozzon létre usert első alkalommal. Ilyenkor 1 millió $ áll rendelkezésre, ezzel lehet:
-		- limit áras adásvételt indítani kiválasztott típusra
-		- piaci áras adásvételt indítani kiválasztott típusra
-
 	- A megbízások mentődjenek el és új adatpont lementésekor hajtódjanak végre (ha lehet).
+
+	- a szám formázást megoldani vhogy (akár JS-ben)
 
 	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
 
 	- user settings page -> change name, delete user, change notification preferences
-	- at logout, user deletion the user chart should be deleted
-	
+		
 	- Nyitott megbízásokról lista
 
-	- Minden user-nél időpecsétes könyveléssel látszódjon, hogy melyik típus hogy változott ($, kereskedési típusok) és hogy ezáltal aznap miből mennyi készlete volt. Mindenhol unit tesztek
-
-	- Ügyfél vagyonának napi helyzetéről legyen chart, típus szerinti bontásban. SessionId alapján generálódjon a html.
-	
 	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)
 	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
 
-	- Fő oldal design: fejléc/leírás/click-here utalálsok chartokra
 	- Detailed oldal design: Leírás/link az egyes mutatókhoz
 
 	- Legyen lehetőség short ügyletekre is

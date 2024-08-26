@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/udvarid/don-trade-golang/authenticator"
+	chart "github.com/udvarid/don-trade-golang/chartBuilder"
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
@@ -22,7 +23,7 @@ func Init(config *model.Configuration) {
 	activeConfiguration = config
 	router := gin.Default()
 	router.LoadHTMLGlob("html/*")
-	// Serve static files from the "static" directory
+
 	router.Static("/static", "./static")
 	router.StaticFile("/favicon.ico", "./static/favicon.ico")
 
@@ -39,8 +40,9 @@ func Init(config *model.Configuration) {
 
 func logout(c *gin.Context) {
 	id_cookie, err := c.Cookie("id")
+	_, session := getId(c)
 	if err == nil {
-		authenticator.Logout(id_cookie)
+		authenticator.Logout(id_cookie, session)
 	}
 	c.SetCookie("id", "", -1, "/", "localhost", false, true)
 	c.SetCookie("session", "", -1, "/", "localhost", false, true)
@@ -52,20 +54,30 @@ func user(c *gin.Context) {
 	if !isLoggedIn {
 		redirectTo(c, "/")
 	}
-	userStatistic := userService.GetUser(getId(c))
+	userId, session := getId(c)
+	userStatistic := userService.GetUser(userId)
 	candleSummary := candleRepository.GetAllCandleSummaries()[0]
+
+	var pageBar HtmlWithInfo
+	html, _ := os.ReadFile("html/kline-" + session + ".html")
+	pageBar.Page = template.HTML(string(html))
+	pageBar.Name = "Portfolio"
+	pageBar.Description = "Detailed portfolio history for the user"
+
 	c.HTML(http.StatusOK, "user.html", gin.H{
 		"title":         "user Page",
 		"name":          userStatistic.Name,
 		"assets":        userStatistic.Assets,
 		"transactions":  userStatistic.Transactions,
 		"candleSummary": candleSummary.Summary,
+		"barChart":      pageBar,
 	})
 }
 
 func admin(c *gin.Context) {
 	isLoggedIn := isLoggedIn(c)
-	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == getId(c)
+	userId, _ := getId(c)
+	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == userId
 	if !isAdminUser {
 		redirectTo(c, "/")
 	}
@@ -76,7 +88,8 @@ func admin(c *gin.Context) {
 
 func resetDb(c *gin.Context) {
 	isLoggedIn := isLoggedIn(c)
-	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == getId(c)
+	userId, _ := getId(c)
+	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == userId
 	if !isAdminUser {
 		redirectTo(c, "/")
 	}
@@ -97,6 +110,7 @@ func validate(c *gin.Context) {
 	if isValidatedInTime {
 		c.SetCookie("id", getSession.Id, 3600, "/", activeConfiguration.RemoteAddress, false, true)
 		c.SetCookie("session", newSession, 3600, "/", activeConfiguration.RemoteAddress, false, true)
+		chart.BuildUserHistoryChart(userService.GetUserHistory(getSession.Id, 60), newSession)
 		redirectTo(c, "/")
 	}
 }
@@ -179,7 +193,8 @@ func startPage(c *gin.Context) {
 	}
 
 	isLoggedIn := isLoggedIn(c)
-	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == getId(c)
+	userId, _ := getId(c)
+	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == userId
 
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"title":          "Main Page",
@@ -193,9 +208,10 @@ func startPage(c *gin.Context) {
 
 }
 
-func getId(c *gin.Context) string {
+func getId(c *gin.Context) (string, string) {
 	id_cookie, _ := c.Cookie("id")
-	return id_cookie
+	session_cookie, _ := c.Cookie("session")
+	return id_cookie, session_cookie
 }
 
 func isLoggedIn(c *gin.Context) bool {

@@ -24,6 +24,40 @@ type klineData struct {
 	data [4]float32
 }
 
+func BuildUserHistoryChart(history []model.HistoryElement, session string) {
+	var date []string
+	assets := make(map[string]bool)
+	for _, element := range history {
+		date = append(date, element.Date.Format("2006/01/02"))
+		for item, value := range element.Items {
+			if math.Abs(value) > 0.00001 {
+				assets[item] = true
+			}
+		}
+	}
+	var allAssets [][]float64
+	var assetNames []string
+	for asset := range assets {
+		assetNames = append(assetNames, asset)
+		var assetValues []float64
+		for _, element := range history {
+			assetValues = append(assetValues, element.Items[asset]/1000)
+		}
+		allAssets = append(allAssets, assetValues)
+	}
+	bar := barChart(date, allAssets, assetNames)
+
+	page := components.NewPage()
+	page.AddCharts(bar)
+
+	f, err := os.Create("html/kline-" + session + ".html")
+	if err != nil {
+		panic(err)
+	}
+	page.Render(io.MultiWriter(f))
+	WaitUntilHtmlReady(session)
+}
+
 func BuildDetailedChart(candles []model.Candle) {
 	page := components.NewPage()
 	page2 := components.NewPage()
@@ -472,6 +506,31 @@ func macdLineMulti(macdPoints []model.Macd) *charts.Line {
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "green"}),
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
 	return line
+}
+
+func barChart(date []string, allAssets [][]float64, assets []string) *charts.Bar {
+	bar := charts.NewBar()
+	bar.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{
+			Title: "$ (thousands)",
+		}),
+	)
+	bar.SetXAxis(date)
+	for i, assetArray := range allAssets {
+		bar.AddSeries(assets[i], generateBarItems(assetArray)).
+			SetSeriesOptions(charts.WithBarChartOpts(opts.BarChart{
+				Stack: "stackA",
+			}))
+	}
+	return bar
+}
+
+func generateBarItems(values []float64) []opts.BarData {
+	items := make([]opts.BarData, 0)
+	for _, value := range values {
+		items = append(items, opts.BarData{Value: value})
+	}
+	return items
 }
 
 func rsiLine(rsiPoints []model.Rsi) *charts.Line {

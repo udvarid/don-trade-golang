@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"time"
 
+	chart "github.com/udvarid/don-trade-golang/chartBuilder"
 	"github.com/udvarid/don-trade-golang/communicator"
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/sessionRepository"
@@ -46,13 +47,15 @@ func IsValid(id string, session string) bool {
 	if diff.Minutes() > sessionTime {
 		delete(sessions, id)
 		sessionRepository.DeleteSession(id)
+		chart.DeleteSpecificHtml(session)
 		return false
 	}
 	return sessionInMap.Session == session
 }
 
-func Logout(id string) {
+func Logout(id string, session string) {
 	delete(sessions, id)
+	chart.DeleteSpecificHtml(session)
 	sessionRepository.DeleteSession(id)
 }
 

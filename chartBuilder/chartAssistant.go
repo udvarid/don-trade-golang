@@ -24,3 +24,20 @@ func DeleteHtml() {
 		}
 	}
 }
+
+func WaitUntilHtmlReady(sessionId string) {
+	filePath := "./html/kline-" + sessionId + ".html"
+	for {
+		if _, err := os.Stat(filePath); err == nil {
+			break
+		}
+	}
+}
+
+func DeleteSpecificHtml(sessionId string) {
+	filePath := "./html/kline-" + sessionId + ".html"
+	err := os.Remove(filePath)
+	if err != nil {
+		log.Printf("Error deleting file %s: %v", filePath, err)
+	}
+}

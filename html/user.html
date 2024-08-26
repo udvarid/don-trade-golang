@@ -6,6 +6,7 @@
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://unpkg.com/htmx.org@2.0.2"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">    
+    <link href="/static/styles.css" rel="stylesheet">
     <title>Dynamic Display</title>
 </head>
 <body class="bg-gray-100 p-4">
@@ -25,5 +26,49 @@
             </div>
           </div>
     </nav>  
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div id="Assets" class="p-4 bg-white rounded shadow">                        
+                <table class="min-w-full bg-blue-50">
+                    <thead>
+                        <tr>
+                            <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Item</th>
+                            <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Volume</th>
+                            <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Actual price</th>
+                            <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range .assets}}
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Item}}</td>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Volume}}</td>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Price}}</td>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Value}}</td>
+                        </tr>
+                        {{end}}
+                    </tbody>
+                </table>                
+        </div>
+        <div id="barChart" class="p-4 bg-white rounded shadow">
+            {{.barChart.Page}}
+        </div>
+        <div id="barChart" class="p-4 bg-white rounded shadow">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="Assets" class="p-4 bg-white rounded shadow">  
+                    transactions
+                </div>
+                <div id="Assets" class="p-4 bg-white rounded shadow">  
+                    profitability
+                </div>
+            </div>
+        </div>
+      </div>
+      <div id="Assets" class="p-4 bg-white rounded shadow">  
+            New orders
+       </div>
+       <div id="Assets" class="p-4 bg-white rounded shadow">  
+            Actual orders
+       </div>       
 </body>
 </html>

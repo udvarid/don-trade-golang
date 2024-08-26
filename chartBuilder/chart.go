@@ -512,7 +512,10 @@ func barChart(date []string, allAssets [][]float64, assets []string) *charts.Bar
 	bar := charts.NewBar()
 	bar.SetGlobalOptions(
 		charts.WithTitleOpts(opts.Title{
-			Title: "$ (thousands)",
+			Title: "",
+		}),
+		charts.WithYAxisOpts(opts.YAxis{
+			Name: "$K",
 		}),
 	)
 	bar.SetXAxis(date)

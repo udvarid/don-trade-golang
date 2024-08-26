@@ -1,15 +1,17 @@
+	- unit tesztek a userservice-s methodokra
+	
 	- Order (Direction (buy/sell) Type(limit/market), limit price, expiration date, Asset)
 	- Order Service -> Validate order
 	
 	- A megbízások mentődjenek el és új adatpont lementésekor hajtódjanak végre (ha lehet).
 
-	- a szám formázást megoldani vhogy (akár JS-ben)
+	- Nyitott megbízásokról lista
+
+	- userHistory chart-ra kattintva új oldal, ahol az elmúlt 1-2 év adatait - zoomolva - lehet látni
 
 	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
 
 	- user settings page -> change name, delete user, change notification preferences
-		
-	- Nyitott megbízásokról lista
 
 	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)
 	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)

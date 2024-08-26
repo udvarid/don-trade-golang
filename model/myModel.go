@@ -133,6 +133,13 @@ type AssetWithValue struct {
 	Value  float64 `json:"value"`
 }
 
+type AssetWithValueInString struct {
+	Item   string `json:"item"`
+	Volume string `json:"volume"`
+	Price  string `json:"price"`
+	Value  string `json:"value"`
+}
+
 type UserStatistic struct {
 	ID           string           `json:"id"`
 	Name         string           `json:"name"`

@@ -10,8 +10,8 @@ import (
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
 )
 
-func GetUser(id string) model.UserStatistic {
-	user, err := userRepository.FindUser(id)
+func createUserIfNotExists(id string) {
+	_, err := userRepository.FindUser(id)
 	if err != nil {
 		var newUser model.User
 		newUser.ID = id
@@ -20,8 +20,11 @@ func GetUser(id string) model.UserStatistic {
 		newUser.Transactions = getInitTransactions()
 		newUser.Assets = getInitAssets()
 		userRepository.AddUser(newUser)
-		user = newUser
 	}
+}
+
+func GetUser(id string) model.UserStatistic {
+	user, _ := userRepository.FindUser(id)
 
 	var userStatistic model.UserStatistic
 	userStatistic.ID = user.ID
@@ -37,6 +40,7 @@ func GetUser(id string) model.UserStatistic {
 }
 
 func GetUserHistory(id string, days int) []model.HistoryElement {
+	createUserIfNotExists(id)
 	var result []model.HistoryElement
 	candles := candleRepository.GetAllCandles()
 	items := collector.GetItemsFromItemMap(collector.GetItems())

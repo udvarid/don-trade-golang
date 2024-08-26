@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 	"net/url"
@@ -13,6 +14,8 @@ import (
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	userService "github.com/udvarid/don-trade-golang/user"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 var (
@@ -67,7 +70,7 @@ func user(c *gin.Context) {
 	c.HTML(http.StatusOK, "user.html", gin.H{
 		"title":         "user Page",
 		"name":          userStatistic.Name,
-		"assets":        userStatistic.Assets,
+		"assets":        transformUserAssetToString(userStatistic.Assets),
 		"transactions":  userStatistic.Transactions,
 		"candleSummary": candleSummary.Summary,
 		"barChart":      pageBar,
@@ -110,8 +113,7 @@ func validate(c *gin.Context) {
 	if isValidatedInTime {
 		c.SetCookie("id", getSession.Id, 3600, "/", activeConfiguration.RemoteAddress, false, true)
 		c.SetCookie("session", newSession, 3600, "/", activeConfiguration.RemoteAddress, false, true)
-		userService.GetUser(getSession.Id)
-		chart.BuildUserHistoryChart(userService.GetUserHistory(getSession.Id, 60), newSession)
+		chart.BuildUserHistoryChart(userService.GetUserHistory(getSession.Id, 30), newSession)
 		redirectTo(c, "/")
 	}
 }
@@ -209,6 +211,13 @@ func startPage(c *gin.Context) {
 
 }
 
+func checkInTask(c *gin.Context) {
+	authenticator.CheckIn(c.Param("id"), c.Param("session"))
+	c.HTML(http.StatusOK, "logged_in.html", gin.H{
+		"title": "Logged in Page",
+	})
+}
+
 func getId(c *gin.Context) (string, string) {
 	id_cookie, _ := c.Cookie("id")
 	session_cookie, _ := c.Cookie("session")
@@ -236,11 +245,18 @@ func redirectTo(c *gin.Context, path string) {
 	c.Redirect(http.StatusFound, location.RequestURI())
 }
 
-func checkInTask(c *gin.Context) {
-	authenticator.CheckIn(c.Param("id"), c.Param("session"))
-	c.HTML(http.StatusOK, "logged_in.html", gin.H{
-		"title": "Logged in Page",
-	})
+func transformUserAssetToString(assets []model.AssetWithValue) []model.AssetWithValueInString {
+	var result []model.AssetWithValueInString
+	p := message.NewPrinter(language.Hungarian)
+	for _, asset := range assets {
+		var newAsset model.AssetWithValueInString
+		newAsset.Item = asset.Item
+		newAsset.Volume = p.Sprintf("%d", int(asset.Volume))
+		newAsset.Price = fmt.Sprintf("%.1f", asset.Price)
+		newAsset.Value = p.Sprintf("%d", int(asset.Value))
+		result = append(result, newAsset)
+	}
+	return result
 }
 
 type HtmlWithInfo struct {

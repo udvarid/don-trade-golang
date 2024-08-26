@@ -110,6 +110,7 @@ func validate(c *gin.Context) {
 	if isValidatedInTime {
 		c.SetCookie("id", getSession.Id, 3600, "/", activeConfiguration.RemoteAddress, false, true)
 		c.SetCookie("session", newSession, 3600, "/", activeConfiguration.RemoteAddress, false, true)
+		userService.GetUser(getSession.Id)
 		chart.BuildUserHistoryChart(userService.GetUserHistory(getSession.Id, 60), newSession)
 		redirectTo(c, "/")
 	}

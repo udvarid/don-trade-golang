@@ -70,7 +70,8 @@ func user(c *gin.Context) {
 	c.HTML(http.StatusOK, "user.html", gin.H{
 		"title":         "user Page",
 		"name":          userStatistic.Name,
-		"assets":        transformUserAssetToString(userStatistic.Assets),
+		"assets":        transformUserAssetToString(userStatistic.Assets[:len(userStatistic.Assets)-1]),
+		"totalAssets":   transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-1:])[0],
 		"transactions":  userStatistic.Transactions,
 		"candleSummary": candleSummary.Summary,
 		"barChart":      pageBar,

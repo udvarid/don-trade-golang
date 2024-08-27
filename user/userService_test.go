@@ -29,6 +29,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 			},
 			expectedResult: []model.AssetWithValue{
 				{Item: "BTC", Volume: 2.0, Price: 50000.0, Value: 100000.0},
+				{Item: "Total", Value: 100000.0},
 			},
 		},
 		{
@@ -49,6 +50,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 			expectedResult: []model.AssetWithValue{
 				{Item: "BTC", Volume: 1.0, Price: 50000.0, Value: 50000.0},
 				{Item: "ETH", Volume: 5.0, Price: 2000.0, Value: 10000.0},
+				{Item: "Total", Value: 60000.0},
 			},
 		},
 		{
@@ -60,7 +62,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 				Summary:   map[string]model.CandleStatistic{},
 				Persisted: []string{},
 			},
-			expectedResult: []model.AssetWithValue{},
+			expectedResult: []model.AssetWithValue{{Item: "Total", Value: 0.0}},
 		},
 	}
 

@@ -54,7 +54,7 @@ func main() {
 		donat.Name = "Udvari Donát"
 		donat.Config = model.UserConfig{NotifyDaily: true, NotifyAtTransaction: true}
 		assets := make(map[string]float64)
-		assets["USD"] = 900000
+		assets["USD"] = 750000
 		assets["NVDA"] = 1000
 		assets["AMZN"] = 1000
 		donat.Assets = assets

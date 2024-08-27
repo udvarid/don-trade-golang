@@ -200,12 +200,14 @@ func getFirstDate(candles []model.Candle, itemNames []string) time.Time {
 
 func getAssetsWithValue(assets map[string]float64, candleSummary model.CandleSummary) []model.AssetWithValue {
 	var result []model.AssetWithValue
+	totalValue := 0.0
 	for asset, volume := range assets {
 		price := 1.0
 		if asset != "USD" {
 			price = candleSummary.Summary[asset].LastPrice
 		}
 		value := price * volume
+		totalValue += value
 		result = append(result, model.AssetWithValue{
 			Item:   asset,
 			Volume: volume,
@@ -213,6 +215,10 @@ func getAssetsWithValue(assets map[string]float64, candleSummary model.CandleSum
 			Value:  value,
 		})
 	}
+	result = append(result, model.AssetWithValue{
+		Item:  "Total",
+		Value: totalValue,
+	})
 	return result
 }
 

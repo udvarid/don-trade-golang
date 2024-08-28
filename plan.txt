@@ -1,4 +1,6 @@
 	- unit tesztek a userservice-s methodokra
+
+	- validáljuk a mutatókat valós adatokkal vhogy
 	
 	- Order (Direction (buy/sell) Type(limit/market), limit price, expiration date, Asset)
 	- Order Service -> Validate order
@@ -6,8 +8,6 @@
 	- A megbízások mentődjenek el és új adatpont lementésekor hajtódjanak végre (ha lehet).
 
 	- Nyitott megbízásokról lista
-
-	- userHistory chart-ra kattintva új oldal, ahol az elmúlt 1-2 év adatait - zoomolva - lehet látni
 
 	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
 
@@ -18,10 +18,24 @@
 
 	- Detailed oldal design: Leírás/link az egyes mutatókhoz
 
-	- Legyen lehetőség short ügyletekre is
+	- Fő oldal, néhány bullshittel
+
+	- külön oldal a bot-okról
+
+	- külön oldal, a user összehasonlításról (profitabilitás)
+
+	- Legyen lehetőség short ügyletekre is, ezt hitellel
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short)
 	- Automatikus/állandó eladási/vételi utasítások megadása generálisan ill. adott típusra (pl. X napos mozgó átlag magasabb, Y naposnál, vétel). Ennél külön SubUser-eket indítsunk (robotokat), melyekhez induló pénzt lehet allokálni. Legyen lehetőség a pénz összeg átcsoportosítására
 	- Limit megadása automatikus műveleteknél (pl. short is, tőkeáttét is, őssz portfóli max x%-a)
+
+	- user táblánál extra feature:
+		- táblázatban az adott assetre kattintva asset chart kerül be a chart helyére, jelölve a vétel és eladás pontokat
+		- táblázatban a 'Total' ra kattinva a portfóli chart kerül be
+		- chart-okra kattintva hosszabb időtáv (1 v 2 év teljes kép)
+	
+	- profitibalityről külön oldal, ahol total, heti/havi profitability legyen és külön legy a botokról is
+
 
 
 Usefull:

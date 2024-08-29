@@ -1,6 +1,4 @@
-	- unit tesztek a userservice-s methodokra
-
-	- validáljuk a mutatókat valós adatokkal vhogy
+	- ADX mutató nem jó, átnézni, újra implementálni
 	
 	- Order (Direction (buy/sell) Type(limit/market), limit price, expiration date, Asset)
 	- Order Service -> Validate order

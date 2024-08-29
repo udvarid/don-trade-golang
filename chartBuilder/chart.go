@@ -71,14 +71,16 @@ func BuildDetailedChart(candles []model.Candle) {
 	longPeriod := 26
 	signalPeriod := 9
 
-	mediumPeriod := 19
+	vwapShortPeriod := 10
+	vwapMediumPeriod := 25
+	vwapLongPeriod := 50
 
 	macd := calculator.CalculateMACD(candles, shortPeriod, longPeriod, signalPeriod)
-	sma := calculator.CalculateSmaLines(candles, shortPeriod, mediumPeriod, longPeriod)
+	sma := calculator.CalculateSmaLines(candles, vwapShortPeriod, vwapMediumPeriod, vwapLongPeriod)
+	vwap := calculator.CalculateVwapLines(candles, vwapShortPeriod, vwapMediumPeriod, vwapLongPeriod)
 
 	rsi := calculator.CalculateRSI(candles, 14)
 	obv := calculator.CalculateOBV(candles)
-	adx := calculator.CalculateADX(candles, 14)
 
 	var kd []klineData
 	for _, candle := range candles {
@@ -93,13 +95,13 @@ func BuildDetailedChart(candles []model.Candle) {
 	detailedChart.Overlap(boilingerChart)
 	detailedChart.Overlap(trendLineChart)
 	macdChart := macdLineMulti(macd)
-	smaChart := maLineMulti(sma, candles[len(candles)-len(sma):])
+	smaChart := maLineMulti(sma)
+	vwapChart := vwapLineMulti(vwap, candles[len(candles)-len(vwap):])
 
 	rsiChart := rsiLine(rsi)
 	obvChart := obvLine(obv)
-	adxChart := adxLineMulti(adx)
 
-	page.AddCharts(detailedChart, macdChart, obvChart)
+	page.AddCharts(detailedChart, macdChart, rsiChart)
 
 	f, err := os.Create("html/kline-detailed-" + candles[0].Item + ".html")
 	if err != nil {
@@ -108,7 +110,7 @@ func BuildDetailedChart(candles []model.Candle) {
 	}
 	page.Render(io.MultiWriter(f))
 
-	page2.AddCharts(smaChart, rsiChart, adxChart)
+	page2.AddCharts(vwapChart, smaChart, obvChart)
 
 	f2, err2 := os.Create("html/kline-detailed2-" + candles[0].Item + ".html")
 	if err2 != nil {
@@ -313,7 +315,56 @@ func boilingerLineMulti(boilingerBands []model.BollingerBand) *charts.Line {
 	return line
 }
 
-func maLineMulti(maPoints []model.Ma, candles []model.Candle) *charts.Line {
+func maLineMulti(maPoints []model.Ma) *charts.Line {
+	line := charts.NewLine()
+	var longLine []float64
+	var mediumLine []float64
+	var shortLine []float64
+	var date []string
+	for _, ma := range maPoints {
+		longLine = append(longLine, ma.MaLong)
+		mediumLine = append(mediumLine, ma.MaMedium)
+		shortLine = append(shortLine, ma.MaShort)
+		date = append(date, ma.Date.Format("2006/01/02"))
+	}
+
+	line.SetGlobalOptions(
+		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
+		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Type:       "inside",
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+		charts.WithDataZoomOpts(opts.DataZoom{
+			Start:      75,
+			End:        100,
+			XAxisIndex: []int{0},
+		}),
+	)
+
+	line.ExtendYAxis(opts.YAxis{
+		Type:  "value",
+		Show:  opts.Bool(true),
+		Scale: opts.Bool(true),
+	})
+
+	line.SetXAxis(date[rollOut():]).
+		AddSeries("Sma long", generateLineItems(longLine[rollOut():]),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("Sma medium", generateLineItems(mediumLine[rollOut():]),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "green"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
+		AddSeries("Sma short", generateLineItems(shortLine[rollOut():]),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "orange"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
+
+	return line
+}
+
+func vwapLineMulti(maPoints []model.Ma, candles []model.Candle) *charts.Line {
 	line := charts.NewLine()
 	var longLine []float64
 	var mediumLine []float64
@@ -351,13 +402,13 @@ func maLineMulti(maPoints []model.Ma, candles []model.Candle) *charts.Line {
 	})
 
 	line.SetXAxis(date[rollOut():]).
-		AddSeries("Sma long", generateLineItems(longLine[rollOut():]),
+		AddSeries("VWAP long", generateLineItems(longLine[rollOut():]),
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
-		AddSeries("Sma medium", generateLineItems(mediumLine[rollOut():]),
+		AddSeries("VWAP medium", generateLineItems(mediumLine[rollOut():]),
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "green"}),
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
-		AddSeries("Sma short", generateLineItems(shortLine[rollOut():]),
+		AddSeries("VWAP short", generateLineItems(shortLine[rollOut():]),
 			charts.WithLineStyleOpts(opts.LineStyle{Color: "orange"}),
 			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
 		AddSeries("Vol.bil.", generateLineItems(volume[rollOut():]),
@@ -367,58 +418,6 @@ func maLineMulti(maPoints []model.Ma, candles []model.Candle) *charts.Line {
 				Opacity: 0.2,
 			}))
 
-	return line
-}
-
-func adxLineMulti(adxPoints []model.Adx) *charts.Line {
-	line := charts.NewLine()
-	var adxLine []float64
-	var pdiLine []float64
-	var mdiLine []float64
-	var strongTrendLine []float64
-	var veryStrongTrendLine []float64
-	var date []string
-	for _, adx := range adxPoints {
-		adxLine = append(adxLine, adx.ADX)
-		pdiLine = append(pdiLine, adx.PDI)
-		mdiLine = append(mdiLine, adx.MDI)
-		strongTrendLine = append(strongTrendLine, 25)
-		veryStrongTrendLine = append(veryStrongTrendLine, 50)
-		date = append(date, adx.Date.Format("2006/01/02"))
-	}
-
-	line.SetGlobalOptions(
-		charts.WithXAxisOpts(opts.XAxis{SplitNumber: 20}),
-		charts.WithYAxisOpts(opts.YAxis{Scale: opts.Bool(true)}),
-		charts.WithDataZoomOpts(opts.DataZoom{
-			Type:       "inside",
-			Start:      75,
-			End:        100,
-			XAxisIndex: []int{0},
-		}),
-		charts.WithDataZoomOpts(opts.DataZoom{
-			Start:      75,
-			End:        100,
-			XAxisIndex: []int{0},
-		}),
-	)
-
-	line.SetXAxis(date[rollOut():]).
-		AddSeries("ADX", generateLineItems(adxLine[rollOut():]),
-			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
-			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
-		AddSeries("", generateLineItems(strongTrendLine[rollOut():]),
-			charts.WithLineStyleOpts(opts.LineStyle{Color: "lightred", Width: 1.5}),
-			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
-		AddSeries("", generateLineItems(veryStrongTrendLine[rollOut():]),
-			charts.WithLineStyleOpts(opts.LineStyle{Color: "red", Width: 1.5}),
-			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
-		AddSeries("+DMI", generateLineItems(pdiLine[rollOut():]),
-			charts.WithLineStyleOpts(opts.LineStyle{Color: "green", Type: "dotted", Opacity: 0.5}),
-			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)})).
-		AddSeries("-DMI", generateLineItems(mdiLine[rollOut():]),
-			charts.WithLineStyleOpts(opts.LineStyle{Color: "orange", Type: "dotted", Opacity: 0.5}),
-			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true), Symbol: "diamond", ShowSymbol: opts.Bool(false)}))
 	return line
 }
 

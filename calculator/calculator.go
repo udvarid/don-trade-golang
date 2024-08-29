@@ -21,61 +21,33 @@ func CalculateSMA(prices []float64, period int) []float64 {
 	return sma
 }
 
-func CalculateADX(candles []model.Candle, period int) []model.Adx {
+func CalculateVwap(candles []model.Candle, period int) []float64 {
+	var vwap []float64
+
 	if len(candles) < period {
-		return []model.Adx{} // Not enough data to calculate ADX
+		return vwap
 	}
 
-	plusDM := make([]float64, len(candles))
-	minusDM := make([]float64, len(candles))
-	tr := make([]float64, len(candles))
+	for i := 0; i <= len(candles)-period; i++ {
+		var cumulativePriceVolume float64
+		var cumulativeVolume float64
 
-	for i := 1; i < len(candles); i++ {
-		highDiff := candles[i].High - candles[i-1].High
-		lowDiff := candles[i-1].Low - candles[i].Low
-
-		if highDiff > lowDiff && highDiff > 0 {
-			plusDM[i] = highDiff
-		} else {
-			plusDM[i] = 0
+		for j := i; j < i+period; j++ {
+			typicalPrice := (candles[j].High + candles[j].Low + candles[j].Close) / 3.0
+			priceVolume := typicalPrice * candles[j].Volume
+			cumulativePriceVolume += priceVolume
+			cumulativeVolume += candles[j].Volume
 		}
 
-		if lowDiff > highDiff && lowDiff > 0 {
-			minusDM[i] = lowDiff
-		} else {
-			minusDM[i] = 0
+		divisor := cumulativeVolume
+		if divisor == 0 {
+			divisor = 1
 		}
-
-		tr[i] = math.Max(candles[i].High-candles[i].Low, math.Max(math.Abs(candles[i].High-candles[i-1].Close), math.Abs(candles[i].Low-candles[i-1].Close)))
+		vwapValue := cumulativePriceVolume / divisor
+		vwap = append(vwap, vwapValue)
 	}
 
-	plusDI := CalculateEMA(plusDM, tr, period)
-	minusDI := CalculateEMA(minusDM, tr, period)
-
-	dx := make([]float64, len(plusDI)-period)
-	div := 1.0
-	for i := range dx {
-		div = plusDI[i+period] + minusDI[i+period]
-		if div == 0 {
-			div = plusDI[i+period-1] + minusDI[i+period-1]
-		}
-		dx[i] = 100 * math.Abs(plusDI[i+period]-minusDI[i+period]) / div
-	}
-
-	adx := CalculateEMA(dx, nil, period)
-
-	adxDtos := make([]model.Adx, len(adx))
-	for i := range adxDtos {
-		adxDtos[i] = model.Adx{
-			Item: candles[i+len(candles)-len(adx)].Item,
-			Date: candles[i+len(candles)-len(adx)].Date,
-			ADX:  adx[i],
-			PDI:  plusDI[i+period],
-			MDI:  minusDI[i+period],
-		}
-	}
-
-	return adxDtos
+	return vwap
 }
 
 func CalculateEMA(prices []float64, tr []float64, period int) []float64 {
@@ -272,6 +244,25 @@ func CalculateSmaLines(candles []model.Candle, shortPeriod int, mediumPeriod int
 	}
 
 	return maDtos
+}
+
+func CalculateVwapLines(candles []model.Candle, shortPeriod int, mediumPeriod int, longPeriod int) []model.Ma {
+	shortVwap := CalculateVwap(candles, shortPeriod)
+	mediumVwap := CalculateVwap(candles, mediumPeriod)
+	longVwap := CalculateVwap(candles, longPeriod)
+
+	vwapDtos := make([]model.Ma, len(longVwap))
+	for i := range vwapDtos {
+		vwapDtos[i] = model.Ma{
+			Item:     candles[i+longPeriod-1].Item,
+			Date:     candles[i+longPeriod-1].Date,
+			MaShort:  shortVwap[i+longPeriod-shortPeriod],
+			MaMedium: mediumVwap[i+longPeriod-mediumPeriod],
+			MaLong:   longVwap[i],
+		}
+	}
+
+	return vwapDtos
 }
 
 func CalculateTrend(data []float64) (slope, intercept, rSquared float64) {

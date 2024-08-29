@@ -63,14 +63,6 @@ type Obv struct {
 	Obv  float64   `json:"obv"`
 }
 
-type Adx struct {
-	Item string    `json:"item"`
-	Date time.Time `json:"date"`
-	ADX  float64   `json:"adx"`
-	PDI  float64   `json:"pdi"`
-	MDI  float64   `json:"mdi"`
-}
-
 type Candle struct {
 	ID     int       `json:"id"`
 	Item   string    `json:"item"`

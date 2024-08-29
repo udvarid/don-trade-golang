@@ -374,6 +374,61 @@ func TestCalculateTrend(t *testing.T) {
 	}
 }
 
+func TestCalculateVwap(t *testing.T) {
+	// Define test cases
+	tests := []struct {
+		name     string
+		candles  []model.Candle
+		period   int
+		expected []float64
+	}{
+		{
+			name: "Basic case",
+			candles: []model.Candle{
+				{Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), High: 110, Low: 90, Close: 100, Volume: 1000},
+				{Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), High: 120, Low: 100, Close: 110, Volume: 1500},
+				{Date: time.Date(2023, 10, 3, 0, 0, 0, 0, time.UTC), High: 130, Low: 110, Close: 120, Volume: 2000},
+				{Date: time.Date(2023, 10, 4, 0, 0, 0, 0, time.UTC), High: 140, Low: 120, Close: 130, Volume: 2500},
+			},
+			period: 2,
+			expected: []float64{
+				106.0,
+				115.7142,
+				125.55550,
+			},
+		},
+		{
+			name: "Period greater than candles length",
+			candles: []model.Candle{
+				{Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), High: 110, Low: 90, Close: 100, Volume: 1000},
+			},
+			period:   2,
+			expected: []float64{},
+		},
+		{
+			name: "Zero volume",
+			candles: []model.Candle{
+				{Date: time.Date(2023, 10, 1, 0, 0, 0, 0, time.UTC), High: 110, Low: 90, Close: 100, Volume: 0},
+				{Date: time.Date(2023, 10, 2, 0, 0, 0, 0, time.UTC), High: 120, Low: 100, Close: 110, Volume: 0},
+			},
+			period:   2,
+			expected: []float64{0.0},
+		},
+	}
+
+	// Run test cases
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := CalculateVwap(tt.candles, tt.period)
+			for i, v := range result {
+				if math.Abs(v-tt.expected[i]) > 1e-4 {
+					t.Errorf("got %v, want %v", v, tt.expected[i])
+				}
+			}
+		})
+	}
+}
+
 func createCandle(item string, date string, close float64) model.Candle {
 	parsedDate, _ := time.Parse("2006-01-02", date)
 	return model.Candle{

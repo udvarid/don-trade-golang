@@ -2,7 +2,9 @@ package user
 
 import (
 	"errors"
+	"fmt"
 	"log"
+	"math"
 	"slices"
 	"time"
 
@@ -41,21 +43,57 @@ func GetUser(id string) model.UserStatistic {
 	return userStatistic
 }
 
-func GetUserHistory(id string, days int) []model.HistoryElement {
-	createUserIfNotExists(id)
-	var result []model.HistoryElement
+func GetPriceChanges() []model.PriceChanges {
+	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+	priceHistory := createPriceHistory(pureToday)
+	items := collector.GetItemsFromItemMap(collector.GetItems())
+	itemsBaseDate := make(map[time.Time]map[string]float64)
+	for _, historyElement := range priceHistory {
+		itemsBaseDate[historyElement.Date] = historyElement.Items
+	}
+	itemsForToday := itemsBaseDate[pureToday]
+	itemsForYesterday := itemsBaseDate[pureToday.AddDate(0, 0, -1)]
+	itemsForWeekAgo := itemsBaseDate[pureToday.AddDate(0, 0, -7)]
+	var changes []model.PriceChanges
+	for _, item := range items {
+		var change model.PriceChanges
+		change.Item = item.Description
+		dailyChange := math.Round((itemsForToday[item.Name]/itemsForYesterday[item.Name]-1)*1000) / 10
+		dailyChangeStr := fmt.Sprintf("%.1f", dailyChange)
+		if dailyChange > 0.0 {
+			dailyChangeStr = "+" + dailyChangeStr
+		}
+		weeklyChange := math.Round((itemsForToday[item.Name]/itemsForWeekAgo[item.Name]-1)*1000) / 10
+		weeklyChangeStr := fmt.Sprintf("%.1f", weeklyChange)
+		if weeklyChange > 0.0 {
+			weeklyChangeStr = "+" + weeklyChangeStr
+		}
+		change.Change = dailyChangeStr + "%/" + weeklyChangeStr + "%"
+		changes = append(changes, change)
+	}
+	return changes
+}
+
+func createPriceHistory(pureToday time.Time) []model.HistoryElement {
 	candles := candleRepository.GetAllCandles()
 	items := collector.GetItemsFromItemMap(collector.GetItems())
 	var itemNames []string
 	for item := range items {
 		itemNames = append(itemNames, item)
 	}
-	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	firstDate, err := getFirstDate(candles, itemNames, pureToday)
 	if err != nil {
 		log.Default().Println("Error getting first date")
 	}
-	priceHistory := getPriceHistory(candles, itemNames, firstDate, pureToday)
+
+	return getPriceHistory(candles, itemNames, firstDate, pureToday)
+}
+
+func GetUserHistory(id string, days int) []model.HistoryElement {
+	createUserIfNotExists(id)
+	var result []model.HistoryElement
+	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+	priceHistory := createPriceHistory(pureToday)
 	user, _ := userRepository.FindUser(id)
 	transactions := user.Transactions
 	periodStart := pureToday.AddDate(0, 0, -days)

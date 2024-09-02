@@ -44,5 +44,5 @@
     100% { transform: translateX(-100%); }
 }
 .moving-band {
-    animation: moveBand 10s linear infinite;
+    animation: moveBand 30s linear infinite;
 }

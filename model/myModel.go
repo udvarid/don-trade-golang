@@ -149,3 +149,8 @@ type HistoryElement struct {
 	Date  time.Time          `json:"date"`
 	Items map[string]float64 `json:"items"`
 }
+
+type PriceChanges struct {
+	Item   string `json:"item"`
+	Change string `json:"daily"`
+}

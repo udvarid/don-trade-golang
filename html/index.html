@@ -45,10 +45,9 @@
 
     <div class="relative overflow-hidden h-12 bg-blue-500 text-white">
         <div class="absolute whitespace-nowrap moving-band">
-            <span class="px-4">Daily Change: +2.5%</span>
-            <span class="px-4">Weekly Change: +5.1%</span>
-            <span class="px-4">Monthly Change: +10.3%</span>
-            <!-- Add more items as needed -->
+            {{ range .priceChanges}}
+                <span class="px-4">{{.Item}} (d/w) {{.Change}}</span>
+            {{end}}
         </div>
     </div>
 

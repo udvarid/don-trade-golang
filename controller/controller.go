@@ -200,6 +200,8 @@ func startPage(c *gin.Context) {
 	userId, _ := getId(c)
 	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == userId
 
+	priceChanges := userService.GetPriceChanges()
+
 	c.HTML(http.StatusOK, "index.html", gin.H{
 		"title":          "Main Page",
 		"isLoggedIn":     isLoggedIn,
@@ -208,6 +210,7 @@ func startPage(c *gin.Context) {
 		"fxPages":        fxPages,
 		"commodityPages": commodityPages,
 		"cryptoPages":    cryptoPages,
+		"priceChanges":   priceChanges,
 	})
 
 }

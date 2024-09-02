@@ -13,37 +13,37 @@ func GetItems() map[string][]model.Item {
 
 func getFxs() []model.Item {
 	var fxs []model.Item
-	fxs = append(fxs, createItem("EURUSD", "EUR-USD fx quote"))
-	fxs = append(fxs, createItem("GBPUSD", "GBP-USD fx quote"))
-	fxs = append(fxs, createItem("CHFUSD", "CHF-USD fx quote"))
-	fxs = append(fxs, createItem("HUFUSD", "HUF-USD fx quote"))
+	fxs = append(fxs, createItem("EURUSD", "EUR"))
+	fxs = append(fxs, createItem("GBPUSD", "GBP"))
+	fxs = append(fxs, createItem("CHFUSD", "CHF"))
+	fxs = append(fxs, createItem("HUFUSD", "HUF"))
 	return fxs
 }
 
 func getStocks() []model.Item {
 	var stocks []model.Item
-	stocks = append(stocks, createItem("NVDA", "Nvidia stock price"))
-	stocks = append(stocks, createItem("AMZN", "Amazon stock price"))
-	stocks = append(stocks, createItem("TSLA", "Tesla stock price"))
-	stocks = append(stocks, createItem("OTP.BD", "OTP stock price"))
+	stocks = append(stocks, createItem("NVDA", "Nvidia"))
+	stocks = append(stocks, createItem("AMZN", "Amazon"))
+	stocks = append(stocks, createItem("TSLA", "Tesla"))
+	stocks = append(stocks, createItem("OTP.BD", "OTP"))
 	return stocks
 }
 
 func getCommodities() []model.Item {
 	var commodities []model.Item
-	commodities = append(commodities, createItem("CLUSD", "Crude Oil-USD price"))
-	commodities = append(commodities, createItem("KCUSX", "Coffee-USD price"))
-	commodities = append(commodities, createItem("GCUSD", "Gold-USD price"))
-	commodities = append(commodities, createItem("SBUSX", "Sugar-USD price"))
+	commodities = append(commodities, createItem("CLUSD", "Crude Oil"))
+	commodities = append(commodities, createItem("KCUSX", "Coffee"))
+	commodities = append(commodities, createItem("GCUSD", "Gold"))
+	commodities = append(commodities, createItem("SBUSX", "Sugar"))
 	return commodities
 }
 
 func getCryptos() []model.Item {
 	var cryptos []model.Item
-	cryptos = append(cryptos, createItem("BTCUSD", "Bitcoin-USD price"))
-	cryptos = append(cryptos, createItem("ETHUSD", "Ethereum-USD price"))
-	cryptos = append(cryptos, createItem("BNBUSD", "Binance-USD price"))
-	cryptos = append(cryptos, createItem("SOLUSD", "Solana-USD price"))
+	cryptos = append(cryptos, createItem("BTCUSD", "Bitcoin"))
+	cryptos = append(cryptos, createItem("ETHUSD", "Ethereum"))
+	cryptos = append(cryptos, createItem("BNBUSD", "Binance"))
+	cryptos = append(cryptos, createItem("SOLUSD", "Solana"))
 	return cryptos
 }
 

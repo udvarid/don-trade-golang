@@ -1,5 +1,3 @@
-	- Main pagen egy felső mozgo sávban a napi/heti változást mutassuk típusonként
-
 	- Order (Direction (buy/sell) Type(limit/market), limit price, expiration date, Asset, number of shares, amount of usd, all shares (in case of sell))	
 	- Felületen nyitott orderek mutatása, delete lehetőséggel
 	

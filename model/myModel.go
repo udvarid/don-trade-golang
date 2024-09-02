@@ -110,6 +110,12 @@ type Transaction struct {
 	Volume float64   `json:"volume"`
 }
 
+type TransactionWitString struct {
+	Asset  string `json:"asset"`
+	Date   string `json:"date"`
+	Volume string `json:"volume"`
+}
+
 type User struct {
 	ID           string             `json:"id"`
 	Name         string             `json:"name"`

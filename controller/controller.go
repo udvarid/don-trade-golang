@@ -72,7 +72,7 @@ func user(c *gin.Context) {
 		"name":          userStatistic.Name,
 		"assets":        transformUserAssetToString(userStatistic.Assets[:len(userStatistic.Assets)-1]),
 		"totalAssets":   transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-1:])[0],
-		"transactions":  userStatistic.Transactions,
+		"transactions":  transformTransactionToString(userStatistic.Transactions),
 		"candleSummary": candleSummary.Summary,
 		"barChart":      pageBar,
 	})
@@ -244,6 +244,22 @@ func isLoggedIn(c *gin.Context) bool {
 func redirectTo(c *gin.Context, path string) {
 	location := url.URL{Path: path}
 	c.Redirect(http.StatusFound, location.RequestURI())
+}
+
+func transformTransactionToString(transactions []model.Transaction) []model.TransactionWitString {
+	var result []model.TransactionWitString
+	p := message.NewPrinter(language.Hungarian)
+	for _, tr := range transactions {
+		var trWithStr model.TransactionWitString
+		trWithStr.Asset = tr.Asset
+		trWithStr.Date = tr.Date.Format("06-01-02")
+		trWithStr.Volume = p.Sprintf("%d", int(tr.Volume))
+		if tr.Volume > 0 {
+			trWithStr.Volume = "+" + trWithStr.Volume
+		}
+		result = append(result, trWithStr)
+	}
+	return result
 }
 
 func transformUserAssetToString(assets []model.AssetWithValue) []model.AssetWithValueInString {

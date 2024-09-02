@@ -34,3 +34,15 @@
 .text-smaller {
     font-size: 0.8rem; /* Example: 14px */
 }
+
+.text-xl-smaller {
+    font-size: 0.6rem; /* Example: 14px */
+}
+
+@keyframes moveBand {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+.moving-band {
+    animation: moveBand 10s linear infinite;
+}

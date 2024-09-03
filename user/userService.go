@@ -51,11 +51,13 @@ func GetPriceChanges() []model.PriceChanges {
 	for _, historyElement := range priceHistory {
 		itemsBaseDate[historyElement.Date] = historyElement.Items
 	}
-	itemsForToday := itemsBaseDate[pureToday]
-	itemsForYesterday := itemsBaseDate[pureToday.AddDate(0, 0, -1)]
-	itemsForWeekAgo := itemsBaseDate[pureToday.AddDate(0, 0, -7)]
+	candleSummaries := candleRepository.GetAllCandleSummaries()[0]
 	var changes []model.PriceChanges
 	for _, item := range items {
+		candleLastDate := candleSummaries.Summary[item.Name].LastDate
+		itemsForToday := itemsBaseDate[candleLastDate]
+		itemsForYesterday := itemsBaseDate[candleLastDate.AddDate(0, 0, -1)]
+		itemsForWeekAgo := itemsBaseDate[candleLastDate.AddDate(0, 0, -7)]
 		var change model.PriceChanges
 		change.Item = item.Description
 		dailyChange := math.Round((itemsForToday[item.Name]/itemsForYesterday[item.Name]-1)*1000) / 10

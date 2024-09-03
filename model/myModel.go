@@ -154,3 +154,16 @@ type PriceChanges struct {
 	Item   string `json:"item"`
 	Change string `json:"daily"`
 }
+
+type Order struct {
+	ID            int     `json:"id"`
+	UserID        string  `json:"user_id"`
+	Item          string  `json:"item"`
+	Direction     string  `json:"direction"`
+	Type          string  `json:"type"`
+	LimitPrice    float64 `json:"limit_price"`
+	NumberOfItems float64 `json:"number_of_items"`
+	Usd           float64 `json:"usd"`
+	AllIn         bool    `json:"all_in"`
+	ValidDays     int     `json:"valid_days"`
+}

@@ -19,6 +19,7 @@
 
 	- külön oldal, a user összehasonlításról (profitabilitás)
 
+	- Stop limit bevezetése (eladás/vétel, ha egy bizonyos ár alá/fölé esik)
 	- Legyen lehetőség short ügyletekre is, ezt hitellel
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short). Itt pl. egy 50% credit coverage bevezetése.
 	- Coverage túllépésnél kényszerlikvidáció??

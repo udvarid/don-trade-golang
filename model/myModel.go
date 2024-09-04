@@ -167,3 +167,16 @@ type Order struct {
 	AllIn         bool    `json:"all_in"`
 	ValidDays     int     `json:"valid_days"`
 }
+
+type OrderInString struct {
+	ID            int    `json:"id"`
+	UserID        string `json:"user_id"`
+	Item          string `json:"item"`
+	Direction     string `json:"direction"`
+	Type          string `json:"type"`
+	LimitPrice    string `json:"limit_price"`
+	NumberOfItems string `json:"number_of_items"`
+	Usd           string `json:"usd"`
+	AllIn         bool   `json:"all_in"`
+	ValidDays     int    `json:"valid_days"`
+}

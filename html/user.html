@@ -91,9 +91,42 @@
       </div>
       <div id="Assets" class="p-4 bg-white rounded shadow">  
             New orders
-       </div>
-       <div id="Assets" class="p-4 bg-white rounded shadow">  
-            Actual orders
        </div>       
+       <div class="w-4/5 mx-0">
+           <h2 class="text-l font-bold text-blue-600 my-4">Actual orders</h2>
+           <table class="min-w-full bg-blue-50">
+               <thead>
+                   <tr>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Asset</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Buy/Sell</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Type</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Limit Price</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">#</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Usd</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">AllIn</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">ValidDays</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   {{range .orders}}
+                   <tr>
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Item}}</td>
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Direction}}</td>
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Type}}</td>                                
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.LimitPrice}}</td>                                
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.NumberOfItems}}</td>                                
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Usd}}</td>                                
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.AllIn}}</td>                                
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.ValidDays}}</td>                                
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">
+                            <div>
+                                <a class="text-l font-bold text-red-500" href="/deleteOrder/{{.ID}}">Delete</a>
+                            </div>
+                        </td>                                
+                   </tr>
+                   {{end}}
+               </tbody>
+           </table>
+       </div>  
 </body>
 </html>

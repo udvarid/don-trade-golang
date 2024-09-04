@@ -33,6 +33,8 @@
 	
 	- profitibalityről külön oldal, ahol total, heti/havi profitability legyen és külön legy a botokról is
 
+	- néhány dolgot esetleg a napi mentés során db-be menteni, így elég csak 1szer kiszámolni (pl. price history)
+
 
 
 Usefull:

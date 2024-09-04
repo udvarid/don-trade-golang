@@ -3,15 +3,18 @@ package controller
 import (
 	"fmt"
 	"html/template"
+	"math"
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/udvarid/don-trade-golang/authenticator"
 	chart "github.com/udvarid/don-trade-golang/chartBuilder"
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/orderService"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	userService "github.com/udvarid/don-trade-golang/user"
 	"golang.org/x/text/language"
@@ -33,6 +36,7 @@ func Init(config *model.Configuration) {
 	router.GET("/", startPage)
 	router.GET("/logout", logout)
 	router.GET("/user", user)
+	router.GET("/deleteOrder/:order", deleteOrder)
 	router.GET("/admin", admin)
 	router.GET("/reset_db", resetDb)
 	router.GET("/detailed/:item", detailedPage)
@@ -52,6 +56,20 @@ func logout(c *gin.Context) {
 	redirectTo(c, "/")
 }
 
+func deleteOrder(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+
+	if orderId, err := strconv.Atoi(c.Param("order")); err == nil {
+		userId, _ := getId(c)
+		orderService.DeleteOrder(orderId, userId)
+	}
+
+	redirectTo(c, "/user")
+}
+
 func user(c *gin.Context) {
 	isLoggedIn := isLoggedIn(c)
 	if !isLoggedIn {
@@ -67,6 +85,8 @@ func user(c *gin.Context) {
 	pageBar.Name = "Portfolio"
 	pageBar.Description = "Detailed portfolio history for the user"
 
+	orders := orderService.GetOrdersByUserId(userId)
+
 	c.HTML(http.StatusOK, "user.html", gin.H{
 		"title":         "user Page",
 		"name":          userStatistic.Name,
@@ -75,6 +95,7 @@ func user(c *gin.Context) {
 		"transactions":  transformTransactionToString(userStatistic.Transactions),
 		"candleSummary": candleSummary.Summary,
 		"barChart":      pageBar,
+		"orders":        transformOrdersToString(orders),
 	})
 }
 
@@ -262,6 +283,38 @@ func transformTransactionToString(transactions []model.Transaction) []model.Tran
 		}
 		result = append(result, trWithStr)
 	}
+	return result
+}
+
+func transformOrdersToString(orders []model.Order) []model.OrderInString {
+	var result []model.OrderInString
+	for _, order := range orders {
+		var orderInString model.OrderInString
+		orderInString.ID = order.ID
+		orderInString.UserID = order.UserID
+		orderInString.Item = order.Item
+		orderInString.Direction = order.Direction
+		orderInString.Type = order.Type
+		if math.Abs(order.LimitPrice) < 0.0001 {
+			orderInString.LimitPrice = "-"
+		} else {
+			orderInString.LimitPrice = fmt.Sprintf("%.1f", order.LimitPrice)
+		}
+		if math.Abs(order.NumberOfItems) < 0.0001 {
+			orderInString.NumberOfItems = "-"
+		} else {
+			orderInString.NumberOfItems = fmt.Sprintf("%.1f", order.NumberOfItems)
+		}
+		if math.Abs(order.Usd) < 0.0001 {
+			orderInString.Usd = "-"
+		} else {
+			orderInString.Usd = fmt.Sprintf("%.1f", order.Usd)
+		}
+		orderInString.AllIn = order.AllIn
+		orderInString.ValidDays = order.ValidDays
+		result = append(result, orderInString)
+	}
+
 	return result
 }
 

@@ -91,14 +91,48 @@ func main() {
 		donat.Transactions = trs
 		userRepository.AddUser(donat)
 	*/
-	/*
-		donat, _ := userRepository.FindUser("udvarid@hotmail.com")
-		assets := donat.Assets
-		assets["USD"] = 900000
-		assets["NVDA"] = 1000
 
-		donat.Transactions = trs
-		userRepository.UpdateUser(donat)
+	/*
+		var order1 model.Order
+		order1.UserID = "udvarid@hotmail.com"
+		order1.Item = "NVDA"
+		order1.Direction = "BUY"
+		order1.Type = "MARKET"
+		order1.Usd = 10000.0
+		order1.AllIn = false
+		order1.ValidDays = 3
+		orderService.AddOrder(order1)
+
+		var order2 model.Order
+		order2.UserID = "udvarid@hotmail.com"
+		order2.Item = "AMZN"
+		order2.Direction = "BUY"
+		order2.Type = "LIMIT"
+		order2.LimitPrice = 100.0
+		order2.NumberOfItems = 100.0
+		order2.AllIn = false
+		order2.ValidDays = 3
+		orderService.AddOrder(order2)
+
+		var order3 model.Order
+		order3.UserID = "udvarid@hotmail.com"
+		order3.Item = "TSLA"
+		order3.Direction = "SELL"
+		order3.Type = "MARKET"
+		order3.AllIn = true
+		order3.ValidDays = 3
+		orderService.AddOrder(order3)
+
+		var order4 model.Order
+		order4.UserID = "udvarid@hotmail.com"
+		order4.Item = "OTP.BD"
+		order4.Direction = "SELL"
+		order4.Type = "LIMIT"
+		order4.LimitPrice = 50.0
+		order4.AllIn = true
+		order4.ValidDays = 3
+		orderService.AddOrder(order4)
 	*/
+
 	controller.Init(&config)
 }

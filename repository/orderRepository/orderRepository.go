@@ -27,6 +27,24 @@ func GetAllOrders() []model.Order {
 	return result
 }
 
+func GetOrder(orderId int) model.Order {
+	db := repoUtil.OpenDb()
+
+	var result model.Order
+	db.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("Order"))
+		v := b.Get(repoUtil.Itob(orderId))
+		if v != nil {
+			var order model.Order
+			json.Unmarshal([]byte(v), &order)
+			result = order
+		}
+		return nil
+	})
+	defer db.Close()
+	return result
+}
+
 func DeleteOrder(orderId int) {
 	db := repoUtil.OpenDb()
 

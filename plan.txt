@@ -1,6 +1,5 @@
-	- Order (Direction (buy/sell) Type(limit/market), limit price, expiration date, Asset, number of shares, amount of usd, all shares (in case of sell))	
-	- Felületen nyitott orderek mutatása, delete lehetőséggel
-	
+	- Új Orderek felvétele felületről
+
 	- A megbízások új adatpont lementésekor hajtódjanak végre (ha lehet).
 	- Order Service -> Validate order
 

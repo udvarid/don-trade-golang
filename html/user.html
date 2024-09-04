@@ -89,9 +89,55 @@
             </div>
         </div>
       </div>
-      <div id="Assets" class="p-4 bg-white rounded shadow">  
-            New orders
-       </div>       
+      <div id="Assets" class="p-4 bg-white rounded shadow">
+        <form id="orderForm" class="d-flex flex-row align-items-start flex-wrap p-3" style="background-color: #e0f7fa;">
+            <div class="mb-3 me-3 d-flex flex-column">
+                <label for="assetList" class="form-label p-1" style="background-color: #58a8d3; color: white;">Asset</label>
+                <select id="assetList" name="assetList" class="form-select">
+                    {{range $key, $value := .candleSummary}}
+                        <option value="{{$key}}">{{$key}}</option>
+                    {{end}}
+                </select>
+            </div>
+            <div class="mb-3 me-3 d-flex flex-column">
+                <label for="orderType" class="form-label p-1" style="background-color: #58a8d3; color: white;">Order Type</label>
+                <select id="orderType" name="orderType" class="form-select">
+                    <option value="BUY">BUY</option>
+                    <option value="SELL">SELL</option>
+                </select>
+            </div>
+            <div class="mb-3 me-3 d-flex flex-column">
+                <label for="marketType" class="form-label p-1" style="background-color: #58a8d3; color: white;">Market Type</label>
+                <select id="marketType" name="marketType" class="form-select">                    
+                    <option value="MARKET">MARKET</option>
+                    <option value="LIMIT">LIMIT</option>
+                </select>
+            </div>
+            <div class="mb-3 me-3 d-flex flex-column">
+                <label for="limitPrice" class="form-label p-1" style="background-color: #58a8d3; color: white;">Limit Price</label>
+                <input type="number" step="0.01" id="limitPrice" name="limitPrice" min="0" class="form-control" style="width: 100px;">
+            </div>
+            <div class="mb-3 me-3 d-flex flex-column">
+                <label for="numberOfAssets" class="form-label p-1" style="background-color: #58a8d3; color: white;">#</label>
+                <input type="number" step="1" id="numberOfAssets" name="numberOfAssets" min="0" class="form-control"  style="width: 100px;">
+            </div>
+            <div class="mb-3 me-3 d-flex flex-column">
+                <label for="usd" class="form-label p-1" style="background-color: #58a8d3; color: white;">USD</label>
+                <input type="number" step="1" id="usd" name="usd" class="form-control" min="0" style="width: 100px;">
+            </div>
+            <div class="mb-3 me-3 d-flex flex-column">
+                <label for="allin" class="form-label p-1" style="background-color: #58a8d3; color: white;">All In</label>
+                <input type="checkbox" id="allin" name="allin" class="form-check-input checkbox-lg">
+            </div>
+            <div class="mb-3 me-3 d-flex flex-column">
+                <label for="validDays" class="form-label p-1" style="background-color: #58a8d3; color: white;">Valid days</label>
+                <input type="number" step="1" id="validDays" name="validDays" class="form-control" min="0" value="1" style="width: 100px;">
+            </div>
+            <div class="w-100 d-flex justify-content-center align-items-center">
+                <button type="submit" class="btn btn-success btn-lg rounded-btn">Add Order</button>
+            </div>
+        </form>
+    </div>
        <div class="w-4/5 mx-0">
            <h2 class="text-l font-bold text-blue-600 my-4">Actual orders</h2>
            <table class="min-w-full bg-blue-50">
@@ -103,8 +149,8 @@
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Limit Price</th>
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">#</th>
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Usd</th>
-                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">AllIn</th>
-                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">ValidDays</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">All in</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Valid days</th>
                    </tr>
                </thead>
                <tbody>

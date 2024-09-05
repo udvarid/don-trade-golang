@@ -36,6 +36,7 @@ func Init(config *model.Configuration) {
 	router.GET("/", startPage)
 	router.GET("/logout", logout)
 	router.GET("/user", user)
+	router.POST("/addorder", addorder)
 	router.GET("/deleteOrder/:order", deleteOrder)
 	router.GET("/admin", admin)
 	router.GET("/reset_db", resetDb)
@@ -119,6 +120,18 @@ func resetDb(c *gin.Context) {
 		redirectTo(c, "/")
 	}
 	collector.DeletePriceDatabase(activeConfiguration)
+}
+
+func addorder(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	userId, _ := getId(c)
+	var order model.OrderInString
+	c.BindJSON(&order)
+	orderService.ValidateAndAddOrder(order, userId)
+	redirectTo(c, "/user")
 }
 
 func validate(c *gin.Context) {
@@ -311,7 +324,7 @@ func transformOrdersToString(orders []model.Order) []model.OrderInString {
 			orderInString.Usd = fmt.Sprintf("%.1f", order.Usd)
 		}
 		orderInString.AllIn = order.AllIn
-		orderInString.ValidDays = order.ValidDays
+		orderInString.ValidDays = strconv.Itoa(order.ValidDays)
 		result = append(result, orderInString)
 	}
 

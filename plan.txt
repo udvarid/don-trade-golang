@@ -1,8 +1,5 @@
-	- Új Orderek felvétele felületről
-
 	- A megbízások új adatpont lementésekor hajtódjanak végre (ha lehet).
-	- Order Service -> Validate order
-
+	
 	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
 
 	- user settings page -> change name, delete user, change notification preferences

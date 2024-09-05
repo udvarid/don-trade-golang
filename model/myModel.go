@@ -178,5 +178,5 @@ type OrderInString struct {
 	NumberOfItems string `json:"number_of_items"`
 	Usd           string `json:"usd"`
 	AllIn         bool   `json:"all_in"`
-	ValidDays     int    `json:"valid_days"`
+	ValidDays     string `json:"valid_days"`
 }

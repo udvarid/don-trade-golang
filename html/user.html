@@ -115,7 +115,7 @@
             </div>
             <div class="mb-3 me-3 d-flex flex-column">
                 <label for="limitPrice" class="form-label p-1" style="background-color: #58a8d3; color: white;">Limit Price</label>
-                <input type="number" step="0.01" id="limitPrice" name="limitPrice" min="0" class="form-control" style="width: 100px;">
+                <input type="number" step="0.01" id="limitPrice" name="limitPrice" min="0.01" required class="form-control" style="width: 100px;">
             </div>
             <div class="mb-3 me-3 d-flex flex-column">
                 <label for="numberOfAssets" class="form-label p-1" style="background-color: #58a8d3; color: white;">#</label>
@@ -131,7 +131,7 @@
             </div>
             <div class="mb-3 me-3 d-flex flex-column">
                 <label for="validDays" class="form-label p-1" style="background-color: #58a8d3; color: white;">Valid days</label>
-                <input type="number" step="1" id="validDays" name="validDays" class="form-control" min="0" value="1" style="width: 100px;">
+                <input type="number" step="1" id="validDays" name="validDays" class="form-control" min="1" value="1" required style="width: 100px;">
             </div>
             <div class="w-100 d-flex justify-content-center align-items-center">
                 <button type="submit" class="btn btn-success btn-lg rounded-btn">Add Order</button>
@@ -174,5 +174,7 @@
                </tbody>
            </table>
        </div>  
+
+       <script src="/static/script_user.js"></script>
 </body>
 </html>

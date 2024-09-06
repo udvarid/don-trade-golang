@@ -19,10 +19,16 @@ document.addEventListener("DOMContentLoaded", function() {
     function toggleAllin() {
         if (allin.checked === true) {
             usd.value = "";
-            usd.disabled = true;            
+            usd.disabled = true;
+            if (orderType.value === "SELL") {
+                number.value = "";
+                number.disabled = true;
+            }
         } else {
             if (orderType.value === "BUY") {
-                usd.disabled = false;
+                usd.disabled = false;                
+            } else {
+                number.disabled = false;
             }
         }
     }

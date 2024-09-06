@@ -92,6 +92,9 @@ func isOrderValid(orderInString model.OrderInString, itemNames []string) bool {
 	if orderInString.Direction == "SELL" && orderInString.NumberOfItems == "" && !orderInString.AllIn {
 		return false
 	}
+	if orderInString.Direction == "SELL" && orderInString.AllIn && orderInString.NumberOfItems != "" {
+		return false
+	}
 	return true
 }
 

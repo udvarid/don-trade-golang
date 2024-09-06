@@ -1,4 +1,24 @@
-	- A megbízások új adatpont lementésekor hajtódjanak végre (ha lehet).
+	- Orderek végrehajtása.
+		- 2 típus:
+			- új adatpont lementésekor értékelődjenek ki, csak azokra, ahol történt új adatpont lementés
+			- admin oldalról indított kéréskor mindenkire az utolsó adatpont alapján -> ilyenkor csak az admin ordereit 
+		- ha megvan a kiértékelhető assetet listája, csak azon ordereket legyűjti és addig próbál újra-és-újra végrehajtani őket, amíg már nem tudott egyet sem végrehajtani
+		- egy user-item páros ha már végrehajtódott, egy másik nem hajtódhat végre -> egy körben nem lehet egy vétel és egy eladás 
+		- a végrehajtott orderek törlődjenek
+		- a megmaradt ordereknél a valid days szám csökkenjen 1-el, ha 0, akkor törlődjön
+		- típusok:
+			- buy market:
+				- a candle open árán vesz 
+				- vagy a megadott darabszámot, vagy a megadott usd-ért (ha all-in, akkor minden pénez számít), ami kevesebb értékű
+			- buy limit
+				- ha a candle open ára alacsonyabb, mint a limit, akkor open ár, ha magasabb, de a 'lowest' alacsonyabb, akkor limit áron, amúgy nem vesz
+				- vagy a megadott darabszámot, vagy a megadott usd-ért (ha all-in, akkor minden pénez számít), ami kevesebb értékű
+			- sell market
+				- a candle open árán ad el
+				- vagy a megadott darabszámot, vagy az összeset, ha all-in csekkolva van
+			- sell limit
+				- ha a candle open ár magasabb, mint a limit, akkor open ár, ha alacsonyabb, de a highest magasabb, akkor a limit áron, amúgy nem adja el
+				- vagy a megadott darabszámot, vagy az összeset, ha all-in csekkolva van
 	
 	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
 

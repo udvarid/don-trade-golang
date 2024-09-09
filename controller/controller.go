@@ -14,6 +14,7 @@ import (
 	chart "github.com/udvarid/don-trade-golang/chartBuilder"
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/orderManager"
 	"github.com/udvarid/don-trade-golang/orderService"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	userService "github.com/udvarid/don-trade-golang/user"
@@ -40,6 +41,7 @@ func Init(config *model.Configuration) {
 	router.GET("/deleteOrder/:order", deleteOrder)
 	router.GET("/admin", admin)
 	router.GET("/reset_db", resetDb)
+	router.GET("/admin_order", adminOrder)
 	router.GET("/detailed/:item", detailedPage)
 	router.POST("/validate/", validate)
 	router.GET("/checkin/:id/:session", checkInTask)
@@ -120,6 +122,16 @@ func resetDb(c *gin.Context) {
 		redirectTo(c, "/")
 	}
 	collector.DeletePriceDatabase(activeConfiguration)
+}
+
+func adminOrder(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	userId, _ := getId(c)
+	isAdminUser := isLoggedIn && activeConfiguration.Admin_user == userId
+	if !isAdminUser {
+		redirectTo(c, "/")
+	}
+	orderManager.ServeOrders(false, userId)
 }
 
 func addorder(c *gin.Context) {

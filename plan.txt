@@ -20,8 +20,6 @@
 				- ha a candle open ár magasabb, mint a limit, akkor open ár, ha alacsonyabb, de a highest magasabb, akkor a limit áron, amúgy nem adja el
 				- vagy a megadott darabszámot, vagy az összeset, ha all-in csekkolva van
 	
-	- admin user (udvarid@hotmail.com) tudjon megbízás kiértékelést indítani az utolsó időpont alapján, mintha friss adat lenne
-
 	- user settings page -> change name, delete user, change notification preferences
 
 	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)

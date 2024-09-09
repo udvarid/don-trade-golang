@@ -22,7 +22,7 @@
     </nav>      
     
     <nav class="bg-white p-4 rounded shadow mb-4">
-        <div class="flex items-center space-x-4">
+        <div class="flex items-center space-x-4 mb-4">
             <button hx-get="/reset_db" hx-target="#ide" class="bg-pink-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
                 Reset Candle database
             </button>
@@ -30,7 +30,20 @@
                 This will clear all the crypto and crypto summary database and request a new refill from the provider
             </div>
         </div>
+        
+
+        <div class="flex items-center space-x-4">
+            <button hx-get="/admin_order" hx-target="#ide" class="bg-pink-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Manage orders for admin
+            </button>
+            <div class="text-gray-700 font-medium">
+                This will serve all orders for admin based on the last candles
+            </div>
+        </div>        
+
         <div id="ide" class="mt-4"></div>
+
     </nav>
+
 </body>
 </html>

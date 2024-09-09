@@ -13,6 +13,7 @@ import (
 
 	chart "github.com/udvarid/don-trade-golang/chartBuilder"
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/orderManager"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 )
 
@@ -131,6 +132,7 @@ func CollectData(config *model.Configuration) {
 	}
 
 	orderCharts(candlesPersisted, itemNamesWithItem)
+	orderManager.ServeOrders(true, "all users")
 }
 
 func orderCharts(candles []model.Candle, itemNames map[string]model.Item) {

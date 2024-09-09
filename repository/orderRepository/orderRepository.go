@@ -72,3 +72,16 @@ func AddOrder(order model.Order) model.Order {
 	defer db.Close()
 	return order
 }
+
+func UpdateOrder(order model.Order) {
+	db := repoUtil.OpenDb()
+	db.Update(func(tx *bolt.Tx) error {
+		b := tx.Bucket([]byte("Order"))
+		buf, err := json.Marshal(order)
+		if err != nil {
+			return err
+		}
+		return b.Put(repoUtil.Itob(order.ID), buf)
+	})
+	defer db.Close()
+}

@@ -26,7 +26,6 @@ https://www.alphavantage.co/
 */
 
 func CollectData(config *model.Configuration) {
-
 	// If today there was already a data collection, then we quit
 	summaries := candleRepository.GetAllCandleSummaries()
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
@@ -132,7 +131,9 @@ func CollectData(config *model.Configuration) {
 	}
 
 	orderCharts(candlesPersisted, itemNamesWithItem)
-	orderManager.ServeOrders(true, "all users")
+	if len(persistedItems) > 0 {
+		orderManager.ServeOrders(true, "all users")
+	}
 }
 
 func orderCharts(candles []model.Candle, itemNames map[string]model.Item) {

@@ -187,6 +187,7 @@ func detailedPage(c *gin.Context) {
 		"title":         "Detailed Page",
 		"isLoggedIn":    isLoggedIn,
 		"description":   item.Description,
+		"name":          item.Name,
 		"detailedPage1": pageCandle,
 		"detailedPage2": pageCandle2,
 	})
@@ -350,7 +351,7 @@ func transformUserAssetToString(assets []model.AssetWithValue) []model.AssetWith
 		var newAsset model.AssetWithValueInString
 		newAsset.Item = asset.Item
 		newAsset.Volume = p.Sprintf("%d", int(asset.Volume))
-		newAsset.Price = fmt.Sprintf("%.1f", asset.Price)
+		newAsset.Price = fmt.Sprintf("%.2f", asset.Price)
 		newAsset.Value = p.Sprintf("%d", int(asset.Value))
 		result = append(result, newAsset)
 	}

@@ -253,18 +253,29 @@ func getAssetsWithValue(assets map[string]float64, candleSummary model.CandleSum
 	var result []model.AssetWithValue
 	totalValue := 0.0
 	for asset, volume := range assets {
-		price := 1.0
 		if asset != "USD" {
-			price = candleSummary.Summary[asset].LastPrice
+			price := candleSummary.Summary[asset].LastPrice
+			if volume > 0.01 {
+				value := price * volume
+				totalValue += value
+				result = append(result, model.AssetWithValue{
+					Item:   asset,
+					Volume: volume,
+					Price:  price,
+					Value:  value,
+				})
+			}
 		}
-		value := price * volume
-		totalValue += value
+	}
+	usd := assets["USD"]
+	if usd > 0.01 {
 		result = append(result, model.AssetWithValue{
-			Item:   asset,
-			Volume: volume,
-			Price:  price,
-			Value:  value,
+			Item:   "USD",
+			Volume: usd,
+			Price:  1.0,
+			Value:  usd,
 		})
+		totalValue += usd
 	}
 	result = append(result, model.AssetWithValue{
 		Item:  "Total",

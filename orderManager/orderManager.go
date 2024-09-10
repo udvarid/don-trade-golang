@@ -9,7 +9,6 @@ import (
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/orderRepository"
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
-	"github.com/udvarid/don-trade-golang/transaction"
 )
 
 func ServeOrders(normal bool, user string) {
@@ -23,14 +22,16 @@ func ServeOrders(normal bool, user string) {
 		itemNames = tempItemNames
 	}
 	fmt.Println("Serving orders for", user, "with items:", itemNames)
-	lastCandles := getlastCandles(candleSummary, itemNames)
+	candles := candleRepository.GetAllCandles()
+	lastCandles := getlastCandles(candleSummary, itemNames, candles)
 
 	orderServed := true
 	userAssetPairs := make(map[string]bool)
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	for orderServed {
 		orderServed = false
-		for _, order := range getRelevantOrders(normal, user, itemNames) {
+		orders := orderRepository.GetAllOrders()
+		for _, order := range getRelevantOrders(normal, user, itemNames, orders) {
 			_, exists := userAssetPairs[order.UserID+"-"+order.Item]
 			if exists {
 				continue
@@ -57,7 +58,7 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Date = pureToday
 				transactionNegative.Volume = initVolume * price * -1
 
-				transaction.HandleTransaction(transactionPositive, transactionNegative, user.ID)
+				handleTransaction(transactionPositive, transactionNegative, user.ID)
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -87,7 +88,7 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Date = pureToday
 				transactionNegative.Volume = initVolume * price * -1
 
-				transaction.HandleTransaction(transactionPositive, transactionNegative, user.ID)
+				handleTransaction(transactionPositive, transactionNegative, user.ID)
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -110,7 +111,7 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Date = pureToday
 				transactionNegative.Volume = initVolume * -1
 
-				transaction.HandleTransaction(transactionPositive, transactionNegative, user.ID)
+				handleTransaction(transactionPositive, transactionNegative, user.ID)
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -136,28 +137,29 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Date = pureToday
 				transactionNegative.Volume = initVolume * -1
 
-				transaction.HandleTransaction(transactionPositive, transactionNegative, user.ID)
+				handleTransaction(transactionPositive, transactionNegative, user.ID)
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
 		}
+	}
 
-		for _, order := range getRelevantOrders(normal, user, itemNames) {
-			order.ValidDays--
-			if order.ValidDays <= 0 {
-				orderRepository.DeleteOrder(order.ID)
-			} else {
-				orderRepository.UpdateOrder(order)
-			}
+	orders := orderRepository.GetAllOrders()
+	for _, order := range getRelevantOrders(normal, user, itemNames, orders) {
+		order.ValidDays--
+		if order.ValidDays <= 0 {
+			orderRepository.DeleteOrder(order.ID)
+		} else {
+			orderRepository.UpdateOrder(order)
 		}
 	}
 
 }
 
-func getRelevantOrders(normal bool, user string, itemNames []string) []model.Order {
+func getRelevantOrders(normal bool, user string, itemNames []string, orders []model.Order) []model.Order {
 	var ordersToServe []model.Order
-	for _, order := range orderRepository.GetAllOrders() {
+	for _, order := range orders {
 		if !normal && order.UserID != user || !slices.Contains(itemNames, order.Item) {
 			continue
 		}
@@ -166,9 +168,8 @@ func getRelevantOrders(normal bool, user string, itemNames []string) []model.Ord
 	return ordersToServe
 }
 
-func getlastCandles(candleSummary model.CandleSummary, itemNames []string) map[string]model.Candle {
+func getlastCandles(candleSummary model.CandleSummary, itemNames []string, candles []model.Candle) map[string]model.Candle {
 	lastCandles := make(map[string]model.Candle)
-	candles := candleRepository.GetAllCandles()
 	for _, candle := range candles {
 		if slices.Contains(itemNames, candle.Item) && candleSummary.Summary[candle.Item].LastDate == candle.Date {
 			lastCandles[candle.Item] = candle
@@ -176,5 +177,13 @@ func getlastCandles(candleSummary model.CandleSummary, itemNames []string) map[s
 	}
 
 	return lastCandles
+}
 
+func handleTransaction(transactionPositive model.Transaction, transactionNegative model.Transaction, userId string) {
+	user, _ := userRepository.FindUser(userId)
+	user.Transactions = append(user.Transactions, transactionPositive)
+	user.Transactions = append(user.Transactions, transactionNegative)
+	user.Assets[transactionPositive.Asset] += transactionPositive.Volume
+	user.Assets[transactionNegative.Asset] += transactionNegative.Volume
+	userRepository.UpdateUser(user)
 }

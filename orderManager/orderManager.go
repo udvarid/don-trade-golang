@@ -55,7 +55,7 @@ func ServeOrders(normal bool, user string) {
 				var transactionNegative model.Transaction
 				transactionNegative.Asset = "USD"
 				transactionNegative.Date = pureToday
-				transactionNegative.Volume = initVolume * price
+				transactionNegative.Volume = initVolume * price * -1
 
 				transaction.HandleTransaction(transactionPositive, transactionNegative, user.ID)
 
@@ -63,38 +63,80 @@ func ServeOrders(normal bool, user string) {
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
-			if order.Direction == "BUY" && order.Type == "LIMIT" && user.Assets["USD"] >= 0.0001 {
-				/*
-					- buy limit
-						- ha a candle open ára alacsonyabb, mint a limit, akkor open ár, ha magasabb, de a 'lowest' alacsonyabb, akkor limit áron, amúgy nem vesz
-						- vagy a megadott darabszámot, vagy a megadott usd-ért (ha all-in, akkor minden pénez számít), ami kevesebb értékű
-				*/
-				// user transaction
-				// user summary change
+			if order.Direction == "BUY" && order.Type == "LIMIT" && user.Assets["USD"] >= 0.0001 && candle.Low <= order.LimitPrice {
+				price := candle.Open
+				if candle.Open > order.LimitPrice {
+					price = order.LimitPrice
+				}
+				initUsd := user.Assets["USD"]
+				if order.Usd > 0.0001 && initUsd > order.Usd {
+					initUsd = order.Usd
+				}
+				initVolume := initUsd / price
+				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
+					initVolume = order.NumberOfItems
+				}
+
+				var transactionPositive model.Transaction
+				transactionPositive.Asset = order.Item
+				transactionPositive.Date = pureToday
+				transactionPositive.Volume = initVolume
+
+				var transactionNegative model.Transaction
+				transactionNegative.Asset = "USD"
+				transactionNegative.Date = pureToday
+				transactionNegative.Volume = initVolume * price * -1
+
+				transaction.HandleTransaction(transactionPositive, transactionNegative, user.ID)
+
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
 			if order.Direction == "SELL" && order.Type == "MARKET" && user.Assets[order.Item] >= 0.0001 {
-				/*
-					- sell market
-						- a candle open árán ad el
-						- vagy a megadott darabszámot, vagy az összeset, ha all-in csekkolva van
-				*/
-				// user transaction
-				// user summary change
+				price := candle.Open
+				initVolume := user.Assets[order.Item]
+				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
+					initVolume = order.NumberOfItems
+				}
+
+				var transactionPositive model.Transaction
+				transactionPositive.Asset = "USD"
+				transactionPositive.Date = pureToday
+				transactionPositive.Volume = price * initVolume
+
+				var transactionNegative model.Transaction
+				transactionNegative.Asset = order.Item
+				transactionNegative.Date = pureToday
+				transactionNegative.Volume = initVolume * -1
+
+				transaction.HandleTransaction(transactionPositive, transactionNegative, user.ID)
+
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
-			if order.Direction == "SELL" && order.Type == "LIMIT" && user.Assets[order.Item] >= 0.0001 {
-				/*
-					- sell limit
-						- ha a candle open ár magasabb, mint a limit, akkor open ár, ha alacsonyabb, de a highest magasabb, akkor a limit áron, amúgy nem adja el
-						- vagy a megadott darabszámot, vagy az összeset, ha all-in csekkolva van
-				*/
-				// user transaction
-				// user summary change
+			if order.Direction == "SELL" && order.Type == "LIMIT" && user.Assets[order.Item] >= 0.0001 && candle.High >= order.LimitPrice {
+
+				price := candle.Open
+				if candle.Open < order.LimitPrice {
+					price = order.LimitPrice
+				}
+				initVolume := user.Assets[order.Item]
+				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
+					initVolume = order.NumberOfItems
+				}
+				var transactionPositive model.Transaction
+				transactionPositive.Asset = "USD"
+				transactionPositive.Date = pureToday
+				transactionPositive.Volume = price * initVolume
+
+				var transactionNegative model.Transaction
+				transactionNegative.Asset = order.Item
+				transactionNegative.Date = pureToday
+				transactionNegative.Volume = initVolume * -1
+
+				transaction.HandleTransaction(transactionPositive, transactionNegative, user.ID)
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true

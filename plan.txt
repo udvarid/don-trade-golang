@@ -1,20 +1,20 @@
 	- user settings page -> change name, delete user, change notification preferences
 
-	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)
+	- asset kiértékeléshez FIFO elv alapján az vásárolt/eladott részvények követése és user oldalon bemutatása
+
+	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)	
 	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
 
-	- Detailed oldal design: Leírás/link az egyes mutatókhoz
-
-	- Fő oldal, néhány bullshittel
-
-	- külön oldal a bot-okról
-
 	- külön oldal, a user összehasonlításról (profitabilitás)
+
+	- Detailed oldal design: Leírás/link az egyes mutatókhoz
+	- Fő oldal, néhány bullshittel	
 
 	- Stop limit bevezetése (eladás/vétel, ha egy bizonyos ár alá/fölé esik)
 	- Legyen lehetőség short ügyletekre is, ezt hitellel
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short). Itt pl. egy 50% credit coverage bevezetése.
 	- Coverage túllépésnél kényszerlikvidáció??
+
 	- Automatikus/állandó eladási/vételi utasítások megadása generálisan ill. adott típusra (pl. X napos mozgó átlag magasabb, Y naposnál, vétel). Ennél külön SubUser-eket indítsunk (robotokat), melyekhez induló pénzt lehet allokálni. Legyen lehetőség a pénz összeg átcsoportosítására
 	- Limit megadása automatikus műveleteknél (pl. short is, tőkeáttét is, őssz portfóli max x%-a)
 
@@ -25,7 +25,11 @@
 	
 	- profitibalityről külön oldal, ahol total, heti/havi profitability legyen és külön legy a botokról is
 
+	- külön oldal a bot-okról
+
 	- néhány dolgot esetleg a napi mentés során db-be menteni, így elég csak 1szer kiszámolni (pl. price history)
+
+	- függvény hívások átnézése, ahol lehet ott pointert használjunk
 
 
 

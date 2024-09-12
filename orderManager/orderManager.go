@@ -2,6 +2,7 @@ package orderManager
 
 import (
 	"fmt"
+	"math"
 	"slices"
 	"time"
 
@@ -38,9 +39,9 @@ func ServeOrders(normal bool, user string) {
 			}
 			user, _ := userRepository.FindUser(order.UserID)
 			candle := lastCandles[order.Item]
-			if order.Direction == "BUY" && order.Type == "MARKET" && user.Assets["USD"] >= 0.0001 {
+			if order.Direction == "BUY" && order.Type == "MARKET" && getVolumen(user.Assets["USD"]) >= 0.0001 {
 				price := candle.Open
-				initUsd := user.Assets["USD"]
+				initUsd := getVolumen(user.Assets["USD"])
 				if order.Usd > 0.0001 && initUsd > order.Usd {
 					initUsd = order.Usd
 				}
@@ -64,12 +65,12 @@ func ServeOrders(normal bool, user string) {
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
-			if order.Direction == "BUY" && order.Type == "LIMIT" && user.Assets["USD"] >= 0.0001 && candle.Low <= order.LimitPrice {
+			if order.Direction == "BUY" && order.Type == "LIMIT" && getVolumen(user.Assets["USD"]) >= 0.0001 && candle.Low <= order.LimitPrice {
 				price := candle.Open
 				if candle.Open > order.LimitPrice {
 					price = order.LimitPrice
 				}
-				initUsd := user.Assets["USD"]
+				initUsd := getVolumen(user.Assets["USD"])
 				if order.Usd > 0.0001 && initUsd > order.Usd {
 					initUsd = order.Usd
 				}
@@ -94,9 +95,9 @@ func ServeOrders(normal bool, user string) {
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
-			if order.Direction == "SELL" && order.Type == "MARKET" && user.Assets[order.Item] >= 0.0001 {
+			if order.Direction == "SELL" && order.Type == "MARKET" && getVolumen(user.Assets[order.Item]) >= 0.0001 {
 				price := candle.Open
-				initVolume := user.Assets[order.Item]
+				initVolume := getVolumen(user.Assets[order.Item])
 				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
 					initVolume = order.NumberOfItems
 				}
@@ -117,13 +118,13 @@ func ServeOrders(normal bool, user string) {
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
-			if order.Direction == "SELL" && order.Type == "LIMIT" && user.Assets[order.Item] >= 0.0001 && candle.High >= order.LimitPrice {
+			if order.Direction == "SELL" && order.Type == "LIMIT" && getVolumen(user.Assets[order.Item]) >= 0.0001 && candle.High >= order.LimitPrice {
 
 				price := candle.Open
 				if candle.Open < order.LimitPrice {
 					price = order.LimitPrice
 				}
-				initVolume := user.Assets[order.Item]
+				initVolume := getVolumen(user.Assets[order.Item])
 				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
 					initVolume = order.NumberOfItems
 				}
@@ -157,6 +158,14 @@ func ServeOrders(normal bool, user string) {
 
 }
 
+func getVolumen(assets []model.VolumeWithPrice) float64 {
+	var total float64
+	for _, asset := range assets {
+		total += asset.Volume
+	}
+	return total
+}
+
 func getRelevantOrders(normal bool, user string, itemNames []string, orders []model.Order) []model.Order {
 	var ordersToServe []model.Order
 	for _, order := range orders {
@@ -183,7 +192,26 @@ func handleTransaction(transactionPositive model.Transaction, transactionNegativ
 	user, _ := userRepository.FindUser(userId)
 	user.Transactions = append(user.Transactions, transactionPositive)
 	user.Transactions = append(user.Transactions, transactionNegative)
-	user.Assets[transactionPositive.Asset] += transactionPositive.Volume
-	user.Assets[transactionNegative.Asset] += transactionNegative.Volume
+	if transactionPositive.Asset == "USD" {
+		user.Assets["USD"][0].Volume += transactionPositive.Volume
+		volumeSold := math.Abs(transactionNegative.Volume)
+		oldPackages := user.Assets[transactionNegative.Asset]
+		var newPackages []model.VolumeWithPrice
+		for _, pack := range oldPackages {
+			if volumeSold >= pack.Volume {
+				volumeSold -= pack.Volume
+			} else {
+				newPackage := model.VolumeWithPrice{Volume: pack.Volume - volumeSold, Price: pack.Price}
+				newPackages = append(newPackages, newPackage)
+				volumeSold = 0
+			}
+		}
+		user.Assets[transactionNegative.Asset] = newPackages
+	} else {
+		price := math.Abs(transactionPositive.Volume / transactionNegative.Volume)
+		user.Assets["USD"][0].Volume += transactionNegative.Volume
+		newPackage := model.VolumeWithPrice{Volume: transactionPositive.Volume, Price: price}
+		user.Assets[transactionPositive.Asset] = append(user.Assets[transactionPositive.Asset], newPackage)
+	}
 	userRepository.UpdateUser(user)
 }

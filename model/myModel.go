@@ -117,11 +117,16 @@ type TransactionWitString struct {
 }
 
 type User struct {
-	ID           string             `json:"id"`
-	Name         string             `json:"name"`
-	Config       UserConfig         `json:"config"`
-	Assets       map[string]float64 `json:"assets"`
-	Transactions []Transaction      `json:"transactions"`
+	ID           string                       `json:"id"`
+	Name         string                       `json:"name"`
+	Config       UserConfig                   `json:"config"`
+	Assets       map[string][]VolumeWithPrice `json:"assets"`
+	Transactions []Transaction                `json:"transactions"`
+}
+
+type VolumeWithPrice struct {
+	Volume float64 `json:"volume"`
+	Price  float64 `json:"price"`
 }
 
 type AssetWithValue struct {

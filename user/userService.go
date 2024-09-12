@@ -266,13 +266,17 @@ func getFirstDate(candles []model.Candle, itemNames []string, pureToday time.Tim
 	return firstDate, nil
 }
 
-func getAssetsWithValue(assets map[string]float64, candleSummary model.CandleSummary) []model.AssetWithValue {
+func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary model.CandleSummary) []model.AssetWithValue {
 	var result []model.AssetWithValue
 	totalValue := 0.0
-	for asset, volume := range assets {
+	for asset, volumes := range assets {
 		if asset != "USD" {
 			price := candleSummary.Summary[asset].LastPrice
-			if volume > 0.01 {
+			if len(volumes) > 0 {
+				volume := 0.0
+				for _, volumeWithPrice := range volumes {
+					volume += volumeWithPrice.Volume
+				}
 				value := price * volume
 				totalValue += value
 				result = append(result, model.AssetWithValue{
@@ -285,14 +289,14 @@ func getAssetsWithValue(assets map[string]float64, candleSummary model.CandleSum
 		}
 	}
 	usd := assets["USD"]
-	if usd > 0.01 {
+	if len(usd) > 0 {
 		result = append(result, model.AssetWithValue{
 			Item:   "USD",
-			Volume: usd,
+			Volume: usd[0].Volume,
 			Price:  1.0,
-			Value:  usd,
+			Value:  usd[0].Volume,
 		})
-		totalValue += usd
+		totalValue += usd[0].Volume
 	}
 	result = append(result, model.AssetWithValue{
 		Item:  "Total",
@@ -301,9 +305,14 @@ func getAssetsWithValue(assets map[string]float64, candleSummary model.CandleSum
 	return result
 }
 
-func getInitAssets() map[string]float64 {
-	assets := make(map[string]float64)
-	assets["USD"] = 1000000.0
+func getInitAssets() map[string][]model.VolumeWithPrice {
+	assets := make(map[string][]model.VolumeWithPrice)
+	var usdList []model.VolumeWithPrice
+	var initUsd model.VolumeWithPrice
+	initUsd.Volume = 1000000.0
+	initUsd.Price = 1.0
+	usdList = append(usdList, initUsd)
+	assets["USD"] = usdList
 	return assets
 }
 

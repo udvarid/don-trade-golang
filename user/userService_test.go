@@ -10,14 +10,14 @@ import (
 func TestGetAssetsWithValue(t *testing.T) {
 	tests := []struct {
 		name           string
-		assets         map[string]float64
+		assets         map[string][]model.VolumeWithPrice
 		candleSummary  model.CandleSummary
 		expectedResult []model.AssetWithValue
 	}{
 		{
 			name: "Single asset",
-			assets: map[string]float64{
-				"BTC": 2.0,
+			assets: map[string][]model.VolumeWithPrice{
+				"BTC": {{Volume: 2.0, Price: 50000.0}},
 			},
 			candleSummary: model.CandleSummary{
 				ID:   1,
@@ -34,9 +34,9 @@ func TestGetAssetsWithValue(t *testing.T) {
 		},
 		{
 			name: "Multiple assets",
-			assets: map[string]float64{
-				"BTC": 1.0,
-				"ETH": 5.0,
+			assets: map[string][]model.VolumeWithPrice{
+				"BTC": {{Volume: 1.0, Price: 50000.0}},
+				"ETH": {{Volume: 5.0, Price: 2000.0}},
 			},
 			candleSummary: model.CandleSummary{
 				ID:   2,
@@ -55,7 +55,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 		},
 		{
 			name:   "No assets",
-			assets: map[string]float64{},
+			assets: map[string][]model.VolumeWithPrice{},
 			candleSummary: model.CandleSummary{
 				ID:        3,
 				Date:      time.Now(),

@@ -37,6 +37,8 @@ func Init(config *model.Configuration) {
 	router.GET("/", startPage)
 	router.GET("/logout", logout)
 	router.GET("/user", user)
+	router.GET("/user_settings", userSettings)
+	router.GET("/user_delete", userDelete)
 	router.POST("/addorder", addorder)
 	router.GET("/deleteOrder/:order", deleteOrder)
 	router.GET("/admin", admin)
@@ -44,6 +46,7 @@ func Init(config *model.Configuration) {
 	router.GET("/admin_order", adminOrder)
 	router.GET("/detailed/:item", detailedPage)
 	router.POST("/validate/", validate)
+	router.POST("/name_change/", nameChange)
 	router.GET("/checkin/:id/:session", checkInTask)
 	router.Run()
 }
@@ -71,6 +74,32 @@ func deleteOrder(c *gin.Context) {
 	}
 
 	redirectTo(c, "/user")
+}
+
+func userDelete(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	id, session := getId(c)
+	authenticator.Logout(id, session)
+	userService.DeleteUser(id)
+	c.SetCookie("id", "", -1, "/", "localhost", false, true)
+	c.SetCookie("session", "", -1, "/", "localhost", false, true)
+	redirectTo(c, "/")
+}
+
+func userSettings(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	userId, _ := getId(c)
+	userStatistic := userService.GetUser(userId)
+	c.HTML(http.StatusOK, "user_settings.html", gin.H{
+		"title": "user_settings Page",
+		"name":  userStatistic.Name,
+	})
 }
 
 func user(c *gin.Context) {
@@ -143,6 +172,20 @@ func addorder(c *gin.Context) {
 	var order model.OrderInString
 	c.BindJSON(&order)
 	orderService.ValidateAndAddOrder(order, userId)
+	redirectTo(c, "/user")
+}
+
+func nameChange(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	userId, _ := getId(c)
+	var newName GetSession
+	c.BindJSON(&newName)
+	if newName.Id != "" {
+		userService.ChangeName(userId, newName.Id)
+	}
 	redirectTo(c, "/user")
 }
 

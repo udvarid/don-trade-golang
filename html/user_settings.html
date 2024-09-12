@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">    
+    <title>Dynamic Display</title>
+</head>
+<body class="bg-gray-100 p-4">
+
+    <nav class="bg-white p-4 rounded shadow mb-4">
+        <div class="flex justify-between items-center">
+            <div class="p-4 rl-auto">
+                <a class="text-xl font-bold text-green-500">User Settings</a>
+            </div>
+            <div class="p-4 ml-auto flex items-center space-x-4">
+                <div class="p-4 ml-auto">
+                    <a class="text-l font-bold text-red-500" href="/">To main page</a>
+                </div>
+                <div class="p-4 ml-auto">
+                    <a class="text-l font-bold text-blue-500" href="/user">User</a>
+                </div>
+                <div>
+                    <a class="text-l font-bold text-green-500" href="/logout">Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>      
+
+    <nav class="bg-white p-4 rounded shadow mb-4">
+
+        <div class="flex items-center space-x-4 mb-4">
+            
+                <form id="nameChangeForm">                    
+                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Change name</button>
+                    <input type="text" name="id" id="id" placeholder={{.name}} class="text-gray-700 font-medium">  
+                </form>              
+            
+        </div>
+    </nav>
+
+    <nav class="bg-white p-4 rounded shadow mb-4">
+        <div class="flex items-center space-x-4 mb-4">
+            <a class="bg-pink-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" href="/user_delete">Delete User!</a>
+            <div class="text-gray-700 font-medium">
+                This will delete the user. All of user's data, transaction history, order, etc. will be permanently deleted!
+            </div>
+        </div>        
+
+    </nav>
+
+    <script src="/static/script_user_settings.js"></script>
+
+</body>
+</html>
+
+
+

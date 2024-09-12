@@ -10,9 +10,26 @@ import (
 
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/orderService"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
 )
+
+func ChangeName(id string, name string) {
+	user, err := userRepository.FindUser(id)
+	if err == nil {
+		user.Name = name
+		userRepository.UpdateUser(user)
+	}
+}
+
+func DeleteUser(id string) {
+	orders := orderService.GetOrdersByUserId(id)
+	for _, order := range orders {
+		orderService.DeleteOrder(order.ID, id)
+	}
+	userRepository.DeleteUser(id)
+}
 
 func createUserIfNotExists(id string) {
 	_, err := userRepository.FindUser(id)

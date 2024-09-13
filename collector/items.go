@@ -25,7 +25,7 @@ func getStocks() []model.Item {
 	stocks = append(stocks, createItem("NVDA", "Nvidia"))
 	stocks = append(stocks, createItem("AMZN", "Amazon"))
 	stocks = append(stocks, createItem("TSLA", "Tesla"))
-	stocks = append(stocks, createItem("OTP.BD", "OTP"))
+	stocks = append(stocks, createItem("SHEL", "Shell"))
 	return stocks
 }
 

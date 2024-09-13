@@ -130,17 +130,20 @@ type VolumeWithPrice struct {
 }
 
 type AssetWithValue struct {
-	Item   string  `json:"item"`
-	Volume float64 `json:"volume"`
-	Price  float64 `json:"price"`
-	Value  float64 `json:"value"`
+	Item      string  `json:"item"`
+	Volume    float64 `json:"volume"`
+	Price     float64 `json:"price"`
+	Value     float64 `json:"value"`
+	BookValue float64 `json:"book_value"`
 }
 
 type AssetWithValueInString struct {
-	Item   string `json:"item"`
-	Volume string `json:"volume"`
-	Price  string `json:"price"`
-	Value  string `json:"value"`
+	Item      string `json:"item"`
+	Volume    string `json:"volume"`
+	Price     string `json:"price"`
+	Value     string `json:"value"`
+	BookValue string `json:"book_value"`
+	Profit    string `json:"profit"`
 }
 
 type UserStatistic struct {

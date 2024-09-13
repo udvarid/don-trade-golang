@@ -269,21 +269,26 @@ func getFirstDate(candles []model.Candle, itemNames []string, pureToday time.Tim
 func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary model.CandleSummary) []model.AssetWithValue {
 	var result []model.AssetWithValue
 	totalValue := 0.0
+	totalBookValue := 0.0
 	for asset, volumes := range assets {
 		if asset != "USD" {
 			price := candleSummary.Summary[asset].LastPrice
 			if len(volumes) > 0 {
 				volume := 0.0
+				bookValue := 0.0
 				for _, volumeWithPrice := range volumes {
 					volume += volumeWithPrice.Volume
+					bookValue += volumeWithPrice.Volume * volumeWithPrice.Price
 				}
 				value := price * volume
 				totalValue += value
+				totalBookValue += bookValue
 				result = append(result, model.AssetWithValue{
-					Item:   asset,
-					Volume: volume,
-					Price:  price,
-					Value:  value,
+					Item:      asset,
+					Volume:    volume,
+					Price:     price,
+					Value:     value,
+					BookValue: bookValue,
 				})
 			}
 		}
@@ -297,10 +302,12 @@ func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary
 			Value:  usd[0].Volume,
 		})
 		totalValue += usd[0].Volume
+		totalBookValue += usd[0].Volume
 	}
 	result = append(result, model.AssetWithValue{
-		Item:  "Total",
-		Value: totalValue,
+		Item:      "Total",
+		Value:     totalValue,
+		BookValue: totalBookValue,
 	})
 	return result
 }

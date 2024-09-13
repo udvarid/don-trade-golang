@@ -1,11 +1,10 @@
-	- asset kiértékeléshez FIFO elv alapján az vásárolt/eladott részvények követése és user oldalon bemutatása
-
-	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)	
-	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
-
 	- külön oldal, a user összehasonlításról (profitabilitás)
 
 	- Stop limit bevezetése (eladás/vétel, ha egy bizonyos ár alá/fölé esik)
+
+	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)	
+	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
+	
 	- Legyen lehetőség short ügyletekre is, ezt hitellel
 	- Legyen lehetőség tőkeáttételes ügyletekre is (long / short). Itt pl. egy 50% credit coverage bevezetése.
 	- Coverage túllépésnél kényszerlikvidáció??

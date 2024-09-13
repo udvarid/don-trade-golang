@@ -28,8 +28,8 @@ func TestGetAssetsWithValue(t *testing.T) {
 				Persisted: []string{"BTC"},
 			},
 			expectedResult: []model.AssetWithValue{
-				{Item: "BTC", Volume: 2.0, Price: 50000.0, Value: 100000.0},
-				{Item: "Total", Value: 100000.0},
+				{Item: "BTC", Volume: 2.0, Price: 50000.0, Value: 100000.0, BookValue: 100000.0},
+				{Item: "Total", Value: 100000.0, BookValue: 100000.0},
 			},
 		},
 		{
@@ -48,9 +48,9 @@ func TestGetAssetsWithValue(t *testing.T) {
 				Persisted: []string{"BTC", "ETH"},
 			},
 			expectedResult: []model.AssetWithValue{
-				{Item: "BTC", Volume: 1.0, Price: 50000.0, Value: 50000.0},
-				{Item: "ETH", Volume: 5.0, Price: 2000.0, Value: 10000.0},
-				{Item: "Total", Value: 60000.0},
+				{Item: "BTC", Volume: 1.0, Price: 50000.0, Value: 50000.0, BookValue: 50000.0},
+				{Item: "ETH", Volume: 5.0, Price: 2000.0, Value: 10000.0, BookValue: 10000.0},
+				{Item: "Total", Value: 60000.0, BookValue: 60000.0},
 			},
 		},
 		{

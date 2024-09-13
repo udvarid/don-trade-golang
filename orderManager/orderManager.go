@@ -208,7 +208,7 @@ func handleTransaction(transactionPositive model.Transaction, transactionNegativ
 		}
 		user.Assets[transactionNegative.Asset] = newPackages
 	} else {
-		price := math.Abs(transactionPositive.Volume / transactionNegative.Volume)
+		price := math.Abs(transactionNegative.Volume / transactionPositive.Volume)
 		user.Assets["USD"][0].Volume += transactionNegative.Volume
 		newPackage := model.VolumeWithPrice{Volume: transactionPositive.Volume, Price: price}
 		user.Assets[transactionPositive.Asset] = append(user.Assets[transactionPositive.Asset], newPackage)

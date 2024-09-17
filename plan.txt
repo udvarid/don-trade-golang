@@ -1,5 +1,3 @@
-	- User össszehasonlító oldalnál sorba rendezni a usereket a profit alapján
-
 	- Stop limit bevezetése (eladás/vétel, ha egy bizonyos ár alá/fölé esik)
 
 	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)	
@@ -24,6 +22,8 @@
 	- néhány dolgot esetleg a napi mentés során db-be menteni, így elég csak 1szer kiszámolni (pl. price history)
 
 	- függvény hívások átnézése, ahol lehet ott pointert használjunk
+
+	- code refactoring (pl. segéd fv-ek util osztályba rakása, stb)
 
 	- Detailed oldal design: Leírás/link az egyes mutatókhoz
 	- Fő oldal, néhány bullshittel	

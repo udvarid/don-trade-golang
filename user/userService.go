@@ -6,6 +6,7 @@ import (
 	"log"
 	"math"
 	"slices"
+	"sort"
 	"time"
 
 	"github.com/udvarid/don-trade-golang/collector"
@@ -64,6 +65,11 @@ func GetTraders() []model.UserSummary {
 		userSummary.Invested = invested / total
 		result = append(result, userSummary)
 	}
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Profit > result[j].Profit
+	})
+
 	return result
 }
 

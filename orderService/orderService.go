@@ -80,7 +80,7 @@ func ValidateAndAddOrder(orderInString model.OrderInString, userId string) {
 }
 
 func isOrderValid(orderInString model.OrderInString, itemNames []string) bool {
-	if orderInString.Type == "LIMIT" && orderInString.LimitPrice == "" {
+	if (orderInString.Type == "LIMIT" || orderInString.Type == "STOP-LIMIT") && orderInString.LimitPrice == "" {
 		return false
 	}
 	if orderInString.NumberOfItems == "" && orderInString.Usd == "" && !orderInString.AllIn {

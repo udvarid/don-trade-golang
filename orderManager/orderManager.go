@@ -95,6 +95,36 @@ func ServeOrders(normal bool, user string) {
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
+			if order.Direction == "BUY" && order.Type == "STOP-LIMIT" && getVolumen(user.Assets["USD"]) >= 0.0001 && candle.High >= order.LimitPrice {
+				price := order.LimitPrice
+				if candle.Open > order.LimitPrice {
+					price = candle.Open
+				}
+				initUsd := getVolumen(user.Assets["USD"])
+				if order.Usd > 0.0001 && initUsd > order.Usd {
+					initUsd = order.Usd
+				}
+				initVolume := initUsd / price
+				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
+					initVolume = order.NumberOfItems
+				}
+
+				var transactionPositive model.Transaction
+				transactionPositive.Asset = order.Item
+				transactionPositive.Date = pureToday
+				transactionPositive.Volume = initVolume
+
+				var transactionNegative model.Transaction
+				transactionNegative.Asset = "USD"
+				transactionNegative.Date = pureToday
+				transactionNegative.Volume = initVolume * price * -1
+
+				handleTransaction(transactionPositive, transactionNegative, user.ID)
+
+				orderRepository.DeleteOrder(order.ID)
+				orderServed = true
+				userAssetPairs[order.UserID+"-"+order.Item] = true
+			}
 			if order.Direction == "SELL" && order.Type == "MARKET" && getVolumen(user.Assets[order.Item]) >= 0.0001 {
 				price := candle.Open
 				initVolume := getVolumen(user.Assets[order.Item])
@@ -123,6 +153,31 @@ func ServeOrders(normal bool, user string) {
 				price := candle.Open
 				if candle.Open < order.LimitPrice {
 					price = order.LimitPrice
+				}
+				initVolume := getVolumen(user.Assets[order.Item])
+				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
+					initVolume = order.NumberOfItems
+				}
+				var transactionPositive model.Transaction
+				transactionPositive.Asset = "USD"
+				transactionPositive.Date = pureToday
+				transactionPositive.Volume = price * initVolume
+
+				var transactionNegative model.Transaction
+				transactionNegative.Asset = order.Item
+				transactionNegative.Date = pureToday
+				transactionNegative.Volume = initVolume * -1
+
+				handleTransaction(transactionPositive, transactionNegative, user.ID)
+				orderRepository.DeleteOrder(order.ID)
+				orderServed = true
+				userAssetPairs[order.UserID+"-"+order.Item] = true
+			}
+			if order.Direction == "SELL" && order.Type == "STOP-LIMIT" && getVolumen(user.Assets[order.Item]) >= 0.0001 && candle.Low <= order.LimitPrice {
+
+				price := order.LimitPrice
+				if candle.Open < order.LimitPrice {
+					price = candle.Open
 				}
 				initVolume := getVolumen(user.Assets[order.Item])
 				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {

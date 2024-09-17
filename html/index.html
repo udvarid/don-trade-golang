@@ -13,41 +13,40 @@
 
     <nav class="bg-white p-4 rounded shadow mb-4">
         <div class="flex justify-between items-center">
-          {{if eq .isLoggedIn true}}
-            <div class="p-4 ml-auto flex items-center space-x-4">
-                {{if eq .isAdminUser true}}
+            <div class="flex items-center space-x-4">
+                <div>
+                    <a class="text-l font-bold text-red-500" href="/users">Hall of Fame</a>
+                </div>
+            </div>
+            {{if eq .isLoggedIn true}}
+                <div class="p-4 flex items-center space-x-4">
+                    {{if eq .isAdminUser true}}
+                        <div>
+                            <a class="text-l font-bold text-grey-500" href="/admin">Admin</a>
+                        </div>
+                    {{end}}
                     <div>
-                        <a class="text-l font-bold text-grey-500" href="/admin">Admin</a>
+                        <a class="text-l font-bold text-green-500" href="/user">User</a>
                     </div>
-                {{end}}
-                <div>
-                    <a class="text-l font-bold text-green-500" href="/user">User</a>
-                </div>
-                <div>
-                    <a class="text-l font-bold text-green-500" href="/users">Hall of Fame</a>
-                </div>
-                <div>
-                    <a class="text-l font-bold text-green-500" href="/logout">Logout</a>
-                </div>
-            </div>
-          {{else}}
-            <div class="p-4 ml-auto flex items-center space-x-4">
-                <div>
-                    <a class="text-l font-bold text-green-500" href="/users">Hall of Fame</a>
-                </div>
-                <form id="loginForm">
-                    <input type="text" name="id" id="id" placeholder="Email" class="custom-input">  
-                    <button type="submit" class="custom-button">Login</button>
-                </form>              
-                <div id="one" class="notification" style="visibility:hidden">
-                    <div class="content">
-                        <p>A login email has just been sent to you, please check it!</p>
+                    <div>
+                        <a class="text-l font-bold text-green-500" href="/logout">Logout</a>
                     </div>
                 </div>
-            </div>
-          {{end}}
+            {{else}}
+                <div class="p-4 flex items-center space-x-4">
+                    <form id="loginForm">
+                        <input type="text" name="id" id="id" placeholder="Email" class="custom-input">  
+                        <button type="submit" class="custom-button">Login</button>
+                    </form>              
+                    <div id="one" class="notification" style="visibility:hidden">
+                        <div class="content">
+                            <p>A login email has just been sent to you, please check it!</p>
+                        </div>
+                    </div>
+                </div>
+            {{end}}
         </div>
-    </nav>  
+    </nav>
 
     <div class="relative overflow-hidden h-12 bg-blue-500 text-white">
         <div class="absolute whitespace-nowrap moving-band">

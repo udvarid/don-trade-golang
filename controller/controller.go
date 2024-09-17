@@ -37,6 +37,7 @@ func Init(config *model.Configuration) {
 	router.GET("/", startPage)
 	router.GET("/logout", logout)
 	router.GET("/user", user)
+	router.GET("/users", users)
 	router.GET("/user_settings", userSettings)
 	router.GET("/user_delete", userDelete)
 	router.POST("/addorder", addorder)
@@ -99,6 +100,17 @@ func userSettings(c *gin.Context) {
 	c.HTML(http.StatusOK, "user_settings.html", gin.H{
 		"title": "user_settings Page",
 		"name":  userStatistic.Name,
+	})
+}
+
+func users(c *gin.Context) {
+	traders := userService.GetTraders()
+	for _, trader := range traders {
+		fmt.Println(trader)
+	}
+	c.HTML(http.StatusOK, "users.html", gin.H{
+		"title":   "users Page",
+		"traders": transformTradersToString(traders),
 	})
 }
 
@@ -387,12 +399,31 @@ func transformOrdersToString(orders []model.Order) []model.OrderInString {
 	return result
 }
 
+func transformTradersToString(traders []model.UserSummary) []model.UserSummaryInString {
+	var result []model.UserSummaryInString
+	for _, trader := range traders {
+		var traderInString model.UserSummaryInString
+		traderInString.UserID = trader.UserID
+		traderInString.UserName = trader.UserName
+		traderInString.Profit = fmt.Sprintf("%.2f", trader.Profit*100) + "%"
+		traderInString.TraderSince = trader.TraderSince
+		traderInString.Invested = fmt.Sprintf("%.2f", trader.Invested*100) + "%"
+		result = append(result, traderInString)
+	}
+	return result
+}
+
 func transformUserAssetToString(assets []model.AssetWithValue) []model.AssetWithValueInString {
 	var result []model.AssetWithValueInString
 	p := message.NewPrinter(language.Hungarian)
+	items := collector.GetItemsFromItemMap(collector.GetItems())
 	for _, asset := range assets {
 		var newAsset model.AssetWithValueInString
-		newAsset.Item = asset.Item
+		if asset.Item == "USD" || asset.Item == "Total" {
+			newAsset.Item = asset.Item
+		} else {
+			newAsset.Item = asset.Item + " - " + items[asset.Item].Description
+		}
 		newAsset.Volume = p.Sprintf("%d", int(asset.Volume))
 		newAsset.Price = fmt.Sprintf("%.2f", asset.Price)
 		newAsset.Value = p.Sprintf("%d", int(asset.Value))

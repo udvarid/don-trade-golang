@@ -1,4 +1,4 @@
-	- külön oldal, a user összehasonlításról (profitabilitás)
+	- User össszehasonlító oldalnál sorba rendezni a usereket a profit alapján
 
 	- Stop limit bevezetése (eladás/vétel, ha egy bizonyos ár alá/fölé esik)
 

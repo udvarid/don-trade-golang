@@ -188,3 +188,19 @@ type OrderInString struct {
 	AllIn         bool   `json:"all_in"`
 	ValidDays     string `json:"valid_days"`
 }
+
+type UserSummary struct {
+	UserID      string  `json:"user_id"`
+	UserName    string  `json:"user_name"`
+	Profit      float64 `json:"profit"`
+	TraderSince int     `json:"trader_since"`
+	Invested    float64 `json:"invested"`
+}
+
+type UserSummaryInString struct {
+	UserID      string `json:"user_id"`
+	UserName    string `json:"user_name"`
+	Profit      string `json:"profit"`
+	TraderSince int    `json:"trader_since"`
+	Invested    string `json:"invested"`
+}

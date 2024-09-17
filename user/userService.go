@@ -44,6 +44,29 @@ func createUserIfNotExists(id string) {
 	}
 }
 
+func GetTraders() []model.UserSummary {
+	result := make([]model.UserSummary, 0)
+	users := userRepository.GetAllUsers()
+	for _, user := range users {
+		var userSummary model.UserSummary
+		userAssets := GetUser(user.ID).Assets
+		userSummary.UserID = user.ID
+		userSummary.UserName = user.Name
+		userSummary.TraderSince = int(time.Since(user.Transactions[0].Date).Hours() / 24)
+		total := userAssets[len(userAssets)-1].Value
+		userSummary.Profit = total/1000000 - 1
+		invested := 0.0
+		for _, asset := range userAssets {
+			if asset.Item != "Total" && asset.Item != "USD" {
+				invested += asset.Value
+			}
+		}
+		userSummary.Invested = invested / total
+		result = append(result, userSummary)
+	}
+	return result
+}
+
 func GetUser(id string) model.UserStatistic {
 	user, _ := userRepository.FindUser(id)
 
@@ -269,7 +292,6 @@ func getFirstDate(candles []model.Candle, itemNames []string, pureToday time.Tim
 func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary model.CandleSummary) []model.AssetWithValue {
 	var result []model.AssetWithValue
 	totalValue := 0.0
-	totalBookValue := 0.0
 	for asset, volumes := range assets {
 		if asset != "USD" {
 			price := candleSummary.Summary[asset].LastPrice
@@ -282,7 +304,6 @@ func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary
 				}
 				value := price * volume
 				totalValue += value
-				totalBookValue += bookValue
 				result = append(result, model.AssetWithValue{
 					Item:      asset,
 					Volume:    volume,
@@ -302,12 +323,11 @@ func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary
 			Value:  usd[0].Volume,
 		})
 		totalValue += usd[0].Volume
-		totalBookValue += usd[0].Volume
 	}
 	result = append(result, model.AssetWithValue{
 		Item:      "Total",
 		Value:     totalValue,
-		BookValue: totalBookValue,
+		BookValue: 1000000,
 	})
 	return result
 }

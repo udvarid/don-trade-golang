@@ -8,6 +8,7 @@ COPY ./html/detailed.html ./html/
 COPY ./html/logged_in.html ./html/
 COPY ./html/admin.html ./html/
 COPY ./html/user.html ./html/
+COPY ./html/user.html ./html/
 COPY ./html/user_settings.html ./html/
 COPY ./static/* ./static/
 RUN mkdir /db

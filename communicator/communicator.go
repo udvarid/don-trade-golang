@@ -18,6 +18,26 @@ func Init(config *model.Configuration) {
 
 var verifier = emailverifier.NewVerifier()
 
+func SendMessageAboutOrders(toAddress string, orders []model.CompletedOrderToMail) {
+	ret, err := verifier.Verify(toAddress)
+	orderString := ""
+	for _, order := range orders {
+		orderString += "<p>" + order.Item + " - " + order.Type + ". Volumen:" + order.Volumen + " Price:" + order.Price + " Usd: " + order.Usd + "</p>"
+	}
+	if err == nil && ret.Syntax.Valid {
+		msg := []byte("To: " + toAddress + "\r\n" +
+			"Subject: Completed orders!\r\n" +
+			"MIME-version: 1.0;\r\n" +
+			"Content-Type: text/html; charset=\"UTF-8\";\r\n" +
+			"\r\n" +
+			"<html><body>" +
+			"<p>Your following orders have been executed:</p>" +
+			orderString +
+			"</body></html>")
+		sendMail(toAddress, msg)
+	}
+}
+
 func SendMessageWithLink(toAddress string, toLink string) {
 	ret, err := verifier.Verify(toAddress)
 	if err == nil && ret.Syntax.Valid {

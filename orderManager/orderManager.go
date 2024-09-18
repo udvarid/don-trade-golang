@@ -6,10 +6,13 @@ import (
 	"slices"
 	"time"
 
+	"github.com/udvarid/don-trade-golang/communicator"
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/orderRepository"
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 func ServeOrders(normal bool, user string) {
@@ -29,6 +32,8 @@ func ServeOrders(normal bool, user string) {
 	orderServed := true
 	userAssetPairs := make(map[string]bool)
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+	var completedOrders []model.CompletedOrderToMail
+	p := message.NewPrinter(language.Hungarian)
 	for orderServed {
 		orderServed = false
 		orders := orderRepository.GetAllOrders()
@@ -60,6 +65,14 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * price * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
+				var completedOrder model.CompletedOrderToMail
+				completedOrder.Id = user.ID
+				completedOrder.Item = order.Item
+				completedOrder.Type = order.Direction
+				completedOrder.Price = fmt.Sprintf("%.2f", price)
+				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+				completedOrders = append(completedOrders, completedOrder)
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -90,6 +103,14 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * price * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
+				var completedOrder model.CompletedOrderToMail
+				completedOrder.Id = user.ID
+				completedOrder.Item = order.Item
+				completedOrder.Type = order.Direction
+				completedOrder.Price = fmt.Sprintf("%.2f", price)
+				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+				completedOrders = append(completedOrders, completedOrder)
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -120,6 +141,14 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * price * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
+				var completedOrder model.CompletedOrderToMail
+				completedOrder.Id = user.ID
+				completedOrder.Item = order.Item
+				completedOrder.Type = order.Direction
+				completedOrder.Price = fmt.Sprintf("%.2f", price)
+				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+				completedOrders = append(completedOrders, completedOrder)
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -143,6 +172,14 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
+				var completedOrder model.CompletedOrderToMail
+				completedOrder.Id = user.ID
+				completedOrder.Item = order.Item
+				completedOrder.Type = order.Direction
+				completedOrder.Price = fmt.Sprintf("%.2f", price)
+				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+				completedOrders = append(completedOrders, completedOrder)
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -169,6 +206,15 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
+				var completedOrder model.CompletedOrderToMail
+				completedOrder.Id = user.ID
+				completedOrder.Item = order.Item
+				completedOrder.Type = order.Direction
+				completedOrder.Price = fmt.Sprintf("%.2f", price)
+				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+				completedOrders = append(completedOrders, completedOrder)
+
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
@@ -194,6 +240,15 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
+				var completedOrder model.CompletedOrderToMail
+				completedOrder.Id = user.ID
+				completedOrder.Item = order.Item
+				completedOrder.Type = order.Direction
+				completedOrder.Price = fmt.Sprintf("%.2f", price)
+				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+				completedOrders = append(completedOrders, completedOrder)
+
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
@@ -208,6 +263,15 @@ func ServeOrders(normal bool, user string) {
 			orderRepository.DeleteOrder(order.ID)
 		} else {
 			orderRepository.UpdateOrder(order)
+		}
+	}
+	if len(completedOrders) > 0 {
+		completedOrdersByUser := make(map[string][]model.CompletedOrderToMail)
+		for _, completedOrder := range completedOrders {
+			completedOrdersByUser[completedOrder.Id] = append(completedOrdersByUser[completedOrder.Id], completedOrder)
+		}
+		for userId, orders := range completedOrdersByUser {
+			communicator.SendMessageAboutOrders(userId, orders)
 		}
 	}
 

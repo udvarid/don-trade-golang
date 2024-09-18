@@ -42,8 +42,9 @@ func main() {
 
 	chart.DeleteHtml()
 
-	collector.CollectData(&config)
 	communicator.Init(&config)
+
+	collector.CollectData(&config)
 
 	authenticator.ClearOldSessions()
 

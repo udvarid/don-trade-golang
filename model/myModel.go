@@ -204,3 +204,12 @@ type UserSummaryInString struct {
 	TraderSince int    `json:"trader_since"`
 	Invested    string `json:"invested"`
 }
+
+type CompletedOrderToMail struct {
+	Id      string `json:"id"`
+	Type    string `json:"type"`
+	Item    string `json:"item"`
+	Volumen string `json:"volumen"`
+	Price   string `json:"price"`
+	Usd     string `json:"usd"`
+}

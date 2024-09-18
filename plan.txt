@@ -1,5 +1,6 @@
-	- Végrehajtott megbízásról emailes értesítés legyen (ha kéri)	
 	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
+
+	- user settings page -> change notification preferences
 	
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	
 	- Coverage túllépésnél kényszerlikvidáció, ha pénzhez jut
@@ -23,9 +24,6 @@
 
 	- Detailed oldal design: Leírás/link az egyes mutatókhoz
 	- Fő oldal, néhány bullshittel	
-
-	- user settings page -> change notification preferences
-
 
 
 Usefull:

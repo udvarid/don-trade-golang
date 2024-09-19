@@ -39,9 +39,16 @@ func BuildUserHistoryChart(history []model.HistoryElement, session string) {
 	var assetNames []string
 	for asset := range assets {
 		assetNames = append(assetNames, asset)
+	}
+	sort.Slice(assetNames, func(i, j int) bool {
+		isUsd := assetNames[i] == "USD"
+		return !isUsd && assetNames[i] < assetNames[j]
+	})
+
+	for _, assetName := range assetNames {
 		var assetValues []float64
 		for _, element := range history {
-			assetValues = append(assetValues, element.Items[asset]/1000)
+			assetValues = append(assetValues, element.Items[assetName]/1000)
 		}
 		allAssets = append(allAssets, assetValues)
 	}

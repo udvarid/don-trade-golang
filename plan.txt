@@ -13,6 +13,7 @@
 		- táblázatban a 'Total' ra kattinva a portfólió chart kerül be
 		- chart-okra kattintva, detailed oldal megnyitása, de új ablakon
 		- táblázatnál legyen SellAll gomb, ami market sell-t csinál
+		- egérrel ha rámegyünk egy elemre, akkor magyarázó szöveg megjelen?
 	
 	- külön oldal a bot-okról
 

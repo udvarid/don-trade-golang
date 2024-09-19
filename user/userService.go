@@ -320,6 +320,10 @@ func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary
 			}
 		}
 	}
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Item < result[j].Item
+	})
+
 	usd := assets["USD"]
 	if len(usd) > 0 {
 		result = append(result, model.AssetWithValue{

@@ -75,10 +75,11 @@ type Candle struct {
 }
 
 type CandleSummary struct {
-	ID        int                        `json:"id"`
-	Date      time.Time                  `json:"date"`
-	Summary   map[string]CandleStatistic `json:"summary"`
-	Persisted []string                   `json:"persisted"`
+	ID              int                        `json:"id"`
+	Date            time.Time                  `json:"date"`
+	Summary         map[string]CandleStatistic `json:"summary"`
+	Persisted       []string                   `json:"persisted"`
+	DailyStatusSent bool                       `json:"daily_status_sent"`
 }
 
 type CandleStatistic struct {

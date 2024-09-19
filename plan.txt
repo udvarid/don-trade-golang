@@ -1,5 +1,3 @@
-	- Minden nap emailes értesítés a portfólió aktuális állapotáról (ha kéri)
-
 	- user settings page -> change notification preferences
 	
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	

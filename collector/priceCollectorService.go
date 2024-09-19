@@ -120,6 +120,8 @@ func CollectData(config *model.Configuration) {
 	var candleSummary model.CandleSummary
 	candleSummary.Date = pureToday
 	candleSummary.Summary = itemCountMap
+	candleSummary.Persisted = persistedItems
+	candleSummary.DailyStatusSent = false
 	if len(summaries) == 0 {
 		candleRepository.AddCandleSummary(candleSummary)
 	} else {
@@ -127,6 +129,7 @@ func CollectData(config *model.Configuration) {
 		candleSummaryToUpdate.Date = candleSummary.Date
 		candleSummaryToUpdate.Summary = candleSummary.Summary
 		candleSummaryToUpdate.Persisted = persistedItems
+		candleSummary.DailyStatusSent = false
 		candleRepository.UpdateCandleSummary(candleSummaryToUpdate)
 	}
 

@@ -4,6 +4,7 @@ import (
 	"embed"
 	"encoding/json"
 	"flag"
+	"fmt"
 
 	"github.com/udvarid/don-trade-golang/authenticator"
 	chart "github.com/udvarid/don-trade-golang/chartBuilder"
@@ -13,6 +14,7 @@ import (
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/repoUtil"
+	userService "github.com/udvarid/don-trade-golang/user"
 )
 
 var config = model.Configuration{}
@@ -47,6 +49,14 @@ func main() {
 	collector.CollectData(&config)
 
 	authenticator.ClearOldSessions()
+
+	cs := candleRepository.GetAllCandleSummaries()[0]
+	if !cs.DailyStatusSent {
+		fmt.Println("Sending daily status")
+		userService.SendDailyStatus()
+		cs.DailyStatusSent = true
+		candleRepository.UpdateCandleSummary(cs)
+	}
 
 	controller.Init(&config)
 }

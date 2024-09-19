@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/udvarid/don-trade-golang/collector"
+	"github.com/udvarid/don-trade-golang/communicator"
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/orderService"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
@@ -71,6 +72,13 @@ func GetTraders() []model.UserSummary {
 	})
 
 	return result
+}
+
+func SendDailyStatus() {
+	users := userRepository.GetAllUsers()
+	for _, user := range users {
+		communicator.SendMessageAboutStatus(GetUser(user.ID))
+	}
 }
 
 func GetUser(id string) model.UserStatistic {

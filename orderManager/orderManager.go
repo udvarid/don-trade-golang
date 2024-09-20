@@ -65,14 +65,16 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * price * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
-				var completedOrder model.CompletedOrderToMail
-				completedOrder.Id = user.ID
-				completedOrder.Item = order.Item
-				completedOrder.Type = order.Direction
-				completedOrder.Price = fmt.Sprintf("%.2f", price)
-				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
-				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
-				completedOrders = append(completedOrders, completedOrder)
+				if user.Config.NotifyAtTransaction {
+					var completedOrder model.CompletedOrderToMail
+					completedOrder.Id = user.ID
+					completedOrder.Item = order.Item
+					completedOrder.Type = order.Direction
+					completedOrder.Price = fmt.Sprintf("%.2f", price)
+					completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+					completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+					completedOrders = append(completedOrders, completedOrder)
+				}
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -103,14 +105,16 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * price * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
-				var completedOrder model.CompletedOrderToMail
-				completedOrder.Id = user.ID
-				completedOrder.Item = order.Item
-				completedOrder.Type = order.Direction
-				completedOrder.Price = fmt.Sprintf("%.2f", price)
-				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
-				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
-				completedOrders = append(completedOrders, completedOrder)
+				if user.Config.NotifyAtTransaction {
+					var completedOrder model.CompletedOrderToMail
+					completedOrder.Id = user.ID
+					completedOrder.Item = order.Item
+					completedOrder.Type = order.Direction
+					completedOrder.Price = fmt.Sprintf("%.2f", price)
+					completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+					completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+					completedOrders = append(completedOrders, completedOrder)
+				}
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -141,14 +145,16 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * price * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
-				var completedOrder model.CompletedOrderToMail
-				completedOrder.Id = user.ID
-				completedOrder.Item = order.Item
-				completedOrder.Type = order.Direction
-				completedOrder.Price = fmt.Sprintf("%.2f", price)
-				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
-				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
-				completedOrders = append(completedOrders, completedOrder)
+				if user.Config.NotifyAtTransaction {
+					var completedOrder model.CompletedOrderToMail
+					completedOrder.Id = user.ID
+					completedOrder.Item = order.Item
+					completedOrder.Type = order.Direction
+					completedOrder.Price = fmt.Sprintf("%.2f", price)
+					completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+					completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+					completedOrders = append(completedOrders, completedOrder)
+				}
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -172,14 +178,16 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
-				var completedOrder model.CompletedOrderToMail
-				completedOrder.Id = user.ID
-				completedOrder.Item = order.Item
-				completedOrder.Type = order.Direction
-				completedOrder.Price = fmt.Sprintf("%.2f", price)
-				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
-				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
-				completedOrders = append(completedOrders, completedOrder)
+				if user.Config.NotifyAtTransaction {
+					var completedOrder model.CompletedOrderToMail
+					completedOrder.Id = user.ID
+					completedOrder.Item = order.Item
+					completedOrder.Type = order.Direction
+					completedOrder.Price = fmt.Sprintf("%.2f", price)
+					completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+					completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+					completedOrders = append(completedOrders, completedOrder)
+				}
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -206,14 +214,16 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
-				var completedOrder model.CompletedOrderToMail
-				completedOrder.Id = user.ID
-				completedOrder.Item = order.Item
-				completedOrder.Type = order.Direction
-				completedOrder.Price = fmt.Sprintf("%.2f", price)
-				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
-				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
-				completedOrders = append(completedOrders, completedOrder)
+				if user.Config.NotifyAtTransaction {
+					var completedOrder model.CompletedOrderToMail
+					completedOrder.Id = user.ID
+					completedOrder.Item = order.Item
+					completedOrder.Type = order.Direction
+					completedOrder.Price = fmt.Sprintf("%.2f", price)
+					completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+					completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+					completedOrders = append(completedOrders, completedOrder)
+				}
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true
@@ -240,14 +250,16 @@ func ServeOrders(normal bool, user string) {
 				transactionNegative.Volume = initVolume * -1
 
 				handleTransaction(transactionPositive, transactionNegative, user.ID)
-				var completedOrder model.CompletedOrderToMail
-				completedOrder.Id = user.ID
-				completedOrder.Item = order.Item
-				completedOrder.Type = order.Direction
-				completedOrder.Price = fmt.Sprintf("%.2f", price)
-				completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
-				completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
-				completedOrders = append(completedOrders, completedOrder)
+				if user.Config.NotifyAtTransaction {
+					var completedOrder model.CompletedOrderToMail
+					completedOrder.Id = user.ID
+					completedOrder.Item = order.Item
+					completedOrder.Type = order.Direction
+					completedOrder.Price = fmt.Sprintf("%.2f", price)
+					completedOrder.Volumen = p.Sprintf("%d", int(initVolume))
+					completedOrder.Usd = p.Sprintf("%.d", int(initVolume*price))
+					completedOrders = append(completedOrders, completedOrder)
+				}
 
 				orderRepository.DeleteOrder(order.ID)
 				orderServed = true

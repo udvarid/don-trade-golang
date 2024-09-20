@@ -48,6 +48,7 @@ func Init(config *model.Configuration) {
 	router.GET("/detailed/:item", detailedPage)
 	router.POST("/validate/", validate)
 	router.POST("/name_change/", nameChange)
+	router.POST("/notify_change/", notifyChange)
 	router.GET("/checkin/:id/:session", checkInTask)
 	router.Run()
 }
@@ -96,10 +97,12 @@ func userSettings(c *gin.Context) {
 		redirectTo(c, "/")
 	}
 	userId, _ := getId(c)
-	userStatistic := userService.GetUser(userId)
+	user := userService.GetUser(userId)
 	c.HTML(http.StatusOK, "user_settings.html", gin.H{
-		"title": "user_settings Page",
-		"name":  userStatistic.Name,
+		"title":               "user_settings Page",
+		"name":                user.Name,
+		"notifyAtTransaction": user.Config.NotifyAtTransaction,
+		"notifyDaily":         user.Config.NotifyDaily,
 	})
 }
 
@@ -120,7 +123,7 @@ func user(c *gin.Context) {
 		redirectTo(c, "/")
 	}
 	userId, session := getId(c)
-	userStatistic := userService.GetUser(userId)
+	userStatistic := userService.GetUserStatistic(userId)
 	candleSummary := candleRepository.GetAllCandleSummaries()[0]
 
 	var pageBar HtmlWithInfo
@@ -184,6 +187,18 @@ func addorder(c *gin.Context) {
 	var order model.OrderInString
 	c.BindJSON(&order)
 	orderService.ValidateAndAddOrder(order, userId)
+	redirectTo(c, "/user")
+}
+
+func notifyChange(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	userId, _ := getId(c)
+	var newNotify NotifyChange
+	c.BindJSON(&newNotify)
+	userService.ChangeNotify(userId, newNotify.Transaction, newNotify.Daily)
 	redirectTo(c, "/user")
 }
 
@@ -447,4 +462,9 @@ type HtmlWithInfo struct {
 
 type GetSession struct {
 	Id string `json:"id"`
+}
+
+type NotifyChange struct {
+	Transaction bool `json:"transaction"`
+	Daily       bool `json:"daily"`
 }

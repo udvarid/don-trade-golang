@@ -5,8 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
     <script src="https://unpkg.com/htmx.org@2.0.2"></script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">    
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">        
     <title>Dynamic Display</title>
+    <style>
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .form-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .form-label {
+            background-color: #2710f3;
+            color: white;
+            padding: 0.5rem;
+        }
+    </style>
 </head>
 <body class="bg-gray-100 p-4">
 
@@ -30,14 +47,31 @@
     </nav>      
 
     <nav class="bg-white p-4 rounded shadow mb-4">
-
-        <div class="flex items-center space-x-4 mb-4">
-            
+        <div class="flex items-center space-x-4 mb-4">            
                 <form id="nameChangeForm">                    
                     <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Change name</button>
-                    <input type="text" name="id" id="id" placeholder={{.name}} class="text-gray-700 font-medium">  
-                </form>              
-            
+                    <input type="text" name="name" id="name" placeholder={{.name}} class="text-gray-700 font-medium">  
+                </form>            
+        </div>
+    </nav>
+
+    <nav class="bg-white p-4 rounded shadow mb-4">
+        <div class="flex items-center space-x-4 mb-4">            
+            <form id="notifyChangeForm" class="form-container">                
+                <div class="form-row">
+                    <div class="mb-3 me-3 d-flex flex-column">
+                        <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Change notification preferences</button>
+                    </div>
+                    <div class="mb-3 me-3 d-flex flex-column">
+                        <label for="transaction" class="form-label">Transaction</label>
+                        <input type="checkbox" id="transaction" name="transaction" class="form-check-input checkbox-lg" {{if .notifyAtTransaction}}checked{{end}}> 
+                    </div>  
+                    <div class="mb-3 me-3 d-flex flex-column">
+                        <label for="daily" class="form-label">Daily status</label>
+                        <input type="checkbox" id="daily" name="daily" class="form-check-input checkbox-lg" {{if .notifyDaily}}checked{{end}}>
+                    </div>
+                </div>
+            </form>          
         </div>
     </nav>
 

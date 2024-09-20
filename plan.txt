@@ -1,4 +1,4 @@
-	- user settings page -> change notification preferences
+	- A delete user-nél és a delete database-nél legyen egy are you sure ablak...
 	
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	
 	- Coverage túllépésnél kényszerlikvidáció, ha pénzhez jut

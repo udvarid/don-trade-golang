@@ -25,6 +25,15 @@ func ChangeName(id string, name string) {
 	}
 }
 
+func ChangeNotify(id string, transaction bool, daily bool) {
+	user, err := userRepository.FindUser(id)
+	if err == nil {
+		user.Config.NotifyAtTransaction = transaction
+		user.Config.NotifyDaily = daily
+		userRepository.UpdateUser(user)
+	}
+}
+
 func DeleteUser(id string) {
 	orders := orderService.GetOrdersByUserId(id)
 	for _, order := range orders {
@@ -51,7 +60,7 @@ func GetTraders() []model.UserSummary {
 	users := userRepository.GetAllUsers()
 	for _, user := range users {
 		var userSummary model.UserSummary
-		userAssets := GetUser(user.ID).Assets
+		userAssets := GetUserStatistic(user.ID).Assets
 		userSummary.UserID = user.ID
 		userSummary.UserName = user.Name
 		userSummary.TraderSince = int(time.Since(user.Transactions[0].Date).Hours() / 24)
@@ -77,11 +86,18 @@ func GetTraders() []model.UserSummary {
 func SendDailyStatus() {
 	users := userRepository.GetAllUsers()
 	for _, user := range users {
-		communicator.SendMessageAboutStatus(GetUser(user.ID))
+		if user.Config.NotifyDaily {
+			communicator.SendMessageAboutStatus(GetUserStatistic(user.ID))
+		}
 	}
 }
 
-func GetUser(id string) model.UserStatistic {
+func GetUser(id string) model.User {
+	user, _ := userRepository.FindUser(id)
+	return user
+}
+
+func GetUserStatistic(id string) model.UserStatistic {
 	user, _ := userRepository.FindUser(id)
 
 	var userStatistic model.UserStatistic

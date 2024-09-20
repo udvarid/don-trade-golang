@@ -129,7 +129,7 @@ func CollectData(config *model.Configuration) {
 		candleSummaryToUpdate.Date = candleSummary.Date
 		candleSummaryToUpdate.Summary = candleSummary.Summary
 		candleSummaryToUpdate.Persisted = persistedItems
-		candleSummary.DailyStatusSent = false
+		candleSummaryToUpdate.DailyStatusSent = false
 		candleRepository.UpdateCandleSummary(candleSummaryToUpdate)
 	}
 

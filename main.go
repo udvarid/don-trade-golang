@@ -14,6 +14,7 @@ import (
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/repoUtil"
+	"github.com/udvarid/don-trade-golang/repository/sessionRepository"
 	userService "github.com/udvarid/don-trade-golang/user"
 )
 
@@ -56,6 +57,14 @@ func main() {
 		userService.SendDailyStatus()
 		cs.DailyStatusSent = true
 		candleRepository.UpdateCandleSummary(cs)
+	}
+
+	activeSessions := sessionRepository.GetAllSessions()
+	for _, session := range activeSessions {
+		fmt.Println(session)
+		if session.IsChecked {
+			chart.BuildUserHistoryChart(userService.GetUserHistory(session.ID, 30), session.Session)
+		}
 	}
 
 	controller.Init(&config)

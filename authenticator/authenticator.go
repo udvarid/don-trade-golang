@@ -13,7 +13,7 @@ import (
 )
 
 var sessions = make(map[string]model.SessionWithTime)
-var sessionTime = 240.0
+var sessionTime = 60.0 * 24 * 5
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -50,7 +50,13 @@ func IsValid(id string, session string) bool {
 		chart.DeleteSpecificHtml(session)
 		return false
 	}
-	return sessionInMap.Session == session
+	isValid := sessionInMap.Session == session
+	if isValid {
+		sessionInMap.SessDate = time.Now()
+		sessions[id] = sessionInMap
+		sessionRepository.AddSession(sessionInMap)
+	}
+	return isValid
 }
 
 func Logout(id string, session string) {
@@ -96,6 +102,7 @@ func Validate(activeConfiguration *model.Configuration, id string, session strin
 	if activeConfiguration.Environment == "local" {
 		fmt.Println("Local environment, validation process skipped")
 		isValidatedInTime = true
+		CheckIn(id, session)
 	} else {
 		if sendCommunicate {
 			linkToSend := activeConfiguration.RemoteAddress + "checkin/" + id + "/" + session

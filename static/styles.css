@@ -91,3 +91,27 @@
 .rounded-btn {
     border-radius: 50px; /* Make the button rounded */
 }
+
+.asset-page {
+    transition: border 0.3s ease; /* Smooth transition for the border */
+}
+
+.asset-page:hover {
+    border: 4px solid lightcoral; /* Light-red border on hover */
+}
+
+.hover-text::before {
+    content: "Click me for more details!"; /* Text to display on hover */
+    position: relative;
+    top: 50%;
+    left: 75%;
+    transform: translate(-50%, 25%);
+    padding: 5px;
+    border-radius: 5px;
+    display: none; /* Hide the text by default */
+    white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.hover-text:hover::before {
+    display: block; /* Show the text on hover */
+}

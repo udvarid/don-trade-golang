@@ -67,7 +67,7 @@
             </div>
             <div id="stockPages" class="space-y-4">
                 {{range $index, $element := .stockPages }}        
-                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" class="asset-page hover-text" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
                 {{end}}
             </div>
         </div>
@@ -81,7 +81,7 @@
             </div>
             <div id="fxPages" class="space-y-4">
                 {{range $index, $element := .fxPages }}        
-                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" class="asset-page hover-text" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
                 {{end}}
             </div>
         </div>
@@ -95,7 +95,7 @@
             </div>
             <div id="commodityPages" class="space-y-4">
                 {{range $index, $element := .commodityPages }}        
-                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" class="asset-page hover-text" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
                 {{end}}
             </div>
         </div>
@@ -109,7 +109,7 @@
             </div>
             <div id="cryptoPages" class="space-y-4">
                 {{range $index, $element := .cryptoPages }}        
-                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                    <div id="{{$element.Name}}" hx-get="/detailed/{{$element.Name}}" hx-target="body" class="asset-page hover-text" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
                 {{end}}
             </div>
         </div>

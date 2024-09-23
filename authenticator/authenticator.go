@@ -13,7 +13,7 @@ import (
 )
 
 var sessions = make(map[string]model.SessionWithTime)
-var sessionTime = 60.0 * 24.0 * 2.0
+var sessionTime = 60.0 * 24.0 * 4.0
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 

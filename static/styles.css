@@ -103,8 +103,8 @@
 .hover-text::before {
     content: "Click me for more details!"; /* Text to display on hover */
     position: relative;
-    top: 50%;
-    left: 75%;
+    top: 75%;
+    left: 90%;
     transform: translate(-50%, 25%);
     padding: 5px;
     border-radius: 5px;

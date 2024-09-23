@@ -1,10 +1,5 @@
-	- A delete user-nél és a delete database-nél legyen egy are you sure ablak...
-	
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	
 	- Coverage túllépésnél kényszerlikvidáció, ha pénzhez jut
-
-	- Automatikus/állandó eladási/vételi utasítások megadása generálisan ill. adott típusra (pl. X napos mozgó átlag magasabb, Y naposnál, vétel). Ennél külön SubUser-eket indítsunk (robotokat), melyekhez induló pénzt lehet allokálni. Legyen lehetőség a pénz összeg átcsoportosítására
-	- Limit megadása automatikus műveleteknél (pl. short is, tőkeáttét is, őssz portfóli max x%-a)
 
 	- user táblánál extra feature:
 		- táblázatban az adott assetre kattintva asset chart kerül be a chart helyére
@@ -12,8 +7,6 @@
 		- chart-okra kattintva, detailed oldal megnyitása, de új ablakon
 		- táblázatnál legyen SellAll gomb, ami market sell-t csinál
 		- egérrel ha rámegyünk egy elemre, akkor magyarázó szöveg megjelen?
-	
-	- külön oldal a bot-okról
 
 	- néhány dolgot esetleg a napi mentés során db-be menteni, így elég csak 1szer kiszámolni (pl. price history)
 
@@ -24,6 +17,11 @@
 	- Detailed oldal design: Leírás/link az egyes mutatókhoz
 	- Fő oldal, néhány bullshittel	
 
+
+	- Automatikus/állandó eladási/vételi utasítások megadása generálisan ill. adott típusra (pl. X napos mozgó átlag magasabb, Y naposnál, vétel). Ennél külön SubUser-eket indítsunk (robotokat), melyekhez induló pénzt lehet allokálni. Legyen lehetőség a pénz összeg átcsoportosítására
+	- Limit megadása automatikus műveleteknél (pl. short is, tőkeáttét is, őssz portfóli max x%-a)
+	
+	- külön oldal a bot-okról
 
 Usefull:
 	- dinamikus html töltés (Single Page method) https://htmx.org/

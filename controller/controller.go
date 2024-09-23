@@ -228,8 +228,9 @@ func validate(c *gin.Context) {
 	isValidatedInTime := authenticator.Validate(activeConfiguration, getSession.Id, newSession, true)
 
 	if isValidatedInTime {
-		c.SetCookie("id", getSession.Id, 3600, "/", activeConfiguration.RemoteAddress, false, true)
-		c.SetCookie("session", newSession, 3600, "/", activeConfiguration.RemoteAddress, false, true)
+		sessionTime := 3600 * 24 * 4
+		c.SetCookie("id", getSession.Id, sessionTime, "/", activeConfiguration.RemoteAddress, false, true)
+		c.SetCookie("session", newSession, sessionTime, "/", activeConfiguration.RemoteAddress, false, true)
 		chart.BuildUserHistoryChart(userService.GetUserHistory(getSession.Id, 30), newSession)
 		redirectTo(c, "/")
 	}
@@ -347,6 +348,7 @@ func getId(c *gin.Context) (string, string) {
 
 func isLoggedIn(c *gin.Context) bool {
 	id_cookie, err := c.Cookie("id")
+	fmt.Println("id_cookie: ", id_cookie)
 	isMissingCookie := false
 	if err != nil {
 		isMissingCookie = true

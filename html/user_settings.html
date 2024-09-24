@@ -23,6 +23,30 @@
             color: white;
             padding: 0.5rem;
         }
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 100%; /* Position the tooltip above the text */
+            left: 25%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-gray-100 p-4">
@@ -47,11 +71,11 @@
     </nav>      
 
     <nav class="bg-white p-4 rounded shadow mb-4">
-        <div class="flex items-center space-x-4 mb-4">            
+        <div class="flex items-center space-x-4 mb-4">
                 <form id="nameChangeForm">                    
                     <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Change name</button>
                     <input type="text" name="name" id="name" placeholder={{.name}} class="text-gray-700 font-medium">  
-                </form>            
+                </form>                
         </div>
     </nav>
 
@@ -62,27 +86,29 @@
                     <div class="mb-3 me-3 d-flex flex-column">
                         <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">Change notification preferences</button>
                     </div>
-                    <div class="mb-3 me-3 d-flex flex-column">
+                    <div class="mb-3 me-3 d-flex flex-column tooltip">
                         <label for="transaction" class="form-label">Transaction</label>
                         <input type="checkbox" id="transaction" name="transaction" class="form-check-input checkbox-lg" {{if .notifyAtTransaction}}checked{{end}}> 
+                        <span class="tooltiptext">Do you want mail about your executed orders?</span>            
                     </div>  
-                    <div class="mb-3 me-3 d-flex flex-column">
+                    <div class="mb-3 me-3 d-flex flex-column tooltip">
                         <label for="daily" class="form-label">Daily status</label>
                         <input type="checkbox" id="daily" name="daily" class="form-check-input checkbox-lg" {{if .notifyDaily}}checked{{end}}>
+                        <span class="tooltiptext">Do you want daily mail about summary of your portfolio?</span>            
                     </div>
                 </div>
             </form>          
         </div>
     </nav>
 
-    <nav class="bg-white p-4 rounded shadow mb-4">
+    <nav class="bg-white p-4 rounded shadow mb-4 tooltip">
         <div class="flex items-center space-x-4 mb-4">
             <a class="bg-pink-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" href="/user_delete">Delete User!</a>
             <div class="text-gray-700 font-medium">
-                This will delete the user. All of user's data, transaction history, order, etc. will be permanently deleted!
-            </div>
+                This will delete the user. All of user's data, transaction history, order, etc. will be permanently deleted!                
+            </div>            
+            <span class="tooltiptext">Warning, this is irreversible!!!</span>            
         </div>        
-
     </nav>
 
     <script src="/static/script_user_settings.js"></script>

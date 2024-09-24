@@ -1,12 +1,17 @@
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	
 	- Coverage túllépésnél kényszerlikvidáció, ha pénzhez jut
+		- felületen extra gomb (sell for debt) -> ekkor USD-t is meg lehet adni
+		- ha az eladandó mennyiség így több, mint amink van, akkor a különbözet a debt
+		- User model-be egy új Debt mező, hasonló, mint az Assets
+		- Vásárlásnál meg kell nézni van e adott típusból debt, ha van, azt kell előbb megszüntetni, a különbözet lehet csak asset
+		- extra korlát: credit limit, ami 50%. Aktuális érték: Debt-ek aktuális értéke / (portfolio - debt érték). Az 50% és aktuális érték közti különbség az addicionális debt korlátja
+		- HallOfFame ill. user statisticnél külön mutató a credit limitre
 
 	- user táblánál extra feature:
 		- táblázatban az adott assetre kattintva asset chart kerül be a chart helyére
 		- táblázatban a 'Total' ra kattinva a portfólió chart kerül be
 		- chart-okra kattintva, detailed oldal megnyitása, de új ablakon
-		- táblázatnál legyen SellAll gomb, ami market sell-t csinál
-		- egérrel ha rámegyünk egy elemre, akkor magyarázó szöveg megjelen?
+		- táblázatnál legyen SellAll gomb, ami market sell-t csinál		
 
 	- néhány dolgot esetleg a napi mentés során db-be menteni, így elég csak 1szer kiszámolni (pl. price history)
 

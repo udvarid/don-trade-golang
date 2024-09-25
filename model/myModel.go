@@ -140,6 +140,7 @@ type AssetWithValue struct {
 
 type AssetWithValueInString struct {
 	Item      string `json:"item"`
+	ItemPure  string `json:"item_pure"`
 	Volume    string `json:"volume"`
 	Price     string `json:"price"`
 	Value     string `json:"value"`

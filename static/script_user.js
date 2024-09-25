@@ -1,3 +1,27 @@
+function handleClearButtonClick(pureItem) {
+    console.log("Clear button clicked with parameter:", pureItem);
+    
+    fetch("/clear_item/"+pureItem, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {                
+        if (response.redirected) {
+            const redirectUrl = response.url;
+            window.location.href = redirectUrl;
+            } 
+        else {
+            return response.json();
+        }
+    })
+    .catch(error => {      
+    console.error("Error:", error);
+    });
+}
+
+
 document.addEventListener("DOMContentLoaded", function() {
     const marketType = document.getElementById("marketType");
     const orderType = document.getElementById("orderType");

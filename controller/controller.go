@@ -40,6 +40,7 @@ func Init(config *model.Configuration) {
 	router.GET("/users", users)
 	router.GET("/user_settings", userSettings)
 	router.GET("/user_delete", userDelete)
+	router.GET("/clear_item/:item", clearItem)
 	router.POST("/addorder", addorder)
 	router.GET("/deleteOrder/:order", deleteOrder)
 	router.GET("/admin", admin)
@@ -62,6 +63,16 @@ func logout(c *gin.Context) {
 	c.SetCookie("id", "", -1, "/", "localhost", false, true)
 	c.SetCookie("session", "", -1, "/", "localhost", false, true)
 	redirectTo(c, "/")
+}
+
+func clearItem(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	userId, _ := getId(c)
+	orderService.MakeClearOrder(userId, c.Param("item"))
+	redirectTo(c, "/user")
 }
 
 func deleteOrder(c *gin.Context) {
@@ -137,7 +148,8 @@ func user(c *gin.Context) {
 	c.HTML(http.StatusOK, "user.html", gin.H{
 		"title":         "user Page",
 		"name":          userStatistic.Name,
-		"assets":        transformUserAssetToString(userStatistic.Assets[:len(userStatistic.Assets)-1]),
+		"assets":        transformUserAssetToString(userStatistic.Assets[:len(userStatistic.Assets)-2]),
+		"usd":           transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-2 : len(userStatistic.Assets)-1])[0],
 		"totalAssets":   transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-1:])[0],
 		"transactions":  transformTransactionToString(userStatistic.Transactions),
 		"candleSummary": candleSummary.Summary,
@@ -441,6 +453,7 @@ func transformUserAssetToString(assets []model.AssetWithValue) []model.AssetWith
 		} else {
 			newAsset.Item = asset.Item + " - " + items[asset.Item].Description
 		}
+		newAsset.ItemPure = asset.Item
 		newAsset.Volume = p.Sprintf("%d", int(asset.Volume))
 		newAsset.Price = fmt.Sprintf("%.2f", asset.Price)
 		newAsset.Value = p.Sprintf("%d", int(asset.Value))

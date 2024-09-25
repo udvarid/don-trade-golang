@@ -28,6 +28,28 @@ func GetOrdersByUserId(userId string) []model.Order {
 	return orders
 }
 
+func MakeClearOrder(userId string, item string) {
+	items := collector.GetItemsFromItemMap(collector.GetItems())
+	_, exist := items[item]
+	if !exist {
+		return
+	}
+	orders := GetOrdersByUserId(userId)
+	for _, order := range orders {
+		if order.Item == item {
+			return
+		}
+	}
+	var clearOrder model.Order
+	clearOrder.AllIn = true
+	clearOrder.Direction = "SELL"
+	clearOrder.Item = item
+	clearOrder.Type = "MARKET"
+	clearOrder.UserID = userId
+	clearOrder.ValidDays = 1
+	AddOrder(clearOrder)
+}
+
 func ValidateAndAddOrder(orderInString model.OrderInString, userId string) {
 	var order model.Order
 	items := collector.GetItemsFromItemMap(collector.GetItems())

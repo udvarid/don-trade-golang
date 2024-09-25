@@ -41,6 +41,7 @@
                             <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Actual price</th>
                             <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Value</th>                            
                             <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Profit</th>
+                            <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -51,8 +52,20 @@
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Price}}</td>
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Value}}</td>                            
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Profit}}</td>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">
+                                <button  type="submit" class="bg-red-300 hover:bg-red-700 text-white font-bold py-1 px-1 rounded" onclick="handleClearButtonClick('{{.ItemPure}}')">
+                                    Clear
+                                </button>
+                            </td>
                         </tr>
                         {{end}}
+                        <tr>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.usd.Item}}</td>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.usd.Volume}}</td>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.usd.Price}}</td>
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.usd.Value}}</td>                            
+                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.usd.Profit}}</td>
+                        </tr>
                         <tr>
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.totalAssets.Item}}</td>
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller"> - </td>

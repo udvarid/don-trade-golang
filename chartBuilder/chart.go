@@ -523,6 +523,10 @@ func barChart(date []string, allAssets [][]float64, assets []string) *charts.Bar
 		charts.WithYAxisOpts(opts.YAxis{
 			Name: "$K",
 		}),
+		charts.WithLegendOpts(opts.Legend{
+			Right: "right",
+			Top:   "middle",
+		}),
 	)
 	bar.SetXAxis(date)
 	for i, assetArray := range allAssets {

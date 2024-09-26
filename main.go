@@ -61,7 +61,6 @@ func main() {
 
 	activeSessions := sessionRepository.GetAllSessions()
 	for _, session := range activeSessions {
-		fmt.Println(session)
 		if session.IsChecked {
 			chart.BuildUserHistoryChart(userService.GetUserHistory(session.ID, 30), session.Session)
 		}

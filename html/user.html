@@ -41,7 +41,18 @@
                             <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Actual price</th>
                             <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Value</th>                            
                             <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Profit</th>
-                            <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider"></th>
+                            <th class="py-1 px-1 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">
+                                <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-0.5 px-0.5 rounded tooltip">
+                                    Chart
+                                    <span class="tooltiptext">Candle chart of this item</span>
+                                </button> 
+                            </th>
+                            <th class="py-1 px-1 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">                                
+                                <button  type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-0.5 px-1 rounded tooltip">
+                                    Clear
+                                    <span class="tooltiptext">Create Market Sell for all of this asset</span>
+                                </button>                                
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -52,8 +63,13 @@
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Price}}</td>
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Value}}</td>                            
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Profit}}</td>
-                            <td class="py-2 px-4 border-b border-gray-200 text-smaller">
-                                <button  type="submit" class="bg-red-300 hover:bg-red-700 text-white font-bold py-1 px-1 rounded" onclick="handleClearButtonClick('{{.ItemPure}}')">
+                            <td class="py-1 px-1 border-b border-gray-200 text-smaller">
+                                <button class="bg-green-300 hover:bg-green-700 text-white font-bold py-0.5 px-0.5 rounded" onclick="handleChangeChartButtonClick('{{.ItemPure}}')">
+                                    Chart
+                                </button>                                
+                            </td>
+                            <td class="py-1 px-1 border-b border-gray-200 text-smaller">
+                                <button  type="submit" class="bg-red-300 hover:bg-red-700 text-white font-bold py-0.5 px-1 rounded" onclick="handleClearButtonClick('{{.ItemPure}}')">
                                     Clear
                                 </button>
                             </td>
@@ -72,16 +88,23 @@
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller"> - </td>
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.totalAssets.Value}}</td>                            
                             <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.totalAssets.Profit}}</td>
+                            <td class="py-1 px-1 border-b border-gray-200 text-smaller">
+                                <button class="bg-green-300 hover:bg-green-700 text-white font-bold py-0.5 px-0.5 rounded" onclick="handleChangeChartButtonClick('Total')">
+                                    Chart
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>                
         </div>
         <div id="barChart" class="p-4 bg-white rounded shadow">
-            {{.barChart.Page}}
+            {{range $index, $element := .charts }}        
+                <div id="chart-{{$element.Name}}" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+            {{end}}            
         </div>
-        <div id="barChart" class="p-4 bg-white rounded shadow">
+        <div id="tranactions" class="p-4 bg-white rounded shadow">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div id="Assets" class="p-4 bg-white rounded shadow">  
+                <div class="p-4 bg-white rounded shadow">  
                     <h2 class="text-l font-bold text-blue-600 my-4">Transactions (last 10)</h2>
                     <table class="min-w-full bg-blue-50">
                         <thead>
@@ -102,13 +125,13 @@
                         </tbody>
                     </table>   
                 </div>
-                <div id="Assets" class="p-4 bg-white rounded shadow">  
+                <div id="bots" class="p-4 bg-white rounded shadow">  
                     bot list
                 </div>
             </div>
         </div>
       </div>
-      <div id="Assets" class="p-4 bg-white rounded shadow">
+      <div id="orders" class="p-4 bg-white rounded shadow">
         <form id="orderForm" class="d-flex flex-row align-items-start flex-wrap p-3" style="background-color: #e0f7fa;">
             <div class="mb-3 me-3 d-flex flex-column">
                 <label for="assetList" class="form-label p-1 tooltip" style="background-color: #58a8d3; color: white;">

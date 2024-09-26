@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/udvarid/don-trade-golang/authenticator"
@@ -119,9 +120,6 @@ func userSettings(c *gin.Context) {
 
 func users(c *gin.Context) {
 	traders := userService.GetTraders()
-	for _, trader := range traders {
-		fmt.Println(trader)
-	}
 	c.HTML(http.StatusOK, "users.html", gin.H{
 		"title":   "users Page",
 		"traders": transformTradersToString(traders),
@@ -137,11 +135,24 @@ func user(c *gin.Context) {
 	userStatistic := userService.GetUserStatistic(userId)
 	candleSummary := candleRepository.GetAllCandleSummaries()[0]
 
+	var charts []HtmlWithInfo
 	var pageBar HtmlWithInfo
 	html, _ := os.ReadFile("html/kline-" + session + ".html")
-	pageBar.Page = template.HTML(string(html))
-	pageBar.Name = "Portfolio"
+	htmlContent := string(html)
+	htmlContent = strings.Replace(htmlContent, "height:500px;", "height:450px;", 1)
+	pageBar.Page = template.HTML(htmlContent)
+	pageBar.Name = "Total"
 	pageBar.Description = "Detailed portfolio history for the user"
+	charts = append(charts, pageBar)
+	for _, asset := range userStatistic.Assets[:len(userStatistic.Assets)-2] {
+		html_asset, _ := os.ReadFile("html/kline-" + asset.Item + ".html")
+		htmlContent := string(html_asset)
+		htmlContent = strings.Replace(htmlContent, "width:900px;height:500px;", "width:500px;height:450px;", 1)
+		var assetChart HtmlWithInfo
+		assetChart.Page = template.HTML(htmlContent)
+		assetChart.Name = asset.Item
+		charts = append(charts, assetChart)
+	}
 
 	orders := orderService.GetOrdersByUserId(userId)
 
@@ -153,7 +164,7 @@ func user(c *gin.Context) {
 		"totalAssets":   transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-1:])[0],
 		"transactions":  transformTransactionToString(userStatistic.Transactions),
 		"candleSummary": candleSummary.Summary,
-		"barChart":      pageBar,
+		"charts":        charts,
 		"orders":        transformOrdersToString(orders),
 	})
 }
@@ -360,7 +371,6 @@ func getId(c *gin.Context) (string, string) {
 
 func isLoggedIn(c *gin.Context) bool {
 	id_cookie, err := c.Cookie("id")
-	fmt.Println("id_cookie: ", id_cookie)
 	isMissingCookie := false
 	if err != nil {
 		isMissingCookie = true

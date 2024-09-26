@@ -1,3 +1,17 @@
+function handleChangeChartButtonClick(item) {    
+    console.log(item)
+    const divs = document.querySelectorAll(`#barChart div`);        
+    divs.forEach(div => {                
+        if (div.id.startsWith("chart-")) {
+            if ("chart-" + item === div.id) {            
+                div.style.display = 'block';
+            } else {                            
+                div.style.display = 'none';
+            }            
+        }   
+    });    
+}
+
 function handleClearButtonClick(pureItem) {
     console.log("Clear button clicked with parameter:", pureItem);
     

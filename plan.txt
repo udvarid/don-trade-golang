@@ -1,7 +1,6 @@
 	- user táblánál extra feature:
-		- táblázatban az adott assetre kattintva asset chart kerül be a chart helyére
-		- táblázatban a 'Total' ra kattinva a portfólió chart kerül be
 		- chart-okra kattintva, detailed oldal megnyitása, de új ablakon
+		- ordereknél lehetőség a valid days ill. a limit price változtatásra
 
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	
 	- Coverage túllépésnél kényszerlikvidáció, ha pénzhez jut

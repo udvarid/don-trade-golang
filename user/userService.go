@@ -60,7 +60,7 @@ func GetTraders() []model.UserSummary {
 	users := userRepository.GetAllUsers()
 	for _, user := range users {
 		var userSummary model.UserSummary
-		userAssets := GetUserStatistic(user.ID).Assets
+		userAssets := GetUserStatistic(user.ID, false).Assets
 		userSummary.UserID = user.ID
 		userSummary.UserName = user.Name
 		userSummary.TraderSince = int(time.Since(user.Transactions[0].Date).Hours() / 24)
@@ -87,7 +87,7 @@ func SendDailyStatus() {
 	users := userRepository.GetAllUsers()
 	for _, user := range users {
 		if user.Config.NotifyDaily {
-			communicator.SendMessageAboutStatus(GetUserStatistic(user.ID))
+			communicator.SendMessageAboutStatus(GetUserStatistic(user.ID, false))
 		}
 	}
 }
@@ -97,19 +97,23 @@ func GetUser(id string) model.User {
 	return user
 }
 
-func GetUserStatistic(id string) model.UserStatistic {
+func GetUserStatistic(id string, onlyTransactions bool) model.UserStatistic {
 	user, _ := userRepository.FindUser(id)
 
 	var userStatistic model.UserStatistic
 	userStatistic.ID = user.ID
 	userStatistic.Name = user.Name
-	if len(user.Transactions) > 10 {
-		userStatistic.Transactions = user.Transactions[len(user.Transactions)-10:]
+	transactionLimit := 25
+	if onlyTransactions {
+		if len(user.Transactions) > transactionLimit {
+			userStatistic.Transactions = user.Transactions[len(user.Transactions)-transactionLimit:]
+		} else {
+			userStatistic.Transactions = user.Transactions
+		}
 	} else {
-		userStatistic.Transactions = user.Transactions
+		candleSummary := candleRepository.GetAllCandleSummaries()[0]
+		userStatistic.Assets = getAssetsWithValue(user.Assets, candleSummary)
 	}
-	candleSummary := candleRepository.GetAllCandleSummaries()[0]
-	userStatistic.Assets = getAssetsWithValue(user.Assets, candleSummary)
 	return userStatistic
 }
 

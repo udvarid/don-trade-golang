@@ -38,6 +38,7 @@ func Init(config *model.Configuration) {
 	router.GET("/", startPage)
 	router.GET("/logout", logout)
 	router.GET("/user", user)
+	router.GET("/transactions", transactions)
 	router.GET("/users", users)
 	router.GET("/user_settings", userSettings)
 	router.GET("/user_delete", userDelete)
@@ -126,28 +127,41 @@ func users(c *gin.Context) {
 	})
 }
 
+func transactions(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	userId, _ := getId(c)
+	userStatistic := userService.GetUserStatistic(userId, true)
+
+	c.HTML(http.StatusOK, "transactions.html", gin.H{
+		"title":        "Transactions Page",
+		"name":         userStatistic.Name,
+		"transactions": transformTransactionToString(userStatistic.Transactions),
+	})
+}
+
 func user(c *gin.Context) {
 	isLoggedIn := isLoggedIn(c)
 	if !isLoggedIn {
 		redirectTo(c, "/")
 	}
 	userId, session := getId(c)
-	userStatistic := userService.GetUserStatistic(userId)
+	userStatistic := userService.GetUserStatistic(userId, false)
 	candleSummary := candleRepository.GetAllCandleSummaries()[0]
 
 	var charts []HtmlWithInfo
 	var pageBar HtmlWithInfo
 	html, _ := os.ReadFile("html/kline-" + session + ".html")
-	htmlContent := string(html)
-	htmlContent = strings.Replace(htmlContent, "height:500px;", "height:450px;", 1)
-	pageBar.Page = template.HTML(htmlContent)
+	pageBar.Page = template.HTML(string(html))
 	pageBar.Name = "Total"
 	pageBar.Description = "Detailed portfolio history for the user"
 	charts = append(charts, pageBar)
 	for _, asset := range userStatistic.Assets[:len(userStatistic.Assets)-2] {
 		html_asset, _ := os.ReadFile("html/kline-" + asset.Item + ".html")
 		htmlContent := string(html_asset)
-		htmlContent = strings.Replace(htmlContent, "width:900px;height:500px;", "width:500px;height:450px;", 1)
+		htmlContent = strings.Replace(htmlContent, "width:900px", "width:750px", 1)
 		var assetChart HtmlWithInfo
 		assetChart.Page = template.HTML(htmlContent)
 		assetChart.Name = asset.Item
@@ -162,7 +176,6 @@ func user(c *gin.Context) {
 		"assets":        transformUserAssetToString(userStatistic.Assets[:len(userStatistic.Assets)-2]),
 		"usd":           transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-2 : len(userStatistic.Assets)-1])[0],
 		"totalAssets":   transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-1:])[0],
-		"transactions":  transformTransactionToString(userStatistic.Transactions),
 		"candleSummary": candleSummary.Summary,
 		"charts":        charts,
 		"orders":        transformOrdersToString(orders),

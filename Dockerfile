@@ -10,6 +10,7 @@ COPY ./html/admin.html ./html/
 COPY ./html/user.html ./html/
 COPY ./html/users.html ./html/
 COPY ./html/user_settings.html ./html/
+COPY ./html/transactions.html ./html/
 COPY ./static/* ./static/
 RUN mkdir /db
 

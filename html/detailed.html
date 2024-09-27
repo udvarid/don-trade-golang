@@ -1,19 +1,32 @@
-<nav class="bg-white p-4 rounded shadow mb-4">
-  <div class="flex justify-between items-center">
-    <div class="p-4 text-xl font-bold text-blue-500">
-      {{.description}} - {{.name}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://unpkg.com/htmx.org@2.0.2"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="/static/styles.css" rel="stylesheet">
+    <title>Dynamic Display</title>
+</head>
+<body>
+  <nav class="bg-white p-4 rounded shadow mb-4">
+    <div class="flex justify-between items-center">
+      <div class="p-4 text-xl font-bold text-blue-500">
+        {{.description}} - {{.name}}
+      </div>
+      <div class="p-4 ml-auto">
+        <a class="text-l font-bold text-red-500" href="/">To main page</a>
+      </div>
     </div>
-    <div class="p-4 ml-auto">
-      <a class="text-l font-bold text-red-500" href="/">To main page</a>
-    </div>
-  </div>
-</nav>  
+  </nav>  
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-  <div id="{{.detailedPage1.Name}}" class="p-4 bg-white rounded shadow">
-      {{.detailedPage1.Page}}
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div id="{{.detailedPage1.Name}}" class="p-4 bg-white rounded shadow">
+        {{.detailedPage1.Page}}
+    </div>
+    <div id="{{.detailedPage2.Name}}" class="p-4 bg-white rounded shadow">
+        {{.detailedPage2.Page}}
+    </div>
   </div>
-  <div id="{{.detailedPage2.Name}}" class="p-4 bg-white rounded shadow">
-      {{.detailedPage2.Page}}
-  </div>
-</div>
+</body>

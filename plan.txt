@@ -1,5 +1,4 @@
 	- user táblánál extra feature:
-		- chart-okra kattintva, detailed oldal megnyitása, de új ablakon
 		- ordereknél lehetőség a valid days ill. a limit price változtatásra
 
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	
@@ -13,6 +12,8 @@
 		- user táblázatnál a clear gombra nyomva ha hitelem van, akkor egy BUY order jelentkezzen pont a hiányzó mennyiségre
 
 	- néhány dolgot esetleg a napi mentés során db-be menteni, így elég csak 1szer kiszámolni (pl. price history)
+
+	- ha nem adunk meg valid dayst, akkor az lejárat nélküli order
 
 	- függvény hívások átnézése, ahol lehet ott pointert használjunk
 

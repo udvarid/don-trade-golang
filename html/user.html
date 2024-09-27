@@ -47,7 +47,7 @@
                             <th class="py-1 px-1 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">
                                 <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-0.5 px-0.5 rounded tooltip">
                                     Chart
-                                    <span class="tooltiptext">Candle chart of this item</span>
+                                    <span class="tooltiptext">Candle chart of this asset</span>
                                 </button> 
                             </th>
                             <th class="py-1 px-1 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">                                
@@ -102,7 +102,12 @@
         </div>
         <div id="barChart" class="p-4 bg-white rounded shadow">
             {{range $index, $element := .charts }}        
-                <div id="chart-{{$element.Name}}" style="display: {{if eq $index 0}}block{{else}}none{{end}};">{{$element.Page}}</div>    
+                <div id="chart-{{$element.Name}}" 
+                     class="{{if ne $index 0}}hover-text{{end}}" 
+                     style="display: {{if eq $index 0}}block{{else}}none{{end}};"
+                     {{if gt $index 0}}onclick="window.open('/detailed/{{$element.Name}}', '_blank')"{{end}}>
+                     {{$element.Page}}
+                </div>    
             {{end}}            
         </div>
       </div>

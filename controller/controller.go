@@ -44,6 +44,7 @@ func Init(config *model.Configuration) {
 	router.GET("/user_delete", userDelete)
 	router.GET("/clear_item/:item", clearItem)
 	router.POST("/addorder", addorder)
+	router.POST("/modify_order", modifyOrder)
 	router.GET("/deleteOrder/:order", deleteOrder)
 	router.GET("/admin", admin)
 	router.GET("/reset_db", resetDb)
@@ -212,6 +213,18 @@ func adminOrder(c *gin.Context) {
 		redirectTo(c, "/")
 	}
 	orderManager.ServeOrders(false, userId)
+}
+
+func modifyOrder(c *gin.Context) {
+	isLoggedIn := isLoggedIn(c)
+	if !isLoggedIn {
+		redirectTo(c, "/")
+	}
+	userId, _ := getId(c)
+	var order model.OrderModifyInString
+	c.BindJSON(&order)
+	orderService.ModifyOrder(userId, order)
+	redirectTo(c, "/user")
 }
 
 func addorder(c *gin.Context) {

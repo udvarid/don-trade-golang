@@ -50,6 +50,40 @@ func MakeClearOrder(userId string, item string) {
 	AddOrder(clearOrder)
 }
 
+func ModifyOrder(userId string, orderModify model.OrderModifyInString) {
+	orders := GetOrdersByUserId(userId)
+	for _, order := range orders {
+		if strconv.Itoa(order.ID) == orderModify.OrderId {
+			validChange := false
+			if order.Type == "LIMIT" || order.Type == "STOP-LIMIT" {
+				limitPrice, err := strconv.ParseFloat(orderModify.LimitPrice, 64)
+				if err != nil {
+					fmt.Println("Error converting LimitPrice:", err)
+					return
+				}
+				if limitPrice > 0.0 && limitPrice != order.LimitPrice {
+					order.LimitPrice = limitPrice
+					validChange = true
+				}
+			}
+
+			validDays, err := strconv.Atoi(orderModify.ValidDays)
+			if err != nil {
+				fmt.Println("Error converting ValidDays:", err)
+				return
+			}
+			if validDays > 0 && validDays != order.ValidDays {
+				order.ValidDays = validDays
+				validChange = true
+			}
+
+			if validChange {
+				orderRepository.UpdateOrder(order)
+			}
+		}
+	}
+}
+
 func ValidateAndAddOrder(orderInString model.OrderInString, userId string) {
 	var order model.Order
 	items := collector.GetItemsFromItemMap(collector.GetItems())

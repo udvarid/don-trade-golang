@@ -178,6 +178,12 @@ type Order struct {
 	ValidDays     int     `json:"valid_days"`
 }
 
+type OrderModifyInString struct {
+	OrderId    string `json:"order_id"`
+	LimitPrice string `json:"limit_price"`
+	ValidDays  string `json:"valid_days"`
+}
+
 type OrderInString struct {
 	ID            int    `json:"id"`
 	UserID        string `json:"user_id"`

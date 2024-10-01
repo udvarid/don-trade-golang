@@ -1,6 +1,3 @@
-	- user táblánál extra feature:
-		- ordereknél lehetőség a valid days ill. a limit price változtatásra
-
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	
 	- Coverage túllépésnél kényszerlikvidáció, ha pénzhez jut
 		- felületen extra gomb (sell for debt) -> ekkor USD-t is meg lehet adni

@@ -199,6 +199,18 @@
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Usd</th>
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">All in</th>
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Valid days</th>
+                       <th class="py-1 px-1 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">
+                        <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-0.5 px-0.5 rounded tooltip">
+                            Modify
+                            <span class="tooltiptext">Modify the limit price and/or valid days</span>
+                        </button> 
+                    </th>
+                    <th class="py-1 px-1 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">                                
+                        <button  type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-0.5 px-1 rounded tooltip">
+                            Delete
+                            <span class="tooltiptext">Delete the order</span>
+                        </button>                                
+                    </th>
                    </tr>
                </thead>
                <tbody>
@@ -206,17 +218,31 @@
                    <tr>
                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Item}}</td>
                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Direction}}</td>
-                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Type}}</td>                                
-                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.LimitPrice}}</td>                                
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Type}}</td>     
+                       {{if or (eq .Type "LIMIT") (eq .Type "STOP-LIMIT")}}
+                            <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">
+                                <input type="number" id="limitPrice-{{.ID}}" step="0.01" min="0.01" value="{{.LimitPrice}}" class="form-control" />
+                            </td>
+                       {{else}}
+                            <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.LimitPrice}}</td> 
+                       {{end}}                        
                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.NumberOfItems}}</td>                                
                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Usd}}</td>                                
                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.AllIn}}</td>                                
-                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.ValidDays}}</td>                                
+                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">
+                            <input type="number" id="validDays-{{.ID}}" step="1" min="1" value="{{.ValidDays}}" class="form-control" />
+                        </td>                              
+                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">                                        
+                            <button class="bg-green-300 hover:bg-green-700 text-white font-bold py-0.5 px-0.5 rounded" onclick="handleModifyOrderButtonClick('{{.ID}}')">
+                                Modify
+                            </button>  
+                        </td>
                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">
                             <div>
-                                <a class="text-l font-bold text-red-500" href="/deleteOrder/{{.ID}}">Delete</a>
+                                <a class="bg-red-300 hover:bg-red-700 text-white font-bold py-0.5 px-0.5 rounded" href="/deleteOrder/{{.ID}}">Delete</a>
                             </div>
-                        </td>                                
+                        </td>
+
                    </tr>
                    {{end}}
                </tbody>

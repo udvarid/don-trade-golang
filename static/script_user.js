@@ -12,6 +12,7 @@ function handleChangeChartButtonClick(item) {
     });    
 }
 
+
 function handleClearButtonClick(pureItem) {
     console.log("Clear button clicked with parameter:", pureItem);
     
@@ -22,6 +23,44 @@ function handleClearButtonClick(pureItem) {
         }
     })
     .then(response => {                
+        if (response.redirected) {
+            const redirectUrl = response.url;
+            window.location.href = redirectUrl;
+            } 
+        else {
+            return response.json();
+        }
+    })
+    .catch(error => {      
+    console.error("Error:", error);
+    });
+}
+
+
+function handleModifyOrderButtonClick(id) {
+    const limitPriceElement = document.getElementById("limitPrice-"+id);
+    const limitPrice = limitPriceElement ? limitPriceElement.value : "0";
+    const validDays = document.getElementById("validDays-"+id).value;
+
+    const formData = {
+        order_id: id,
+        limit_price: limitPrice,
+        valid_days: validDays
+    };
+    
+    // Convert form data to JSON
+    const jsonData = JSON.stringify(formData); 
+
+    console.log(jsonData)
+    
+    fetch("/modify_order", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: jsonData
+    })
+    .then(response => {        
         if (response.redirected) {
             const redirectUrl = response.url;
             window.location.href = redirectUrl;

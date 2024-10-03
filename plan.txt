@@ -1,3 +1,5 @@
+	- detailed page-ról lehessen selecttel átmenni másikra
+
 	- Legyen lehetőség short ügyletekre is, ezt hitellel (50%-os credit coverage)	
 	- Coverage túllépésnél kényszerlikvidáció, ha pénzhez jut
 		- felületen extra gomb (sell for debt) -> ekkor USD-t is meg lehet adni

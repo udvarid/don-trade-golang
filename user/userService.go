@@ -216,11 +216,11 @@ func GetUserHistory(id string, days int) []model.HistoryElement {
 			historyElement.Date = periodStart
 			historyElement.Items = make(map[string]float64)
 			for item, price := range priceElement.Items {
-				muliplier := 0.0
+				multiplier := 0.0
 				if len(volumenElement.Items) > 0 {
-					muliplier = volumenElement.Items[item]
+					multiplier = volumenElement.Items[item]
 				}
-				historyElement.Items[item] = price * muliplier
+				historyElement.Items[item] = price * multiplier
 			}
 
 			result = append(result, historyElement)
@@ -338,13 +338,15 @@ func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary
 				}
 				value := price * volume
 				totalValue += value
-				result = append(result, model.AssetWithValue{
-					Item:      asset,
-					Volume:    volume,
-					Price:     price,
-					Value:     value,
-					BookValue: bookValue,
-				})
+				if value >= 0.1 {
+					result = append(result, model.AssetWithValue{
+						Item:      asset,
+						Volume:    volume,
+						Price:     price,
+						Value:     value,
+						BookValue: bookValue,
+					})
+				}
 			}
 		}
 	}

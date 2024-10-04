@@ -444,7 +444,7 @@ func transformOrdersToString(orders []model.Order) []model.OrderInString {
 		if math.Abs(order.LimitPrice) < 0.0001 {
 			orderInString.LimitPrice = "-"
 		} else {
-			orderInString.LimitPrice = fmt.Sprintf("%.1f", order.LimitPrice)
+			orderInString.LimitPrice = fmt.Sprintf("%.2f", order.LimitPrice)
 		}
 		if math.Abs(order.NumberOfItems) < 0.0001 {
 			orderInString.NumberOfItems = "-"

@@ -51,6 +51,7 @@ func createUserIfNotExists(id string) {
 		newUser.Config = getDefaultUserConfig()
 		newUser.Transactions = getInitTransactions()
 		newUser.Assets = getInitAssets()
+		newUser.Debts = make(map[string][]model.VolumeWithPrice)
 		userRepository.AddUser(newUser)
 	}
 }

@@ -67,17 +67,12 @@ func main() {
 		}
 	}
 
-	donat, _ := userRepository.FindUser("udvarid@hotmail.com")
-	debts := make(map[string][]model.VolumeWithPrice)
-	var modelWPList []model.VolumeWithPrice
-	var modelWp model.VolumeWithPrice
-	modelWp.Price = 130.0
-	modelWp.Volume = -100.0
-	modelWPList = append(modelWPList, modelWp)
-
-	debts["NVDA"] = modelWPList
-	donat.Debts = debts
-	userRepository.UpdateUser(donat)
+	for _, user := range userRepository.GetAllUsers() {
+		if len(user.Debts) == 0 {
+			user.Debts = make(map[string][]model.VolumeWithPrice)
+			userRepository.UpdateUser(user)
+		}
+	}
 
 	controller.Init(&config)
 }

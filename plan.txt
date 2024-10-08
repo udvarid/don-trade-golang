@@ -2,6 +2,8 @@
 
 	- Tranzakció history tisztítás: 3 hónappal ezelőtti állapot szerint induló tranzakció és ahhoz hozzácsapni a rákövetkezőket. Így a tranzakciók listája nem nő végtelenre.
 
+	- a main-ben a debts rendberakás kódrészt kitörölni
+	
 	- short		
 		- extra korlát: credit limit, ami 50%. Aktuális érték: Debt-ek aktuális értéke / (portfolio - debt érték). Az 50% és aktuális érték közti különbség az addicionális debt korlátja
 		- ha az eladandó mennyiség így több, mint amink van, akkor a különbözet a debt		

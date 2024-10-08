@@ -73,6 +73,7 @@ func GetTraders() []model.UserSummary {
 			}
 		}
 		userSummary.Invested = invested / total
+		userSummary.CreditLimit = calculateCreditLimit(userAssets)
 		result = append(result, userSummary)
 	}
 
@@ -112,9 +113,24 @@ func GetUserStatistic(id string, onlyTransactions bool) model.UserStatistic {
 		}
 	} else {
 		candleSummary := candleRepository.GetAllCandleSummaries()[0]
-		userStatistic.Assets = getAssetsWithValue(user.Assets, candleSummary)
+		userStatistic.Assets = getAssetsWithValue(user.Assets, user.Debts, candleSummary)
+		userStatistic.CreditLimit = calculateCreditLimit(userStatistic.Assets)
 	}
 	return userStatistic
+}
+
+func calculateCreditLimit(assets []model.AssetWithValue) float64 {
+	brutto := 0.0
+	debt := 0.0
+	for _, asset := range assets {
+		if asset.Item == "Total" {
+			brutto = asset.Value
+		} else if asset.Item != "USD" && asset.Value < 0 {
+			debt += asset.Value
+		}
+	}
+	netto := brutto + debt
+	return math.Abs(debt / netto)
 }
 
 func GetPriceChanges() []model.PriceChanges {
@@ -323,10 +339,25 @@ func getFirstDate(candles []model.Candle, itemNames []string, pureToday time.Tim
 	return firstDate, nil
 }
 
-func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary model.CandleSummary) []model.AssetWithValue {
+func joinAssetsAndDebts(assets map[string][]model.VolumeWithPrice, debts map[string][]model.VolumeWithPrice) map[string][]model.VolumeWithPrice {
+	result := make(map[string][]model.VolumeWithPrice)
+	for asset, volumes := range assets {
+		result[asset] = volumes
+	}
+	for asset, volumes := range debts {
+		result[asset] = volumes
+	}
+	return result
+}
+
+func getAssetsWithValue(
+	assets map[string][]model.VolumeWithPrice,
+	debts map[string][]model.VolumeWithPrice,
+	candleSummary model.CandleSummary) []model.AssetWithValue {
+	assetsAndDebts := joinAssetsAndDebts(assets, debts)
 	var result []model.AssetWithValue
 	totalValue := 0.0
-	for asset, volumes := range assets {
+	for asset, volumes := range assetsAndDebts {
 		if asset != "USD" {
 			price := candleSummary.Summary[asset].LastPrice
 			if len(volumes) > 0 {
@@ -354,7 +385,7 @@ func getAssetsWithValue(assets map[string][]model.VolumeWithPrice, candleSummary
 		return result[i].Item < result[j].Item
 	})
 
-	usd := assets["USD"]
+	usd := assetsAndDebts["USD"]
 	if len(usd) > 0 {
 		result = append(result, model.AssetWithValue{
 			Item:   "USD",

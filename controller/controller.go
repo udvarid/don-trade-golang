@@ -178,6 +178,7 @@ func user(c *gin.Context) {
 		"usd":           transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-2 : len(userStatistic.Assets)-1])[0],
 		"totalAssets":   transformUserAssetToString(userStatistic.Assets[len(userStatistic.Assets)-1:])[0],
 		"candleSummary": candleSummary.Summary,
+		"creditLimit":   fmt.Sprintf("%.1f", userStatistic.CreditLimit*100) + "%",
 		"charts":        charts,
 		"orders":        transformOrdersToString(orders),
 	})
@@ -473,6 +474,7 @@ func transformTradersToString(traders []model.UserSummary) []model.UserSummaryIn
 		traderInString.Profit = fmt.Sprintf("%.2f", trader.Profit*100) + "%"
 		traderInString.TraderSince = trader.TraderSince
 		traderInString.Invested = fmt.Sprintf("%.2f", trader.Invested*100) + "%"
+		traderInString.CreditLimit = fmt.Sprintf("%.1f", trader.CreditLimit*100) + "%"
 		result = append(result, traderInString)
 	}
 	return result

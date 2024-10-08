@@ -122,6 +122,7 @@ type User struct {
 	Name         string                       `json:"name"`
 	Config       UserConfig                   `json:"config"`
 	Assets       map[string][]VolumeWithPrice `json:"assets"`
+	Debts        map[string][]VolumeWithPrice `json:"debts"`
 	Transactions []Transaction                `json:"transactions"`
 }
 
@@ -153,6 +154,7 @@ type UserStatistic struct {
 	Name         string           `json:"name"`
 	Assets       []AssetWithValue `json:"assets"`
 	Transactions []Transaction    `json:"transactions"`
+	CreditLimit  float64          `json:"credit_limit"`
 }
 
 type HistoryElement struct {
@@ -203,6 +205,7 @@ type UserSummary struct {
 	Profit      float64 `json:"profit"`
 	TraderSince int     `json:"trader_since"`
 	Invested    float64 `json:"invested"`
+	CreditLimit float64 `json:"credit_limit"`
 }
 
 type UserSummaryInString struct {
@@ -211,6 +214,7 @@ type UserSummaryInString struct {
 	Profit      string `json:"profit"`
 	TraderSince int    `json:"trader_since"`
 	Invested    string `json:"invested"`
+	CreditLimit string `json:"credit_limit"`
 }
 
 type CompletedOrderToMail struct {

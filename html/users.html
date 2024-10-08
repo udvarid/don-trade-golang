@@ -32,6 +32,7 @@
                         <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Name</th>
                         <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Profit %</th>
                         <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Invested %</th>
+                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Short %</th>
                         <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider">Trader since (days)</th>
                     </tr>
                 </thead>
@@ -41,6 +42,7 @@
                         <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.UserName}}</td>
                         <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Profit}}</td>
                         <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.Invested}}</td>
+                        <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.CreditLimit}}</td>
                         <td class="py-2 px-4 border-b border-gray-200 text-smaller">{{.TraderSince}}</td>                                                    
                     </tr>
                     {{end}}

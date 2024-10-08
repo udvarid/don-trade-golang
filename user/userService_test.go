@@ -11,6 +11,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 	tests := []struct {
 		name           string
 		assets         map[string][]model.VolumeWithPrice
+		debts          map[string][]model.VolumeWithPrice
 		candleSummary  model.CandleSummary
 		expectedResult []model.AssetWithValue
 	}{
@@ -19,6 +20,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 			assets: map[string][]model.VolumeWithPrice{
 				"BTC": {{Volume: 2.0, Price: 50000.0}},
 			},
+			debts: map[string][]model.VolumeWithPrice{},
 			candleSummary: model.CandleSummary{
 				ID:   1,
 				Date: time.Now(),
@@ -38,6 +40,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 				"BTC": {{Volume: 1.0, Price: 50000.0}},
 				"ETH": {{Volume: 5.0, Price: 2000.0}},
 			},
+			debts: map[string][]model.VolumeWithPrice{},
 			candleSummary: model.CandleSummary{
 				ID:   2,
 				Date: time.Now(),
@@ -56,6 +59,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 		{
 			name:   "No assets",
 			assets: map[string][]model.VolumeWithPrice{},
+			debts:  map[string][]model.VolumeWithPrice{},
 			candleSummary: model.CandleSummary{
 				ID:        3,
 				Date:      time.Now(),
@@ -68,7 +72,7 @@ func TestGetAssetsWithValue(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := getAssetsWithValue(tt.assets, tt.candleSummary)
+			result := getAssetsWithValue(tt.assets, tt.debts, tt.candleSummary)
 			if len(result) != len(tt.expectedResult) {
 				t.Errorf("expected %d results, got %d", len(tt.expectedResult), len(result))
 			}

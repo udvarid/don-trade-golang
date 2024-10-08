@@ -177,6 +177,7 @@ type Order struct {
 	NumberOfItems float64 `json:"number_of_items"`
 	Usd           float64 `json:"usd"`
 	AllIn         bool    `json:"all_in"`
+	Short         bool    `json:"short"`
 	ValidDays     int     `json:"valid_days"`
 }
 
@@ -196,6 +197,7 @@ type OrderInString struct {
 	NumberOfItems string `json:"number_of_items"`
 	Usd           string `json:"usd"`
 	AllIn         bool   `json:"all_in"`
+	Short         bool   `json:"short"`
 	ValidDays     string `json:"valid_days"`
 }
 

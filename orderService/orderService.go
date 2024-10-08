@@ -97,6 +97,7 @@ func ValidateAndAddOrder(orderInString model.OrderInString, userId string) {
 		order.Direction = orderInString.Direction
 		order.Type = orderInString.Type
 		order.AllIn = orderInString.AllIn
+		order.Short = orderInString.Short
 		if orderInString.LimitPrice != "" {
 			limitPrice, err := strconv.ParseFloat(orderInString.LimitPrice, 64)
 			if err != nil {
@@ -140,6 +141,9 @@ func isOrderValid(orderInString model.OrderInString, itemNames []string) bool {
 		return false
 	}
 	if orderInString.NumberOfItems == "" && orderInString.Usd == "" && !orderInString.AllIn {
+		return false
+	}
+	if orderInString.Short && (orderInString.Direction == "BUY" || orderInString.AllIn) {
 		return false
 	}
 	if !slices.Contains(itemNames, orderInString.Item) {

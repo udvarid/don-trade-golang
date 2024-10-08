@@ -1,5 +1,4 @@
-function handleChangeChartButtonClick(item) {    
-    console.log(item)
+function handleChangeChartButtonClick(item) {
     const divs = document.querySelectorAll(`#barChart div`);        
     divs.forEach(div => {                
         if (div.id.startsWith("chart-")) {
@@ -50,8 +49,6 @@ function handleModifyOrderButtonClick(id) {
     
     // Convert form data to JSON
     const jsonData = JSON.stringify(formData); 
-
-    console.log(jsonData)
     
     fetch("/modify_order", {
         method: "POST",
@@ -82,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const orderForm = document.getElementById("orderForm");
     const usd = document.getElementById("usd");
     const allin = document.getElementById("allin");
+    const short = document.getElementById("short");
     const number = document.getElementById("numberOfAssets");
 
     function toggleLimitPrice() {
@@ -111,19 +109,34 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function toggleOrderType() {
+        allin.disabled = false;
         if (orderType.value === "SELL") {
             usd.value = "";
-            usd.disabled = true;            
+            usd.disabled = true;
+            short.disabled = false;          
         } else {
             if (allin.checked === false) {
                 usd.disabled = false;
-            }            
+            }
+            short.disabled = true;
+            short.checked = false;
+        }
+    }
+
+    function toggleShort() {
+        if (short.checked === true) {
+            allin.checked = false;
+            allin.disabled = true;
+            number.disabled = false;
+        } else {
+            allin.disabled = false;
         }
     }
 
     marketType.addEventListener("change", toggleLimitPrice);
     allin.addEventListener("change", toggleAllin);
     orderType.addEventListener("change", toggleOrderType);
+    short.addEventListener("change", toggleShort);
 
     orderForm.addEventListener("submit", function(event) {        
         event.preventDefault();
@@ -138,12 +151,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 number_of_items: document.getElementById("numberOfAssets").value,
                 usd: document.getElementById("usd").value,
                 all_in: document.getElementById("allin").checked,
+                short: document.getElementById("short").checked,
                 valid_days: document.getElementById("validDays").value,
             };
             
             // Convert form data to JSON
             const jsonData = JSON.stringify(formData); 
-            console.log(jsonData)
             
             fetch("/addorder", {
                 method: "POST",

@@ -342,10 +342,14 @@ func getFirstDate(candles []model.Candle, itemNames []string, pureToday time.Tim
 func joinAssetsAndDebts(assets map[string][]model.VolumeWithPrice, debts map[string][]model.VolumeWithPrice) map[string][]model.VolumeWithPrice {
 	result := make(map[string][]model.VolumeWithPrice)
 	for asset, volumes := range assets {
-		result[asset] = volumes
+		if len(volumes) > 0 {
+			result[asset] = volumes
+		}
 	}
 	for asset, volumes := range debts {
-		result[asset] = volumes
+		if len(volumes) > 0 {
+			result[asset] = volumes
+		}
 	}
 	return result
 }
@@ -369,7 +373,7 @@ func getAssetsWithValue(
 				}
 				value := price * volume
 				totalValue += value
-				if value >= 0.1 {
+				if math.Abs(value) >= 0.1 {
 					result = append(result, model.AssetWithValue{
 						Item:      asset,
 						Volume:    volume,

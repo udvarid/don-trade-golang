@@ -15,6 +15,7 @@ import (
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/repoUtil"
 	"github.com/udvarid/don-trade-golang/repository/sessionRepository"
+	"github.com/udvarid/don-trade-golang/repository/userRepository"
 	userService "github.com/udvarid/don-trade-golang/user"
 )
 
@@ -65,6 +66,18 @@ func main() {
 			chart.BuildUserHistoryChart(userService.GetUserHistory(session.ID, 30), session.Session)
 		}
 	}
+
+	donat, _ := userRepository.FindUser("udvarid@hotmail.com")
+	debts := make(map[string][]model.VolumeWithPrice)
+	var modelWPList []model.VolumeWithPrice
+	var modelWp model.VolumeWithPrice
+	modelWp.Price = 130.0
+	modelWp.Volume = -100.0
+	modelWPList = append(modelWPList, modelWp)
+
+	debts["NVDA"] = modelWPList
+	donat.Debts = debts
+	userRepository.UpdateUser(donat)
 
 	controller.Init(&config)
 }

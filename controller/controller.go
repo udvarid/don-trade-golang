@@ -497,7 +497,14 @@ func transformUserAssetToString(assets []model.AssetWithValue) []model.AssetWith
 		newAsset.Value = p.Sprintf("%d", int(asset.Value))
 		if math.Abs(asset.BookValue) > 0.0001 {
 			newAsset.BookValue = p.Sprintf("%d", int(asset.BookValue))
-			newAsset.Profit = fmt.Sprintf("%.2f", (asset.Value/asset.BookValue-1)*100) + "%"
+			if asset.BookValue > 0.0001 {
+				newAsset.Profit = fmt.Sprintf("%.2f", (asset.Value/asset.BookValue-1)*100) + "%"
+				newAsset.Short = false
+			} else {
+				newAsset.Profit = fmt.Sprintf("%.2f", (asset.Value/asset.BookValue-1)*-100) + "%"
+				newAsset.Short = true
+			}
+
 		} else {
 			newAsset.BookValue = "-"
 			newAsset.Profit = "-"

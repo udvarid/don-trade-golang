@@ -37,6 +37,14 @@ func main() {
 	config.RemoteAddress = *remoteAddress
 	repoUtil.Init()
 
+	// Ezt később törölni
+	for _, user := range userRepository.GetAllUsers() {
+		if len(user.Debts) == 0 {
+			user.Debts = make(map[string][]model.VolumeWithPrice)
+			userRepository.UpdateUser(user)
+		}
+	}
+
 	forceRefresh := false
 	if forceRefresh {
 		cs := candleRepository.GetAllCandleSummaries()[0]
@@ -64,13 +72,6 @@ func main() {
 	for _, session := range activeSessions {
 		if session.IsChecked {
 			chart.BuildUserHistoryChart(userService.GetUserHistory(session.ID, 30), session.Session)
-		}
-	}
-
-	for _, user := range userRepository.GetAllUsers() {
-		if len(user.Debts) == 0 {
-			user.Debts = make(map[string][]model.VolumeWithPrice)
-			userRepository.UpdateUser(user)
 		}
 	}
 

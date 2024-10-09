@@ -134,3 +134,10 @@
     visibility: visible;
     opacity: 1;
 }
+
+.bg-short {
+    background-color: #fae4e6;
+}
+.bg-long {
+    background-color:  #ccf3e6;
+}

@@ -147,6 +147,7 @@ type AssetWithValueInString struct {
 	Value     string `json:"value"`
 	BookValue string `json:"book_value"`
 	Profit    string `json:"profit"`
+	Short     bool   `json:"short"`
 }
 
 type UserStatistic struct {

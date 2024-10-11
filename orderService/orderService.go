@@ -2,12 +2,14 @@ package orderService
 
 import (
 	"fmt"
+	"math"
 	"slices"
 	"strconv"
 
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/repository/orderRepository"
+	"github.com/udvarid/don-trade-golang/repository/userRepository"
 )
 
 func DeleteOrder(orderId int, userId string) {
@@ -28,7 +30,7 @@ func GetOrdersByUserId(userId string) []model.Order {
 	return orders
 }
 
-func MakeClearOrder(userId string, item string) {
+func MakeClearOrder(userId string, item string, short bool) {
 	items := collector.GetItemsFromItemMap(collector.GetItems())
 	_, exist := items[item]
 	if !exist {
@@ -41,12 +43,30 @@ func MakeClearOrder(userId string, item string) {
 		}
 	}
 	var clearOrder model.Order
-	clearOrder.AllIn = true
-	clearOrder.Direction = "SELL"
-	clearOrder.Item = item
-	clearOrder.Type = "MARKET"
-	clearOrder.UserID = userId
-	clearOrder.ValidDays = 1
+	if !short {
+		clearOrder.AllIn = true
+		clearOrder.Direction = "SELL"
+		clearOrder.Item = item
+		clearOrder.Type = "MARKET"
+		clearOrder.UserID = userId
+		clearOrder.ValidDays = 1
+	} else {
+		user, _ := userRepository.FindUser(userId)
+		debt := user.Debts[item]
+		if len(debt) == 0 {
+			return
+		}
+		numbers := 0.0
+		for _, volumeWithPrice := range debt {
+			numbers += volumeWithPrice.Volume
+		}
+		clearOrder.Direction = "BUY"
+		clearOrder.Item = item
+		clearOrder.Type = "MARKET"
+		clearOrder.UserID = userId
+		clearOrder.ValidDays = 1
+		clearOrder.NumberOfItems = math.Abs(numbers)
+	}
 	AddOrder(clearOrder)
 }
 

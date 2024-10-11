@@ -11,6 +11,7 @@ import (
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/orderRepository"
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
+	userstatistic "github.com/udvarid/don-trade-golang/userStatistic"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -34,6 +35,8 @@ func ServeOrders(normal bool, user string) {
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	var completedOrders []model.CompletedOrderToMail
 	p := message.NewPrinter(language.Hungarian)
+	userStatistic := userstatistic.GetUserStatistic(user, false)
+	fmt.Println("Credit limit for", user, "is", userStatistic.CreditLimit)
 	for orderServed {
 		orderServed = false
 		orders := orderRepository.GetAllOrders()
@@ -160,11 +163,18 @@ func ServeOrders(normal bool, user string) {
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
-			if order.Direction == "SELL" && order.Type == "MARKET" && getVolumen(user.Assets[order.Item]) >= 0.0001 {
+			if order.Direction == "SELL" && order.Type == "MARKET" && (getVolumen(user.Assets[order.Item]) >= 0.0001 || order.Short) {
 				price := candle.Open
 				initVolume := getVolumen(user.Assets[order.Item])
-				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
-					initVolume = order.NumberOfItems
+				if order.NumberOfItems > 0.0001 && (initVolume > order.NumberOfItems || order.Short) {
+					if order.Short {
+						initVolume = calculateShortVolume(userStatistic, order, candleSummary)
+						if initVolume < 0.0001 {
+							continue
+						}
+					} else {
+						initVolume = order.NumberOfItems
+					}
 				}
 
 				var transactionPositive model.Transaction
@@ -193,15 +203,22 @@ func ServeOrders(normal bool, user string) {
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
-			if order.Direction == "SELL" && order.Type == "LIMIT" && getVolumen(user.Assets[order.Item]) >= 0.0001 && candle.High >= order.LimitPrice {
+			if order.Direction == "SELL" && order.Type == "LIMIT" && candle.High >= order.LimitPrice && (getVolumen(user.Assets[order.Item]) >= 0.0001 || order.Short) {
 
 				price := candle.Open
 				if candle.Open < order.LimitPrice {
 					price = order.LimitPrice
 				}
 				initVolume := getVolumen(user.Assets[order.Item])
-				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
-					initVolume = order.NumberOfItems
+				if order.NumberOfItems > 0.0001 && (initVolume > order.NumberOfItems || order.Short) {
+					if order.Short {
+						initVolume = calculateShortVolume(userStatistic, order, candleSummary)
+						if initVolume < 0.0001 {
+							continue
+						}
+					} else {
+						initVolume = order.NumberOfItems
+					}
 				}
 				var transactionPositive model.Transaction
 				transactionPositive.Asset = "USD"
@@ -229,15 +246,22 @@ func ServeOrders(normal bool, user string) {
 				orderServed = true
 				userAssetPairs[order.UserID+"-"+order.Item] = true
 			}
-			if order.Direction == "SELL" && order.Type == "STOP-LIMIT" && getVolumen(user.Assets[order.Item]) >= 0.0001 && candle.Low <= order.LimitPrice {
+			if order.Direction == "SELL" && order.Type == "STOP-LIMIT" && candle.Low <= order.LimitPrice && (getVolumen(user.Assets[order.Item]) >= 0.0001 || order.Short) {
 
 				price := order.LimitPrice
 				if candle.Open < order.LimitPrice {
 					price = candle.Open
 				}
 				initVolume := getVolumen(user.Assets[order.Item])
-				if order.NumberOfItems > 0.0001 && initVolume > order.NumberOfItems {
-					initVolume = order.NumberOfItems
+				if order.NumberOfItems > 0.0001 && (initVolume > order.NumberOfItems || order.Short) {
+					if order.Short {
+						initVolume = calculateShortVolume(userStatistic, order, candleSummary)
+						if initVolume < 0.0001 {
+							continue
+						}
+					} else {
+						initVolume = order.NumberOfItems
+					}
 				}
 				var transactionPositive model.Transaction
 				transactionPositive.Asset = "USD"
@@ -289,6 +313,27 @@ func ServeOrders(normal bool, user string) {
 
 }
 
+func calculateShortVolume(userStatistic model.UserStatistic, order model.Order, candleSummary model.CandleSummary) float64 {
+	shortLimit := userStatistic.CreditLimit
+	if shortLimit > 0.5 {
+		return 0.0
+	}
+	total := 0.0
+	for _, asset := range userStatistic.Assets {
+		if asset.Item == "Total" {
+			total = asset.Value
+			break
+		}
+	}
+	price := candleSummary.Summary[order.Item].LastPrice
+	initVolume := order.NumberOfItems
+
+	freeCreditSum := (0.5 - shortLimit) * total
+	maximumItem := freeCreditSum / price
+
+	return math.Min(initVolume, maximumItem)
+}
+
 func getVolumen(assets []model.VolumeWithPrice) float64 {
 	var total float64
 	for _, asset := range assets {
@@ -337,12 +382,42 @@ func handleTransaction(transactionPositive model.Transaction, transactionNegativ
 				volumeSold = 0
 			}
 		}
+		if volumeSold > 0.0001 {
+			price := math.Abs(transactionPositive.Volume / transactionNegative.Volume)
+			newPackage := model.VolumeWithPrice{Volume: volumeSold * -1, Price: price}
+			user.Debts[transactionNegative.Asset] = append(user.Debts[transactionNegative.Asset], newPackage)
+		}
 		user.Assets[transactionNegative.Asset] = newPackages
 	} else {
 		price := math.Abs(transactionNegative.Volume / transactionPositive.Volume)
 		user.Assets["USD"][0].Volume += transactionNegative.Volume
 		newPackage := model.VolumeWithPrice{Volume: transactionPositive.Volume, Price: price}
-		user.Assets[transactionPositive.Asset] = append(user.Assets[transactionPositive.Asset], newPackage)
+		debts, newPackageAfterDebtHandling := clearFromDebts(user, newPackage, transactionPositive.Asset)
+		user.Debts = debts
+		if newPackageAfterDebtHandling.Volume > 0.0001 {
+			user.Assets[transactionPositive.Asset] = append(user.Assets[transactionPositive.Asset], newPackageAfterDebtHandling)
+		}
 	}
 	userRepository.UpdateUser(user)
+}
+
+func clearFromDebts(user model.User, newPackage model.VolumeWithPrice, asset string) (map[string][]model.VolumeWithPrice, model.VolumeWithPrice) {
+	debts := user.Debts[asset]
+	if len(debts) == 0 {
+		return user.Debts, newPackage
+	}
+	var newDebts []model.VolumeWithPrice
+	volumen := newPackage.Volume
+	for _, pack := range debts {
+		if volumen >= math.Abs(pack.Volume) {
+			volumen -= math.Abs(pack.Volume)
+		} else {
+			newDebt := model.VolumeWithPrice{Volume: pack.Volume + volumen, Price: pack.Price}
+			newDebts = append(newDebts, newDebt)
+			volumen = 0
+		}
+	}
+	user.Debts[asset] = newDebts
+	newPackage.Volume = volumen
+	return user.Debts, newPackage
 }

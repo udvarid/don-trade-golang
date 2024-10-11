@@ -12,9 +12,10 @@ import (
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/communicator"
 	"github.com/udvarid/don-trade-golang/model"
-	"github.com/udvarid/don-trade-golang/orderService"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
+	"github.com/udvarid/don-trade-golang/repository/orderRepository"
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
+	userstatistic "github.com/udvarid/don-trade-golang/userStatistic"
 )
 
 func ChangeName(id string, name string) {
@@ -35,9 +36,15 @@ func ChangeNotify(id string, transaction bool, daily bool) {
 }
 
 func DeleteUser(id string) {
-	orders := orderService.GetOrdersByUserId(id)
+	var orders []model.Order
+	allOrders := orderRepository.GetAllOrders()
+	for _, order := range allOrders {
+		if order.UserID == id {
+			orders = append(orders, order)
+		}
+	}
 	for _, order := range orders {
-		orderService.DeleteOrder(order.ID, id)
+		orderRepository.DeleteOrder(order.ID)
 	}
 	userRepository.DeleteUser(id)
 }
@@ -61,7 +68,7 @@ func GetTraders() []model.UserSummary {
 	users := userRepository.GetAllUsers()
 	for _, user := range users {
 		var userSummary model.UserSummary
-		userAssets := GetUserStatistic(user.ID, false).Assets
+		userAssets := userstatistic.GetUserStatistic(user.ID, false).Assets
 		userSummary.UserID = user.ID
 		userSummary.UserName = user.Name
 		userSummary.TraderSince = int(time.Since(user.Transactions[0].Date).Hours() / 24)
@@ -74,7 +81,7 @@ func GetTraders() []model.UserSummary {
 			}
 		}
 		userSummary.Invested = invested / total
-		userSummary.CreditLimit = calculateCreditLimit(userAssets)
+		userSummary.CreditLimit = userstatistic.CalculateCreditLimit(userAssets)
 		result = append(result, userSummary)
 	}
 
@@ -89,7 +96,7 @@ func SendDailyStatus() {
 	users := userRepository.GetAllUsers()
 	for _, user := range users {
 		if user.Config.NotifyDaily {
-			communicator.SendMessageAboutStatus(GetUserStatistic(user.ID, false))
+			communicator.SendMessageAboutStatus(userstatistic.GetUserStatistic(user.ID, false))
 		}
 	}
 }
@@ -97,41 +104,6 @@ func SendDailyStatus() {
 func GetUser(id string) model.User {
 	user, _ := userRepository.FindUser(id)
 	return user
-}
-
-func GetUserStatistic(id string, onlyTransactions bool) model.UserStatistic {
-	user, _ := userRepository.FindUser(id)
-
-	var userStatistic model.UserStatistic
-	userStatistic.ID = user.ID
-	userStatistic.Name = user.Name
-	transactionLimit := 25
-	if onlyTransactions {
-		if len(user.Transactions) > transactionLimit {
-			userStatistic.Transactions = user.Transactions[len(user.Transactions)-transactionLimit:]
-		} else {
-			userStatistic.Transactions = user.Transactions
-		}
-	} else {
-		candleSummary := candleRepository.GetAllCandleSummaries()[0]
-		userStatistic.Assets = getAssetsWithValue(user.Assets, user.Debts, candleSummary)
-		userStatistic.CreditLimit = calculateCreditLimit(userStatistic.Assets)
-	}
-	return userStatistic
-}
-
-func calculateCreditLimit(assets []model.AssetWithValue) float64 {
-	brutto := 0.0
-	debt := 0.0
-	for _, asset := range assets {
-		if asset.Item == "Total" {
-			brutto = asset.Value
-		} else if asset.Item != "USD" && asset.Value < 0 {
-			debt += asset.Value
-		}
-	}
-	netto := brutto + debt
-	return math.Abs(debt / netto)
 }
 
 func GetPriceChanges() []model.PriceChanges {
@@ -338,74 +310,6 @@ func getFirstDate(candles []model.Candle, itemNames []string, pureToday time.Tim
 		return time.Now(), errors.New("no first date found")
 	}
 	return firstDate, nil
-}
-
-func joinAssetsAndDebts(assets map[string][]model.VolumeWithPrice, debts map[string][]model.VolumeWithPrice) map[string][]model.VolumeWithPrice {
-	result := make(map[string][]model.VolumeWithPrice)
-	for asset, volumes := range assets {
-		if len(volumes) > 0 {
-			result[asset] = volumes
-		}
-	}
-	for asset, volumes := range debts {
-		if len(volumes) > 0 {
-			result[asset] = volumes
-		}
-	}
-	return result
-}
-
-func getAssetsWithValue(
-	assets map[string][]model.VolumeWithPrice,
-	debts map[string][]model.VolumeWithPrice,
-	candleSummary model.CandleSummary) []model.AssetWithValue {
-	assetsAndDebts := joinAssetsAndDebts(assets, debts)
-	var result []model.AssetWithValue
-	totalValue := 0.0
-	for asset, volumes := range assetsAndDebts {
-		if asset != "USD" {
-			price := candleSummary.Summary[asset].LastPrice
-			if len(volumes) > 0 {
-				volume := 0.0
-				bookValue := 0.0
-				for _, volumeWithPrice := range volumes {
-					volume += volumeWithPrice.Volume
-					bookValue += volumeWithPrice.Volume * volumeWithPrice.Price
-				}
-				value := price * volume
-				totalValue += value
-				if math.Abs(value) >= 0.1 {
-					result = append(result, model.AssetWithValue{
-						Item:      asset,
-						Volume:    volume,
-						Price:     price,
-						Value:     value,
-						BookValue: bookValue,
-					})
-				}
-			}
-		}
-	}
-	sort.Slice(result, func(i, j int) bool {
-		return result[i].Item < result[j].Item
-	})
-
-	usd := assetsAndDebts["USD"]
-	if len(usd) > 0 {
-		result = append(result, model.AssetWithValue{
-			Item:   "USD",
-			Volume: usd[0].Volume,
-			Price:  1.0,
-			Value:  usd[0].Volume,
-		})
-		totalValue += usd[0].Volume
-	}
-	result = append(result, model.AssetWithValue{
-		Item:      "Total",
-		Value:     totalValue,
-		BookValue: 1000000,
-	})
-	return result
 }
 
 func getInitAssets() map[string][]model.VolumeWithPrice {

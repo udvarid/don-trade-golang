@@ -1,9 +1,3 @@
-	- short		
-		- extra korlát: credit limit, ami 50%. Aktuális érték: Debt-ek aktuális értéke / (portfolio - debt érték). Az 50% és aktuális érték közti különbség az addicionális debt korlátja
-		- ha az eladandó mennyiség így több, mint amink van, akkor a különbözet a debt		
-		- Vásárlásnál meg kell nézni van e adott típusból debt, ha van, azt kell előbb megszüntetni, a különbözet lehet csak asset
-		- user táblázatnál a clear gombra nyomva ha hitelem van, akkor egy BUY order jelentkezzen pont a hiányzó mennyiségre. Ill. itt a Clear gomb viselkedjen így		
-
 	- detailed page-ról lehessen selecttel átmenni másikra
 
 	- a main-ben a debts rendberakás kódrészt kitörölni		

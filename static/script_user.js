@@ -12,10 +12,10 @@ function handleChangeChartButtonClick(item) {
 }
 
 
-function handleClearButtonClick(pureItem) {
+function handleClearButtonClick(pureItem, short) {
     console.log("Clear button clicked with parameter:", pureItem);
     
-    fetch("/clear_item/"+pureItem, {
+    fetch("/clear_item/"+pureItem+"/"+short, {
         method: "GET",
         headers: {
             "Content-Type": "application/json"

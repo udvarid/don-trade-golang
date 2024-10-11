@@ -19,6 +19,7 @@ import (
 	"github.com/udvarid/don-trade-golang/orderService"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	userService "github.com/udvarid/don-trade-golang/user"
+	userstatistic "github.com/udvarid/don-trade-golang/userStatistic"
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
@@ -42,7 +43,7 @@ func Init(config *model.Configuration) {
 	router.GET("/users", users)
 	router.GET("/user_settings", userSettings)
 	router.GET("/user_delete", userDelete)
-	router.GET("/clear_item/:item", clearItem)
+	router.GET("/clear_item/:item/:short", clearItem)
 	router.POST("/addorder", addorder)
 	router.POST("/modify_order", modifyOrder)
 	router.GET("/deleteOrder/:order", deleteOrder)
@@ -74,7 +75,12 @@ func clearItem(c *gin.Context) {
 		redirectTo(c, "/")
 	}
 	userId, _ := getId(c)
-	orderService.MakeClearOrder(userId, c.Param("item"))
+	shortParam := c.Param("short")
+	shortBool, err := strconv.ParseBool(shortParam)
+	if err != nil {
+		shortBool = false // or handle the error as needed
+	}
+	orderService.MakeClearOrder(userId, c.Param("item"), shortBool)
 	redirectTo(c, "/user")
 }
 
@@ -134,7 +140,7 @@ func transactions(c *gin.Context) {
 		redirectTo(c, "/")
 	}
 	userId, _ := getId(c)
-	userStatistic := userService.GetUserStatistic(userId, true)
+	userStatistic := userstatistic.GetUserStatistic(userId, true)
 
 	c.HTML(http.StatusOK, "transactions.html", gin.H{
 		"title":        "Transactions Page",
@@ -149,7 +155,7 @@ func user(c *gin.Context) {
 		redirectTo(c, "/")
 	}
 	userId, session := getId(c)
-	userStatistic := userService.GetUserStatistic(userId, false)
+	userStatistic := userstatistic.GetUserStatistic(userId, false)
 	candleSummary := candleRepository.GetAllCandleSummaries()[0]
 
 	var charts []HtmlWithInfo

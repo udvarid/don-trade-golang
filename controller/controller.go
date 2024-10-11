@@ -464,6 +464,7 @@ func transformOrdersToString(orders []model.Order) []model.OrderInString {
 			orderInString.Usd = fmt.Sprintf("%.1f", order.Usd)
 		}
 		orderInString.AllIn = order.AllIn
+		orderInString.Short = order.Short
 		orderInString.ValidDays = strconv.Itoa(order.ValidDays)
 		result = append(result, orderInString)
 	}

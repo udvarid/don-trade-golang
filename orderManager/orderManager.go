@@ -36,7 +36,6 @@ func ServeOrders(normal bool, user string) {
 	var completedOrders []model.CompletedOrderToMail
 	p := message.NewPrinter(language.Hungarian)
 	userStatistic := userstatistic.GetUserStatistic(user, false)
-	fmt.Println("Credit limit for", user, "is", userStatistic.CreditLimit)
 	for orderServed {
 		orderServed = false
 		orders := orderRepository.GetAllOrders()

@@ -205,6 +205,7 @@
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">#</th>
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Usd</th>
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">All in</th>
+                       <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Short</th>
                        <th class="py-2 px-4 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">Valid days</th>
                        <th class="py-1 px-1 border-b-2 border-gray-200 bg-blue-100 text-left text-sm leading-4 font-bold text-lightblue-600 tracking-wider text-smaller">
                         <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-0.5 px-0.5 rounded tooltip">
@@ -235,7 +236,8 @@
                        {{end}}                        
                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.NumberOfItems}}</td>                                
                        <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Usd}}</td>                                
-                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.AllIn}}</td>                                
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.AllIn}}</td>
+                       <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">{{.Short}}</td>
                         <td class="py-2 px-4 border-b border-gray-200 text-xl-smaller">
                             <input type="number" id="validDays-{{.ID}}" step="1" min="1" value="{{.ValidDays}}" class="form-control" />
                         </td>                              

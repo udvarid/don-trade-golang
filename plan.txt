@@ -1,6 +1,4 @@
-	- detailed page-ról lehessen selecttel átmenni másikra
-
-	- a main-ben a debts rendberakás kódrészt kitörölni		
+	- detailed page-ról lehessen selecttel átmenni másikra	
 
 	- néhány dolgot esetleg a napi mentés során db-be menteni, így elég csak 1szer kiszámolni (pl. price history)
 

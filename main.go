@@ -15,7 +15,6 @@ import (
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/repoUtil"
 	"github.com/udvarid/don-trade-golang/repository/sessionRepository"
-	"github.com/udvarid/don-trade-golang/repository/userRepository"
 	userService "github.com/udvarid/don-trade-golang/user"
 )
 
@@ -36,14 +35,6 @@ func main() {
 	config.Environment = *environment
 	config.RemoteAddress = *remoteAddress
 	repoUtil.Init()
-
-	// Ezt később törölni
-	for _, user := range userRepository.GetAllUsers() {
-		if len(user.Debts) == 0 {
-			user.Debts = make(map[string][]model.VolumeWithPrice)
-			userRepository.UpdateUser(user)
-		}
-	}
 
 	forceRefresh := false
 	if forceRefresh {

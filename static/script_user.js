@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function() {
     const allin = document.getElementById("allin");
     const short = document.getElementById("short");
     const number = document.getElementById("numberOfAssets");
-
+    
     function toggleLimitPrice() {
         if (marketType.value === "MARKET") {
             limitPrice.disabled = true;

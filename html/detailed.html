@@ -12,9 +12,11 @@
 <body>
   <nav class="bg-white p-4 rounded shadow mb-4">
     <div class="flex justify-between items-center">
-      <div class="p-4 text-xl font-bold text-blue-500">
-        {{.description}} - {{.name}}
-      </div>
+      <select id="assetList" name="assetList" class="p-1 text-sm border rounded bg-white-200 bold-blue" onchange="handleChangeDetailed()">
+        {{range .items}}
+            <option value="{{.Name}}"{{if eq .Name $.name}}selected{{end}}>{{.Description}} - {{.Name}}</option>
+        {{end}}
+     </select>
       <div class="p-4 ml-auto">
         <a class="text-l font-bold text-red-500" href="/">To main page</a>
       </div>
@@ -29,4 +31,6 @@
         {{.detailedPage2.Page}}
     </div>
   </div>
+
+  <script src="/static/script_detailed.js"></script>
 </body>

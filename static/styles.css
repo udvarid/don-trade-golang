@@ -141,3 +141,7 @@
 .bg-long {
     background-color:  #ccf3e6;
 }
+.bold-blue {
+    font-weight: bold;
+    color: blue;
+}

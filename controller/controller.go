@@ -317,6 +317,7 @@ func detailedPage(c *gin.Context) {
 		"name":          item.Name,
 		"detailedPage1": pageCandle,
 		"detailedPage2": pageCandle2,
+		"items":         items,
 	})
 }
 

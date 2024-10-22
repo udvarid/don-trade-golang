@@ -53,6 +53,14 @@ func BuildUserHistoryChart(history []model.HistoryElement, session string) {
 		allAssets = append(allAssets, assetValues)
 	}
 	bar := barChart(date, allAssets, assetNames)
+	myLine := make([]float64, len(date))
+	for _, assets := range allAssets {
+		for i, asset := range assets {
+			myLine[i] += asset
+		}
+	}
+	totalLine := lineChart(date, myLine)
+	bar.Overlap(totalLine)
 
 	page := components.NewPage()
 	page.AddCharts(bar)
@@ -536,6 +544,20 @@ func barChart(date []string, allAssets [][]float64, assets []string) *charts.Bar
 			}))
 	}
 	return bar
+}
+
+func lineChart(date []string, myLine []float64) *charts.Line {
+	line := charts.NewLine()
+	line.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{
+			Title: "",
+		}),
+	)
+	line.SetXAxis(date).
+		AddSeries("Total", generateLineItems(myLine),
+			charts.WithLineStyleOpts(opts.LineStyle{Color: "blue"}),
+			charts.WithLineChartOpts(opts.LineChart{Smooth: opts.Bool(true)}))
+	return line
 }
 
 func generateBarItems(values []float64) []opts.BarData {

@@ -1,5 +1,3 @@
-	- detaild chart-nál legyen total (netto) value
-
 	- Tranzakció history tisztítás: 3 hónappal ezelőtti állapot szerint induló tranzakció és ahhoz hozzácsapni a rákövetkezőket. Így a tranzakciók listája nem nő végtelenre.
 
 	- néhány dolgot esetleg a napi mentés során db-be menteni, így elég csak 1szer kiszámolni (pl. price history)

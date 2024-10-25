@@ -40,7 +40,7 @@ func main() {
 	if forceRefresh {
 		cs := candleRepository.GetAllCandleSummaries()[0]
 		cs.Date = cs.Date.AddDate(0, 0, -1)
-		candleRepository.UpdateCandleSummary(cs)
+		candleRepository.UpdateCandleSummary(&cs)
 	}
 
 	chart.DeleteHtml()
@@ -56,7 +56,7 @@ func main() {
 		fmt.Println("Sending daily status")
 		userService.SendDailyStatus()
 		cs.DailyStatusSent = true
-		candleRepository.UpdateCandleSummary(cs)
+		candleRepository.UpdateCandleSummary(&cs)
 	}
 
 	activeSessions := sessionRepository.GetAllSessions()

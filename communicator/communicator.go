@@ -20,7 +20,7 @@ func Init(config *model.Configuration) {
 
 var verifier = emailverifier.NewVerifier()
 
-func SendMessageAboutStatus(userStatistic model.UserStatistic) {
+func SendMessageAboutStatus(userStatistic *model.UserStatistic) {
 	ret, err := verifier.Verify(userStatistic.ID)
 	if err == nil && ret.Syntax.Valid {
 		p := message.NewPrinter(language.Hungarian)

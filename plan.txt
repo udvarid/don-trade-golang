@@ -6,8 +6,6 @@
 
 	- code refactoring (pl. segéd fv-ek util osztályba rakása, stb)
 
-	- ha nem adunk meg valid dayst, akkor az lejárat nélküli order	
-
 	- Fő oldal, néhány bullshittel	
 
 	- Botok	

@@ -38,7 +38,7 @@ func DeleteCandle(candleId int) {
 	defer db.Close()
 }
 
-func AddCandle(candle model.Candle) model.Candle {
+func AddCandle(candle *model.Candle) {
 	db := repoUtil.OpenDb()
 	db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("Candle"))
@@ -52,5 +52,4 @@ func AddCandle(candle model.Candle) model.Candle {
 	})
 
 	defer db.Close()
-	return candle
 }

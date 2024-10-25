@@ -54,7 +54,7 @@ func IsValid(id string, session string) bool {
 	if isValid {
 		sessionInMap.SessDate = time.Now()
 		sessions[id] = sessionInMap
-		sessionRepository.AddSession(sessionInMap)
+		sessionRepository.AddSession(&sessionInMap)
 	}
 	return isValid
 }
@@ -70,13 +70,13 @@ func CheckIn(id string, session string) {
 	if isPresent {
 		sessionInMap.IsChecked = true
 		sessions[id] = sessionInMap
-		sessionRepository.AddSession(sessionInMap)
+		sessionRepository.AddSession(&sessionInMap)
 	} else {
 		sessionInDb, err := sessionRepository.FindSession(id)
 		if err == nil {
 			sessionInDb.IsChecked = true
 			sessions[id] = sessionInDb
-			sessionRepository.AddSession(sessionInDb)
+			sessionRepository.AddSession(&sessionInDb)
 		}
 	}
 }
@@ -86,14 +86,14 @@ func GiveSession(id string) (string, error) {
 		return "", errors.New("empty id")
 	}
 	sessionGenerated := randStringBytes(50)
-	sess := model.SessionWithTime{
+	session := model.SessionWithTime{
 		ID:        id,
 		Session:   sessionGenerated,
 		SessDate:  time.Now(),
 		IsChecked: false,
 	}
-	sessions[id] = sess
-	sessionRepository.AddSession(sess)
+	sessions[id] = session
+	sessionRepository.AddSession(&session)
 	return sessionGenerated, nil
 }
 

@@ -9,7 +9,7 @@ import (
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
 )
 
-func GetUserStatistic(id string, onlyTransactions bool) model.UserStatistic {
+func GetUserStatistic(id string, onlyTransactions bool) *model.UserStatistic {
 	user, _ := userRepository.FindUser(id)
 
 	var userStatistic model.UserStatistic
@@ -27,7 +27,7 @@ func GetUserStatistic(id string, onlyTransactions bool) model.UserStatistic {
 		userStatistic.Assets = getAssetsWithValue(user.Assets, user.Debts, candleSummary)
 		userStatistic.CreditLimit = CalculateCreditLimit(userStatistic.Assets)
 	}
-	return userStatistic
+	return &userStatistic
 }
 
 func getAssetsWithValue(

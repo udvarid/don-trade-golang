@@ -66,7 +66,7 @@ func FindSession(id string) (model.SessionWithTime, error) {
 	}
 }
 
-func AddSession(session model.SessionWithTime) {
+func AddSession(session *model.SessionWithTime) {
 	db := repoUtil.OpenDb()
 	db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("Sessions"))

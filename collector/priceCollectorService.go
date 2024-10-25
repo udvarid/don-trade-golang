@@ -29,20 +29,16 @@ func CollectData(config *model.Configuration) {
 	// If today there was already a data collection, then we quit
 	summaries := candleRepository.GetAllCandleSummaries()
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+	itemMap := GetItems()
+	itemNamesWithItem := GetItemsFromItemMap(itemMap)
+	candlesPersisted := candleRepository.GetAllCandles()
 	if len(summaries) > 0 && summaries[0].Date == pureToday {
 		log.Println("No more data collection today")
-
-		forceChartCreation := true
-		if forceChartCreation {
-			cp := candleRepository.GetAllCandles()
-			inwi := GetItemsFromItemMap(GetItems())
-			orderCharts(cp, inwi)
-		}
+		orderCharts(candlesPersisted, itemNamesWithItem)
 		return
 	}
 
 	// starting data collection for each item in separated goroutins
-	itemMap := GetItems()
 	itemCounts := 0
 	for _, v := range itemMap {
 		itemCounts += len(v)
@@ -66,14 +62,13 @@ func CollectData(config *model.Configuration) {
 	}()
 
 	// waiting the results and the new candles will be presisted
-	candlesPersisted := candleRepository.GetAllCandles()
 	var persistedItems []string
 	for result := range channel {
 		persisted := 0
 		for _, candleDto := range result.result {
-			candle := mapCandleDtoToCandle(candleDto)
+			candle := mapCandleDtoToCandle(&candleDto)
 			if isCandleNew(&candlesPersisted, &candle) {
-				candleRepository.AddCandle(candle)
+				candleRepository.AddCandle(&candle)
 				persisted++
 			}
 		}
@@ -85,7 +80,6 @@ func CollectData(config *model.Configuration) {
 
 	// the old and unrelevant candles should be deleted
 	timeSomeYearsBefore := pureToday.AddDate(-3, 0, 0)
-	itemNamesWithItem := GetItemsFromItemMap(itemMap)
 	var itemNames []string
 	for itemName := range itemNamesWithItem {
 		itemNames = append(itemNames, itemName)
@@ -123,14 +117,14 @@ func CollectData(config *model.Configuration) {
 	candleSummary.Persisted = persistedItems
 	candleSummary.DailyStatusSent = false
 	if len(summaries) == 0 {
-		candleRepository.AddCandleSummary(candleSummary)
+		candleRepository.AddCandleSummary(&candleSummary)
 	} else {
 		candleSummaryToUpdate := summaries[0]
 		candleSummaryToUpdate.Date = candleSummary.Date
 		candleSummaryToUpdate.Summary = candleSummary.Summary
 		candleSummaryToUpdate.Persisted = persistedItems
 		candleSummaryToUpdate.DailyStatusSent = false
-		candleRepository.UpdateCandleSummary(candleSummaryToUpdate)
+		candleRepository.UpdateCandleSummary(&candleSummaryToUpdate)
 	}
 
 	orderCharts(candlesPersisted, itemNamesWithItem)
@@ -196,7 +190,7 @@ func isCandleNew(candlesPersisted *[]model.Candle, candle *model.Candle) bool {
 	return true
 }
 
-func mapCandleDtoToCandle(candleDto model.CandleDto) model.Candle {
+func mapCandleDtoToCandle(candleDto *model.CandleDto) model.Candle {
 	var candle model.Candle
 	candle.Item = candleDto.Item
 	candle.High = candleDto.High

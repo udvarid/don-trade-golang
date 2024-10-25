@@ -167,7 +167,7 @@ func ServeOrders(normal bool, user string) {
 				initVolume := getVolumen(user.Assets[order.Item])
 				if order.NumberOfItems > 0.0001 && (initVolume > order.NumberOfItems || order.Short) {
 					if order.Short {
-						initVolume = calculateShortVolume(userStatistic, order, candleSummary)
+						initVolume = calculateShortVolume(userStatistic, &order, &candleSummary)
 						if initVolume < 0.0001 {
 							continue
 						}
@@ -211,7 +211,7 @@ func ServeOrders(normal bool, user string) {
 				initVolume := getVolumen(user.Assets[order.Item])
 				if order.NumberOfItems > 0.0001 && (initVolume > order.NumberOfItems || order.Short) {
 					if order.Short {
-						initVolume = calculateShortVolume(userStatistic, order, candleSummary)
+						initVolume = calculateShortVolume(userStatistic, &order, &candleSummary)
 						if initVolume < 0.0001 {
 							continue
 						}
@@ -254,7 +254,7 @@ func ServeOrders(normal bool, user string) {
 				initVolume := getVolumen(user.Assets[order.Item])
 				if order.NumberOfItems > 0.0001 && (initVolume > order.NumberOfItems || order.Short) {
 					if order.Short {
-						initVolume = calculateShortVolume(userStatistic, order, candleSummary)
+						initVolume = calculateShortVolume(userStatistic, &order, &candleSummary)
 						if initVolume < 0.0001 {
 							continue
 						}
@@ -312,7 +312,7 @@ func ServeOrders(normal bool, user string) {
 
 }
 
-func calculateShortVolume(userStatistic model.UserStatistic, order model.Order, candleSummary model.CandleSummary) float64 {
+func calculateShortVolume(userStatistic *model.UserStatistic, order *model.Order, candleSummary *model.CandleSummary) float64 {
 	shortLimit := userStatistic.CreditLimit
 	if shortLimit > 0.5 {
 		return 0.0

@@ -27,7 +27,7 @@ func GetAllCandleSummaries() []model.CandleSummary {
 	return result
 }
 
-func UpdateCandleSummary(candleSummary model.CandleSummary) {
+func UpdateCandleSummary(candleSummary *model.CandleSummary) {
 	db := repoUtil.OpenDb()
 	db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("CandleSummary"))
@@ -40,7 +40,7 @@ func UpdateCandleSummary(candleSummary model.CandleSummary) {
 	defer db.Close()
 }
 
-func AddCandleSummary(candleSummary model.CandleSummary) model.CandleSummary {
+func AddCandleSummary(candleSummary *model.CandleSummary) {
 	db := repoUtil.OpenDb()
 	db.Update(func(tx *bolt.Tx) error {
 		b := tx.Bucket([]byte("CandleSummary"))
@@ -54,7 +54,6 @@ func AddCandleSummary(candleSummary model.CandleSummary) model.CandleSummary {
 	})
 
 	defer db.Close()
-	return candleSummary
 }
 
 func DeleteCandleSummary(candleSummaryId int) {

@@ -21,22 +21,22 @@ func CalculateSMA(prices []float64, period int) []float64 {
 	return sma
 }
 
-func CalculateVwap(candles []model.Candle, period int) []float64 {
+func CalculateVwap(candles *model.GroupOfCandles, period int) []float64 {
 	var vwap []float64
 
-	if len(candles) < period {
+	if len(candles.Group) < period {
 		return vwap
 	}
 
-	for i := 0; i <= len(candles)-period; i++ {
+	for i := 0; i <= len(candles.Group)-period; i++ {
 		var cumulativePriceVolume float64
 		var cumulativeVolume float64
 
 		for j := i; j < i+period; j++ {
-			typicalPrice := (candles[j].High + candles[j].Low + candles[j].Close) / 3.0
-			priceVolume := typicalPrice * candles[j].Volume
+			typicalPrice := (candles.Group[j].High + candles.Group[j].Low + candles.Group[j].Close) / 3.0
+			priceVolume := typicalPrice * candles.Group[j].Volume
 			cumulativePriceVolume += priceVolume
-			cumulativeVolume += candles[j].Volume
+			cumulativeVolume += candles.Group[j].Volume
 		}
 
 		divisor := cumulativeVolume
@@ -80,7 +80,7 @@ func CalculateEMA(prices []float64, tr []float64, period int) []float64 {
 	return ema
 }
 
-func CalculateMACD(candles []model.Candle, shortPeriod int, longPeriod int, signalPeriod int) []model.Macd {
+func CalculateMACD(candles *model.GroupOfCandles, shortPeriod int, longPeriod int, signalPeriod int) []model.Macd {
 	closePrices := candleToFloat(candles)
 	shortEMA := CalculateEMA(closePrices, nil, shortPeriod)
 	longEMA := CalculateEMA(closePrices, nil, longPeriod)
@@ -98,8 +98,8 @@ func CalculateMACD(candles []model.Candle, shortPeriod int, longPeriod int, sign
 	macdDtos := make([]model.Macd, len(signalLine))
 	for i := range macdDtos {
 		macdDtos[i] = model.Macd{
-			Item:   candles[i+len(candles)-len(macdDtos)].Item,
-			Date:   candles[i+len(candles)-len(macdDtos)].Date,
+			Item:   candles.Group[i+len(candles.Group)-len(macdDtos)].Item,
+			Date:   candles.Group[i+len(candles.Group)-len(macdDtos)].Date,
 			Macd:   macdLine[i+len(macdLine)-len(signalLine)],
 			Signal: signalLine[i],
 		}
@@ -108,17 +108,17 @@ func CalculateMACD(candles []model.Candle, shortPeriod int, longPeriod int, sign
 	return macdDtos
 }
 
-func CalculateRSI(candles []model.Candle, period int) []model.Rsi {
-	if len(candles) < period {
+func CalculateRSI(candles *model.GroupOfCandles, period int) []model.Rsi {
+	if len(candles.Group) < period {
 		return []model.Rsi{} // Not enough data to calculate RSI
 	}
 
-	gains := make([]float64, len(candles))
-	losses := make([]float64, len(candles))
+	gains := make([]float64, len(candles.Group))
+	losses := make([]float64, len(candles.Group))
 
 	// Calculate initial gains and losses
-	for i := 1; i < len(candles); i++ {
-		change := candles[i].Close - candles[i-1].Close
+	for i := 1; i < len(candles.Group); i++ {
+		change := candles.Group[i].Close - candles.Group[i-1].Close
 		if change > 0 {
 			gains[i] = change
 		} else {
@@ -136,8 +136,8 @@ func CalculateRSI(candles []model.Candle, period int) []model.Rsi {
 	avgLoss /= float64(period)
 
 	// Calculate RSI for each point in the series
-	rsis := make([]model.Rsi, len(candles)-period)
-	for i := period; i < len(candles); i++ {
+	rsis := make([]model.Rsi, len(candles.Group)-period)
+	for i := period; i < len(candles.Group); i++ {
 		if i > period {
 			// Update the average gain and loss with a rolling average
 			avgGain = (avgGain*(float64(period-1)) + gains[i]) / float64(period)
@@ -153,8 +153,8 @@ func CalculateRSI(candles []model.Candle, period int) []model.Rsi {
 		}
 
 		rsis[i-period] = model.Rsi{
-			Item: candles[i].Item,
-			Date: candles[i].Date,
+			Item: candles.Group[i].Item,
+			Date: candles.Group[i].Date,
 			RSI:  rsi,
 		}
 	}
@@ -162,31 +162,31 @@ func CalculateRSI(candles []model.Candle, period int) []model.Rsi {
 	return rsis
 }
 
-func CalculateOBV(candles []model.Candle) []model.Obv {
-	if len(candles) == 0 {
+func CalculateOBV(candles *model.GroupOfCandles) []model.Obv {
+	if len(candles.Group) == 0 {
 		return []model.Obv{}
 	}
 
-	obvs := make([]model.Obv, len(candles))
+	obvs := make([]model.Obv, len(candles.Group))
 	obvs[0] = model.Obv{
-		Item: candles[0].Item,
-		Date: candles[0].Date,
-		Obv:  candles[0].Volume,
+		Item: candles.Group[0].Item,
+		Date: candles.Group[0].Date,
+		Obv:  candles.Group[0].Volume,
 	}
 
-	for i := 1; i < len(candles); i++ {
+	for i := 1; i < len(candles.Group); i++ {
 		var obv float64
-		if candles[i].Close > candles[i-1].Close {
-			obv = obvs[i-1].Obv + candles[i].Volume
-		} else if candles[i].Close < candles[i-1].Close {
-			obv = obvs[i-1].Obv - candles[i].Volume
+		if candles.Group[i].Close > candles.Group[i-1].Close {
+			obv = obvs[i-1].Obv + candles.Group[i].Volume
+		} else if candles.Group[i].Close < candles.Group[i-1].Close {
+			obv = obvs[i-1].Obv - candles.Group[i].Volume
 		} else {
 			obv = obvs[i-1].Obv
 		}
 
 		obvs[i] = model.Obv{
-			Item: candles[i].Item,
-			Date: candles[i].Date,
+			Item: candles.Group[i].Item,
+			Date: candles.Group[i].Date,
 			Obv:  obv,
 		}
 	}
@@ -209,15 +209,15 @@ func CalculateStandardDeviation(prices []float64, ma []float64, period int) []fl
 	return stdDev
 }
 
-func CalculateBollingerBands(candles []model.Candle, period int, multiplier float64) []model.BollingerBand {
+func CalculateBollingerBands(candles *model.GroupOfCandles, period int, multiplier float64) []model.BollingerBand {
 	sma := CalculateSMA(candleToFloat(candles), period)
 	stdDev := CalculateStandardDeviation(candleToFloat(candles), sma, period)
 
 	bollingerBands := make([]model.BollingerBand, len(sma))
 	for i := range bollingerBands {
 		bollingerBands[i] = model.BollingerBand{
-			Item:       candles[i+period-1].Item,
-			Date:       candles[i+period-1].Date,
+			Item:       candles.Group[i+period-1].Item,
+			Date:       candles.Group[i+period-1].Date,
 			UpperBand:  sma[i] + (stdDev[i] * multiplier),
 			LowerBand:  sma[i] - (stdDev[i] * multiplier),
 			CenterBand: sma[i],
@@ -226,7 +226,7 @@ func CalculateBollingerBands(candles []model.Candle, period int, multiplier floa
 	return bollingerBands
 }
 
-func CalculateSmaLines(candles []model.Candle, shortPeriod int, mediumPeriod int, longPeriod int) []model.Ma {
+func CalculateSmaLines(candles *model.GroupOfCandles, shortPeriod int, mediumPeriod int, longPeriod int) []model.Ma {
 	closePrices := candleToFloat(candles)
 	shortMa := CalculateSMA(closePrices, shortPeriod)
 	mediumMa := CalculateSMA(closePrices, mediumPeriod)
@@ -235,8 +235,8 @@ func CalculateSmaLines(candles []model.Candle, shortPeriod int, mediumPeriod int
 	maDtos := make([]model.Ma, len(longMa))
 	for i := range maDtos {
 		maDtos[i] = model.Ma{
-			Item:     candles[i+longPeriod-1].Item,
-			Date:     candles[i+longPeriod-1].Date,
+			Item:     candles.Group[i+longPeriod-1].Item,
+			Date:     candles.Group[i+longPeriod-1].Date,
 			MaShort:  shortMa[i+longPeriod-shortPeriod],
 			MaMedium: mediumMa[i+longPeriod-mediumPeriod],
 			MaLong:   longMa[i],
@@ -246,7 +246,7 @@ func CalculateSmaLines(candles []model.Candle, shortPeriod int, mediumPeriod int
 	return maDtos
 }
 
-func CalculateVwapLines(candles []model.Candle, shortPeriod int, mediumPeriod int, longPeriod int) []model.Ma {
+func CalculateVwapLines(candles *model.GroupOfCandles, shortPeriod int, mediumPeriod int, longPeriod int) []model.Ma {
 	shortVwap := CalculateVwap(candles, shortPeriod)
 	mediumVwap := CalculateVwap(candles, mediumPeriod)
 	longVwap := CalculateVwap(candles, longPeriod)
@@ -254,8 +254,8 @@ func CalculateVwapLines(candles []model.Candle, shortPeriod int, mediumPeriod in
 	vwapDtos := make([]model.Ma, len(longVwap))
 	for i := range vwapDtos {
 		vwapDtos[i] = model.Ma{
-			Item:     candles[i+longPeriod-1].Item,
-			Date:     candles[i+longPeriod-1].Date,
+			Item:     candles.Group[i+longPeriod-1].Item,
+			Date:     candles.Group[i+longPeriod-1].Date,
 			MaShort:  shortVwap[i+longPeriod-shortPeriod],
 			MaMedium: mediumVwap[i+longPeriod-mediumPeriod],
 			MaLong:   longVwap[i],
@@ -338,9 +338,9 @@ func GetTrendLine(dataLine []float64, period int, strenght float64) (trendLine [
 	return trendPoints
 }
 
-func candleToFloat(candles []model.Candle) []float64 {
+func candleToFloat(candles *model.GroupOfCandles) []float64 {
 	var result []float64
-	for _, candle := range candles {
+	for _, candle := range candles.Group {
 		result = append(result, candle.Close)
 	}
 	return result

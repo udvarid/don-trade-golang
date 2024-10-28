@@ -24,10 +24,10 @@ type klineData struct {
 	data [4]float32
 }
 
-func BuildUserHistoryChart(history []model.HistoryElement, session string) {
+func BuildUserHistoryChart(history *model.GroupOfHistoryElement, session string) {
 	var date []string
 	assets := make(map[string]bool)
-	for _, element := range history {
+	for _, element := range history.Group {
 		date = append(date, element.Date.Format("2006/01/02"))
 		for item, value := range element.Items {
 			if math.Abs(value) > 0.00001 {
@@ -47,7 +47,7 @@ func BuildUserHistoryChart(history []model.HistoryElement, session string) {
 
 	for _, assetName := range assetNames {
 		var assetValues []float64
-		for _, element := range history {
+		for _, element := range history.Group {
 			assetValues = append(assetValues, element.Items[assetName]/1000)
 		}
 		allAssets = append(allAssets, assetValues)
@@ -73,7 +73,7 @@ func BuildUserHistoryChart(history []model.HistoryElement, session string) {
 	WaitUntilHtmlReady(session)
 }
 
-func BuildDetailedChart(candles []model.Candle) {
+func BuildDetailedChart(candles *model.GroupOfCandles) {
 	page := components.NewPage()
 	page2 := components.NewPage()
 
@@ -98,27 +98,27 @@ func BuildDetailedChart(candles []model.Candle) {
 	obv := calculator.CalculateOBV(candles)
 
 	var kd []klineData
-	for _, candle := range candles {
+	for _, candle := range candles.Group {
 		myDate := candle.Date.Format("2006/01/02")
 		klineData := klineData{date: myDate, data: [4]float32{float32(candle.Open), float32(candle.Close), float32(candle.Low), float32(candle.High)}}
 		kd = append(kd, klineData)
 	}
 
 	detailedChart := klineDetailed(kd[period:])
-	trendLineChart := trendLineOnCandle(candles[period:])
+	trendLineChart := trendLineOnCandle(candles.Group[period:])
 	boilingerChart := boilingerLineMulti(bollingerBands)
 	detailedChart.Overlap(boilingerChart)
 	detailedChart.Overlap(trendLineChart)
 	macdChart := macdLineMulti(macd)
 	smaChart := maLineMulti(sma)
-	vwapChart := vwapLineMulti(vwap, candles[len(candles)-len(vwap):])
+	vwapChart := vwapLineMulti(vwap, candles.Group[len(candles.Group)-len(vwap):])
 
 	rsiChart := rsiLine(rsi)
 	obvChart := obvLine(obv)
 
 	page.AddCharts(detailedChart, macdChart, rsiChart)
 
-	f, err := os.Create("html/kline-detailed-" + candles[0].Item + ".html")
+	f, err := os.Create("html/kline-detailed-" + candles.Group[0].Item + ".html")
 	if err != nil {
 		panic(err)
 
@@ -127,7 +127,7 @@ func BuildDetailedChart(candles []model.Candle) {
 
 	page2.AddCharts(vwapChart, smaChart, obvChart)
 
-	f2, err2 := os.Create("html/kline-detailed2-" + candles[0].Item + ".html")
+	f2, err2 := os.Create("html/kline-detailed2-" + candles.Group[0].Item + ".html")
 	if err2 != nil {
 		panic(err2)
 
@@ -135,12 +135,12 @@ func BuildDetailedChart(candles []model.Candle) {
 	page2.Render(io.MultiWriter(f2))
 }
 
-func BuildSimpleCandleChart(candles []model.Candle, description string) {
+func BuildSimpleCandleChart(candles *model.GroupOfCandles, description string) {
 
 	page := components.NewPage()
 
 	var kd []klineData
-	for _, candle := range candles {
+	for _, candle := range candles.Group {
 		myDate := candle.Date.Format("2006/01/02")
 		klineData := klineData{date: myDate, data: [4]float32{float32(candle.Open), float32(candle.Close), float32(candle.Low), float32(candle.High)}}
 		kd = append(kd, klineData)
@@ -148,7 +148,7 @@ func BuildSimpleCandleChart(candles []model.Candle, description string) {
 
 	page.AddCharts(klineBase(kd, description))
 
-	f, err := os.Create("html/kline-" + candles[0].Item + ".html")
+	f, err := os.Create("html/kline-" + candles.Group[0].Item + ".html")
 	if err != nil {
 		panic(err)
 

@@ -74,6 +74,10 @@ type Candle struct {
 	Volume float64   `json:"volume"`
 }
 
+type GroupOfCandles struct {
+	Group []Candle `json:"group"`
+}
+
 type CandleSummary struct {
 	ID              int                        `json:"id"`
 	Date            time.Time                  `json:"date"`
@@ -161,6 +165,10 @@ type UserStatistic struct {
 type HistoryElement struct {
 	Date  time.Time          `json:"date"`
 	Items map[string]float64 `json:"items"`
+}
+
+type GroupOfHistoryElement struct {
+	Group []HistoryElement `json:"group"`
 }
 
 type PriceChanges struct {

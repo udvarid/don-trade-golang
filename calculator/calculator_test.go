@@ -39,7 +39,9 @@ func TestCandleToFloat(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := candleToFloat(tt.candles)
+			var candleGroup model.GroupOfCandles
+			candleGroup.Group = tt.candles
+			result := candleToFloat(&candleGroup)
 			if !sameSlice(result, tt.expected) {
 				t.Errorf("candleToFloat() = %v, want %v", result, tt.expected)
 			}
@@ -147,7 +149,9 @@ func TestCalculateSmaLines(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := CalculateSmaLines(tt.candles, tt.shortPeriod, tt.mediumPeriod, tt.longPeriod)
+			var candleGroup model.GroupOfCandles
+			candleGroup.Group = tt.candles
+			result := CalculateSmaLines(&candleGroup, tt.shortPeriod, tt.mediumPeriod, tt.longPeriod)
 			if !sameMA(result, tt.expected) {
 				t.Errorf("CalculateSmaLines() = %v, want %v", result, tt.expected)
 			}
@@ -263,7 +267,10 @@ func TestCalculateOBV(t *testing.T) {
 		{Item: "AAPL", Date: time.Date(2021, 1, 4, 0, 0, 0, 0, time.UTC), Obv: 3000},
 	}
 
-	result := CalculateOBV(candles)
+	var candleGroup model.GroupOfCandles
+	candleGroup.Group = candles
+
+	result := CalculateOBV(&candleGroup)
 
 	if len(result) != len(expected) {
 		t.Fatalf("expected length %d, got %d", len(expected), len(result))
@@ -303,7 +310,9 @@ func TestCalculateRSI(t *testing.T) {
 
 	// Calculate RSI
 	period := 5
-	rsis := CalculateRSI(candles, period)
+	var candleGroup model.GroupOfCandles
+	candleGroup.Group = candles
+	rsis := CalculateRSI(&candleGroup, period)
 
 	// Check the length of the result
 	if len(rsis) != len(expectedRSIs) {
@@ -419,7 +428,9 @@ func TestCalculateVwap(t *testing.T) {
 	// Run test cases
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := CalculateVwap(tt.candles, tt.period)
+			var candleGroup model.GroupOfCandles
+			candleGroup.Group = tt.candles
+			result := CalculateVwap(&candleGroup, tt.period)
 			for i, v := range result {
 				if math.Abs(v-tt.expected[i]) > 1e-4 {
 					t.Errorf("got %v, want %v", v, tt.expected[i])

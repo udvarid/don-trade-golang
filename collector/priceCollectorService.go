@@ -34,7 +34,9 @@ func CollectData(config *model.Configuration) {
 	candlesPersisted := candleRepository.GetAllCandles()
 	if len(summaries) > 0 && summaries[0].Date == pureToday {
 		log.Println("No more data collection today")
-		orderCharts(candlesPersisted, itemNamesWithItem)
+		var groupOfCandles model.GroupOfCandles
+		groupOfCandles.Group = candlesPersisted
+		orderCharts(&groupOfCandles, itemNamesWithItem)
 		return
 	}
 
@@ -127,16 +129,19 @@ func CollectData(config *model.Configuration) {
 		candleRepository.UpdateCandleSummary(&candleSummaryToUpdate)
 	}
 
-	orderCharts(candlesPersisted, itemNamesWithItem)
+	var groupOfCandles model.GroupOfCandles
+	groupOfCandles.Group = candlesPersisted
+
+	orderCharts(&groupOfCandles, itemNamesWithItem)
 	if len(persistedItems) > 0 {
 		orderManager.ServeOrders(true, "all users")
 	}
 }
 
-func orderCharts(candles []model.Candle, itemNames map[string]model.Item) {
+func orderCharts(candles *model.GroupOfCandles, itemNames map[string]model.Item) {
 	for itemName, item := range itemNames {
 		var candlesToChart []model.Candle
-		for _, candle := range candles {
+		for _, candle := range candles.Group {
 			if candle.Item == itemName {
 				candlesToChart = append(candlesToChart, candle)
 			}
@@ -148,8 +153,12 @@ func orderCharts(candles []model.Candle, itemNames map[string]model.Item) {
 		if n > 100 {
 			n = 100
 		}
-		chart.BuildSimpleCandleChart(candlesToChart[len(candlesToChart)-n:], item.Description)
-		chart.BuildDetailedChart(candlesToChart)
+		var groupOfCandlesForSimpleChart model.GroupOfCandles
+		var groupOfCandlesForDetailedChart model.GroupOfCandles
+		groupOfCandlesForSimpleChart.Group = candlesToChart[len(candlesToChart)-n:]
+		groupOfCandlesForDetailedChart.Group = candlesToChart
+		chart.BuildSimpleCandleChart(&groupOfCandlesForSimpleChart, item.Description)
+		chart.BuildDetailedChart(&groupOfCandlesForDetailedChart)
 	}
 }
 

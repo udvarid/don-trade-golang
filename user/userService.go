@@ -154,7 +154,7 @@ func createPriceHistory(pureToday time.Time) []model.HistoryElement {
 	return getPriceHistory(candles, itemNames, firstDate, pureToday)
 }
 
-func GetUserHistory(id string, days int) []model.HistoryElement {
+func GetUserHistory(id string, days int) *model.GroupOfHistoryElement {
 	createUserIfNotExists(id)
 	var result []model.HistoryElement
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
@@ -217,7 +217,10 @@ func GetUserHistory(id string, days int) []model.HistoryElement {
 		periodStart = periodStart.AddDate(0, 0, 1)
 	}
 
-	return result
+	var groupResult model.GroupOfHistoryElement
+	groupResult.Group = result
+
+	return &groupResult
 }
 
 func getElementByDate(history []model.HistoryElement, date time.Time) model.HistoryElement {

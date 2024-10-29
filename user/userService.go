@@ -12,6 +12,7 @@ import (
 	"github.com/udvarid/don-trade-golang/collector"
 	"github.com/udvarid/don-trade-golang/communicator"
 	"github.com/udvarid/don-trade-golang/model"
+	"github.com/udvarid/don-trade-golang/orderService"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/orderRepository"
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
@@ -36,14 +37,7 @@ func ChangeNotify(id string, transaction bool, daily bool) {
 }
 
 func DeleteUser(id string) {
-	var orders []model.Order
-	allOrders := orderRepository.GetAllOrders()
-	for _, order := range allOrders {
-		if order.UserID == id {
-			orders = append(orders, order)
-		}
-	}
-	for _, order := range orders {
+	for _, order := range orderService.GetOrdersByUserId(id) {
 		orderRepository.DeleteOrder(order.ID)
 	}
 	userRepository.DeleteUser(id)

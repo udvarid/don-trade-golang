@@ -87,7 +87,7 @@ func TestIsOrderValid(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			result := isOrderValid(tc.orderInString, tc.itemNames)
+			result := isOrderValid(&tc.orderInString, tc.itemNames)
 			if result != tc.expectedResult {
 				t.Errorf("expected %t, got %t", tc.expectedResult, result)
 			}

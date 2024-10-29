@@ -67,10 +67,10 @@ func MakeClearOrder(userId string, item string, short bool) {
 		clearOrder.ValidDays = 1
 		clearOrder.NumberOfItems = math.Abs(numbers)
 	}
-	AddOrder(clearOrder)
+	orderRepository.AddOrder(clearOrder)
 }
 
-func ModifyOrder(userId string, orderModify model.OrderModifyInString) {
+func ModifyOrder(userId string, orderModify *model.OrderModifyInString) {
 	orders := GetOrdersByUserId(userId)
 	for _, order := range orders {
 		if strconv.Itoa(order.ID) == orderModify.OrderId {
@@ -100,11 +100,12 @@ func ModifyOrder(userId string, orderModify model.OrderModifyInString) {
 			if validChange {
 				orderRepository.UpdateOrder(order)
 			}
+			break
 		}
 	}
 }
 
-func ValidateAndAddOrder(orderInString model.OrderInString, userId string) {
+func ValidateAndAddOrder(orderInString *model.OrderInString, userId string) {
 	var order model.Order
 	items := collector.GetItemsFromItemMap(collector.GetItems())
 	var itemNames []string
@@ -152,11 +153,11 @@ func ValidateAndAddOrder(orderInString model.OrderInString, userId string) {
 		}
 		order.ValidDays = validDays
 
-		AddOrder(order)
+		orderRepository.AddOrder(order)
 	}
 }
 
-func isOrderValid(orderInString model.OrderInString, itemNames []string) bool {
+func isOrderValid(orderInString *model.OrderInString, itemNames []string) bool {
 	if (orderInString.Type == "LIMIT" || orderInString.Type == "STOP-LIMIT") && orderInString.LimitPrice == "" {
 		return false
 	}
@@ -176,8 +177,4 @@ func isOrderValid(orderInString model.OrderInString, itemNames []string) bool {
 		return false
 	}
 	return true
-}
-
-func AddOrder(order model.Order) {
-	orderRepository.AddOrder(order)
 }

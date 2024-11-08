@@ -1,11 +1,8 @@
 package user
 
 import (
-	"errors"
 	"fmt"
-	"log"
 	"math"
-	"slices"
 	"sort"
 	"time"
 
@@ -13,6 +10,7 @@ import (
 	"github.com/udvarid/don-trade-golang/communicator"
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/orderService"
+	"github.com/udvarid/don-trade-golang/priceHistory"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 	"github.com/udvarid/don-trade-golang/repository/orderRepository"
 	"github.com/udvarid/don-trade-golang/repository/userRepository"
@@ -102,7 +100,7 @@ func GetUser(id string) model.User {
 
 func GetPriceChanges() []model.PriceChanges {
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-	priceHistory := createPriceHistory(pureToday)
+	priceHistory := priceHistory.GetPriceHistory(pureToday, false, collector.GetItemsFromItemMap(collector.GetItems()))
 	items := collector.GetItemsFromItemMap(collector.GetItems())
 	itemsBaseDate := make(map[time.Time]map[string]float64)
 	for _, historyElement := range priceHistory {
@@ -133,26 +131,11 @@ func GetPriceChanges() []model.PriceChanges {
 	return changes
 }
 
-func createPriceHistory(pureToday time.Time) []model.HistoryElement {
-	candles := candleRepository.GetAllCandles()
-	items := collector.GetItemsFromItemMap(collector.GetItems())
-	var itemNames []string
-	for item := range items {
-		itemNames = append(itemNames, item)
-	}
-	firstDate, err := getFirstDate(candles, itemNames, pureToday)
-	if err != nil {
-		log.Default().Println("Error getting first date")
-	}
-
-	return getPriceHistory(candles, itemNames, firstDate, pureToday)
-}
-
 func GetUserHistory(id string, days int) *model.GroupOfHistoryElement {
 	createUserIfNotExists(id)
 	var result []model.HistoryElement
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
-	priceHistory := createPriceHistory(pureToday)
+	priceHistory := priceHistory.GetPriceHistory(pureToday, false, collector.GetItemsFromItemMap(collector.GetItems()))
 	user, _ := userRepository.FindUser(id)
 	transactions := user.Transactions
 	periodStart := pureToday.AddDate(0, 0, -days)
@@ -224,89 +207,6 @@ func getElementByDate(history []model.HistoryElement, date time.Time) model.Hist
 		}
 	}
 	return model.HistoryElement{}
-}
-
-func getPriceHistory(candles []model.Candle, itemNames []string, firstDate time.Time, pureToday time.Time) []model.HistoryElement {
-	var result []model.HistoryElement
-	var firstElement model.HistoryElement
-	firstElement.Date = firstDate
-	firstElement.Items = make(map[string]float64)
-	for _, candle := range candles {
-		if candle.Date == firstDate {
-			firstElement.Items[candle.Item] = candle.Close
-		}
-		if len(firstElement.Items) == len(itemNames) {
-			break
-		}
-	}
-	result = append(result, firstElement)
-	for {
-		firstDate = firstDate.AddDate(0, 0, 1)
-		if firstDate.After(pureToday) {
-			break
-		}
-		var nextElement model.HistoryElement
-		nextElement.Date = firstDate
-		nextElement.Items = make(map[string]float64)
-		for _, item := range itemNames {
-			foundItem := false
-			for _, candle := range candles {
-				if candle.Date == firstDate && candle.Item == item {
-					foundItem = true
-					nextElement.Items[item] = candle.Close
-					break
-				}
-			}
-			if !foundItem {
-				priceYesterday := result[len(result)-1].Items[item]
-				nextElement.Items[item] = priceYesterday
-			}
-		}
-		result = append(result, nextElement)
-	}
-	return result
-}
-
-func getFirstDate(candles []model.Candle, itemNames []string, pureToday time.Time) (time.Time, error) {
-	firstDate := time.Now()
-	itemsByDate := make(map[time.Time][]string)
-	for _, candle := range candles {
-		if candle.Date.Before(firstDate) {
-			firstDate = candle.Date
-		}
-		dayElement, exists := itemsByDate[candle.Date]
-		if !exists {
-			itemsByDate[candle.Date] = []string{candle.Item}
-		} else {
-			itemsByDate[candle.Date] = append(dayElement, candle.Item)
-		}
-	}
-	foundDateWhenAllItemsExist := false
-	for !foundDateWhenAllItemsExist {
-		dayElement, exists := itemsByDate[firstDate]
-		contains := true
-		if exists {
-			for _, itemName := range itemNames {
-				if !slices.Contains(dayElement, itemName) {
-					contains = false
-					break
-				}
-			}
-			if contains {
-				foundDateWhenAllItemsExist = true
-			}
-		}
-		if !foundDateWhenAllItemsExist {
-			firstDate = firstDate.AddDate(0, 0, 1)
-			if firstDate.After(pureToday) {
-				break
-			}
-		}
-	}
-	if !foundDateWhenAllItemsExist {
-		return time.Now(), errors.New("no first date found")
-	}
-	return firstDate, nil
 }
 
 func getInitAssets() map[string][]model.VolumeWithPrice {

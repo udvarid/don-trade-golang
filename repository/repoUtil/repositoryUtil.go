@@ -40,6 +40,13 @@ func Init() {
 		return nil
 	})
 	db.Update(func(tx *bolt.Tx) error {
+		_, err := tx.CreateBucketIfNotExists([]byte("PriceHistory"))
+		if err != nil {
+			return fmt.Errorf("create bucket: %s", err)
+		}
+		return nil
+	})
+	db.Update(func(tx *bolt.Tx) error {
 		_, err := tx.CreateBucketIfNotExists([]byte("Sessions"))
 		if err != nil {
 			return fmt.Errorf("create bucket: %s", err)

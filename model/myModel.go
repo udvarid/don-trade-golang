@@ -168,6 +168,7 @@ type HistoryElement struct {
 }
 
 type GroupOfHistoryElement struct {
+	ID    int              `json:"id"`
 	Group []HistoryElement `json:"group"`
 }
 

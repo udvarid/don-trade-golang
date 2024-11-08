@@ -14,6 +14,7 @@ import (
 	chart "github.com/udvarid/don-trade-golang/chartBuilder"
 	"github.com/udvarid/don-trade-golang/model"
 	"github.com/udvarid/don-trade-golang/orderManager"
+	"github.com/udvarid/don-trade-golang/priceHistory"
 	"github.com/udvarid/don-trade-golang/repository/candleRepository"
 )
 
@@ -134,6 +135,18 @@ func CollectData(config *model.Configuration) {
 
 	orderCharts(&groupOfCandles, itemNamesWithItem)
 	if len(persistedItems) > 0 {
+		pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
+		priceHistory := priceHistory.GetPriceHistory(pureToday, true, GetItemsFromItemMap(GetItems()))
+		persistedPriceHistories := candleRepository.GetAllPriceHistory()
+		var priceHistoryElement model.GroupOfHistoryElement
+		if len(persistedPriceHistories) == 0 {
+			priceHistoryElement.Group = priceHistory
+			candleRepository.AddPriceHistory(&priceHistoryElement)
+		} else {
+			priceHistoryElement = persistedPriceHistories[0]
+			priceHistoryElement.Group = priceHistory
+			candleRepository.UpdatePriceHistory(&priceHistoryElement)
+		}
 		orderManager.ServeOrders(true, "all users")
 	}
 }

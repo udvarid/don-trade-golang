@@ -1,4 +1,9 @@
 	- Tranzakció history tisztítás: 3 hónappal ezelőtti állapot szerint induló tranzakció és ahhoz hozzácsapni a rákövetkezőket. Így a tranzakciók listája nem nő végtelenre.	
+	   - userService::GetUserHistory hoz hasonló fv
+	   - a periódus eleje a 'firstTransactionDate'
+	   - a periódus vége a 'pureToday'.minus(90)
+	   - az így kapott HistoryElement tömb utolsó napját kell venni, ezek az induló tranzakciók
+	   - az ügyfél tranzakciói közül az ezen dátum utániakat hagyjuk csak meg, arra figyelve, hogy az induló tranzakciók a tömb elejére kerüljenek
 
 	- Fő oldal, néhány bullshittel	
 

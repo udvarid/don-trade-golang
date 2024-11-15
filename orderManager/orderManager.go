@@ -35,7 +35,6 @@ func ServeOrders(normal bool, user string) {
 	pureToday, _ := time.Parse("2006-01-02", time.Now().Format("2006-01-02"))
 	var completedOrders []model.CompletedOrderToMail
 	p := message.NewPrinter(language.Hungarian)
-	userStatistic := userstatistic.GetUserStatistic(user, false)
 	for orderServed {
 		orderServed = false
 		orders := orderRepository.GetAllOrders()
@@ -45,6 +44,7 @@ func ServeOrders(normal bool, user string) {
 				continue
 			}
 			user, _ := userRepository.FindUser(order.UserID)
+			userStatistic := userstatistic.GetUserStatistic(user.ID, false)
 			candle := lastCandles[order.Item]
 			if order.Direction == "BUY" && order.Type == "MARKET" && getVolumen(user.Assets["USD"]) >= 0.0001 {
 				price := candle.Open

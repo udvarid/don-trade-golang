@@ -5,9 +5,30 @@
 	   - az így kapott HistoryElement tömb utolsó napját kell venni, ezek az induló tranzakciók
 	   - az ügyfél tranzakciói közül az ezen dátum utániakat hagyjuk csak meg, arra figyelve, hogy az induló tranzakciók a tömb elejére kerüljenek
 
-	- Fő oldal, néhány bullshittel	
+	- Botok			
+	   - Bot model létrehozás
+	   		- Paraméterek: Kezdő limit, Asset list, Tranzakció limit%, Asset/Portfolio limit%, ShortSell Y/N
+			- Változók: Id, owner, Assets, Debts, Transactions
+	   - Rules: 
+	   		- Több szabályt is meg lehet adni, de ezek AND-el vannak összekötve
+			- Egy robot vagy az összes assetet nézi, vagy egy részét
+			- 1 napos ordereket ad le
+			- tranzakció a kezdő limit x%-a, default 5%, állítható
+			- Asset/portfolio limit default 25%, állítható
+			- Short-sell opció (default false), állítható
+	   - Kiértékelő esetek:
+	   		- vwap -> period -> vs vwap, sma -> GT, LT
+			- sma -> period -> vs vwap, sma -> GT, LT
+			- macd -> short, long, signal period -> number, signal -> GT, LT
+			- rsi -> period -> number -> GT, LT
+			- obv -> trendPeriod -> slope -> GT, LT
+	   - other:
+	   		- orderManger-ben a ServeOrders-t át kell alakítani, hogy ne csak a User-eket szolgálja ki, hanem a Botokat is
+			- Frontendre kell külön Bot létrehozó oldal, bot létrehozást validáló szervízzel
+			- Frontendnél a user page-nél a portfólió táblázatnál külön sorba a botokat kell tenni, gommbal egy Bot összefoglaló oldalra lehet menni
+			- Frontendnél a botösszefoglaló, adodtt sor-nál gombra kattintva frissíti a bot history-t ill. alul a bot configot és az utolsó tranzakciókat
 
-	- Botok	
+	- Botokhoz több kiértékelő eset létrehozása
 
 Usefull:
 	- dinamikus html töltés (Single Page method) https://htmx.org/
